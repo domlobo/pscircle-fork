@@ -9,7 +9,5 @@ struct color_t {
 	double a;
 };
 
-struct color_t color_from_hex(const char *hstr);
-
-struct color_t fun();
-
+struct color_t
+color_from_hex(const char *hstr);

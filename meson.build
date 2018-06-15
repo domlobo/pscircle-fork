@@ -1,17 +1,22 @@
 project(
 	'pscircle',
-	'c'
+	'c',
+	default_options : [
+		'buildtype=release'
+	]
 )
 
 config = configuration_data()
 config.set('version', '1.0.0')
+config.set('NDEBUG', not get_option('buildtype').startswith('debug'))
 
 psc_main = [
 	'src/pscircle.c'
 ]
 
 psc_sources = [
-	'src/color.c'
+	'src/color.c',
+	'src/ppoint.c'
 ]
 
 configure_file(
@@ -34,9 +39,9 @@ deps = [
 ]
 
 test_flags = [
-#	'-march=native',
-#	'-mavx',
-#	'-ffast-math'
+	'-march=native',
+	'-mavx',
+	'-ffast-math'
 ]
 
 cflags = []
@@ -65,6 +70,6 @@ executable(
 	install: true
 )
 
-if ['debug', 'debugoptimized'].contains(get_option('buildtype'))
+if get_option('buildtype').startswith('debug')
 	subdir('tests')
 endif

@@ -1,3 +1,5 @@
 #define VERSION_STR "@version@"
 
-#mesondefine TOKEN
+#mesondefine NDEBUG
+
+#define PSC_EPS FLT_EPSILON

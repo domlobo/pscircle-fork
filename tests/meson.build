@@ -1,5 +1,6 @@
 tests = [
-	['color', ['color.cpp']]
+	['color', ['color.cc']],
+	['ppoint', ['ppoint.cc']],
 ]
 
 add_languages('cpp')
