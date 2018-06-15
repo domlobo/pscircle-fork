@@ -16,7 +16,8 @@ psc_main = [
 
 psc_sources = [
 	'src/color.c',
-	'src/ppoint.c'
+	'src/ppoint.c',
+	'src/node.c'
 ]
 
 configure_file(

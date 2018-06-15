@@ -2,15 +2,15 @@
 
 #include "config.h"
 
-struct color_t {
+typedef struct {
 	double r;
 	double g;
 	double b;
 	double a;
-};
+} color_t;
 
-struct color_t
+color_t
 color_from_hex(const char *hstr);
 
-struct color_t
-color_between(struct color_t a, struct color_t b, double k);
+color_t
+color_between(color_t a, color_t b, double k);

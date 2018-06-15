@@ -6,7 +6,7 @@
 
 #include "color.h"
 
-struct color_t color_from_hex(const char *hstr)
+color_t color_from_hex(const char *hstr)
 {
 	uint32_t r = 0;
 	uint32_t g = 0;
@@ -36,7 +36,7 @@ struct color_t color_from_hex(const char *hstr)
 			goto error;
 	}
 
-	struct color_t col = {
+	color_t col = {
 		.r = (double) r / 255,
 		.g = (double) g / 255,
 		.b = (double) b / 255,
@@ -50,12 +50,12 @@ error:
 	exit(EXIT_FAILURE);
 }
 
-struct color_t
-color_between(struct color_t a, struct color_t b, double k)
+color_t
+color_between(color_t a, color_t b, double k)
 {
 	assert(k >= 0 && k <= 1);
 
-	struct color_t col = {
+	color_t col = {
 		.r = a.r + k * (b.r - a.r),
 		.g = a.g + k * (b.g - a.g),
 		.b = a.b + k * (b.b - a.b),

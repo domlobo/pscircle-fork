@@ -8,7 +8,7 @@
 
 #include "config.h"
 
-bool is_valid(struct ppoint_t p)
+bool is_valid(ppoint_t p)
 {
 	if (p.r < 0)
 		return false;
@@ -20,10 +20,10 @@ bool is_valid(struct ppoint_t p)
 	return fabs(d - 1.) < PSC_EPS;
 }
 
-struct ppoint_t
+ppoint_t
 ppoint_from_radial(double phi, double rho)
 {
-	struct ppoint_t p = {0};
+	ppoint_t p = {0};
 	p.r = rho;
 
 	if (rho != 0)
@@ -35,7 +35,7 @@ ppoint_from_radial(double phi, double rho)
 }
 
 bool
-ppoint_codirectinal(struct ppoint_t a, struct ppoint_t b)
+ppoint_codirectinal(ppoint_t a, ppoint_t b)
 {
 	assert(is_valid(a));
 	assert(is_valid(b));
@@ -46,12 +46,12 @@ ppoint_codirectinal(struct ppoint_t a, struct ppoint_t b)
 	return (fabs(a.nx - b.nx) < PSC_EPS) && (fabs(a.ny - b.ny) < PSC_EPS);
 }
 
-struct ppoint_t
-ppoint_normal(struct ppoint_t a, bool up)
+ppoint_t
+ppoint_normal(ppoint_t a, bool up)
 {
 	assert(is_valid(a));
 
-	struct ppoint_t p = {0};
+	ppoint_t p = {0};
 	if (fabs(a.r) < PSC_EPS)
 		return p;
 
@@ -70,8 +70,8 @@ ppoint_normal(struct ppoint_t a, bool up)
 	return p;
 }
 
-struct ppoint_t
-ppoint_add(struct ppoint_t a, struct ppoint_t b)
+ppoint_t
+ppoint_add(ppoint_t a, ppoint_t b)
 {
 	assert(is_valid(a));
 	assert(is_valid(b));
@@ -80,7 +80,7 @@ ppoint_add(struct ppoint_t a, struct ppoint_t b)
 	double y = a.r*a.ny + b.r*b.ny;
 	double r = sqrt(x*x + y*y);
 
-	struct ppoint_t p = {0};
+	ppoint_t p = {0};
 
 	if (fabs(r) > PSC_EPS) {
 		p.r = r;

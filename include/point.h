@@ -1,6 +1,6 @@
 #pragma once
 
-struct point_t {
+typedef struct {
 	double x;
 	double y;
-};
+} point_t;
