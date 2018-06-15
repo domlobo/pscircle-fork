@@ -6,7 +6,7 @@ extern "C" {
 #include "ppoint.h"
 }
 
-#define EPS 1e-15
+#define EPS PSC_EPS
 
 using namespace std;
 using namespace ::testing;

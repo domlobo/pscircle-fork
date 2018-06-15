@@ -4,7 +4,7 @@ extern "C" {
 #include "node.h"
 }
 
-#define EPS 1e-6
+#define EPS PSC_EPS
 
 using namespace std;
 using namespace ::testing;

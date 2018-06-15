@@ -6,8 +6,6 @@
 
 #include <stdio.h>
 
-#include "config.h"
-
 #include "node.h"
 
 #define FOR_CHILDREN(node) \

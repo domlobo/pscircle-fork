@@ -1,16 +1,16 @@
 #pragma once
 
-#include "config.h"
+#include "types.h"
 
 typedef struct {
-	double r;
-	double g;
-	double b;
-	double a;
+	real_t r;
+	real_t g;
+	real_t b;
+	real_t a;
 } color_t;
 
 color_t
 color_from_hex(const char *hstr);
 
 color_t
-color_between(color_t a, color_t b, double k);
+color_between(color_t a, color_t b, real_t k);

@@ -37,10 +37,10 @@ color_t color_from_hex(const char *hstr)
 	}
 
 	color_t col = {
-		.r = (double) r / 255,
-		.g = (double) g / 255,
-		.b = (double) b / 255,
-		.a = (double) a / 255
+		.r = (real_t) r / 255,
+		.g = (real_t) g / 255,
+		.b = (real_t) b / 255,
+		.a = (real_t) a / 255
 	};
 
 	return col;
@@ -51,7 +51,7 @@ error:
 }
 
 color_t
-color_between(color_t a, color_t b, double k)
+color_between(color_t a, color_t b, real_t k)
 {
 	assert(k >= 0 && k <= 1);
 
