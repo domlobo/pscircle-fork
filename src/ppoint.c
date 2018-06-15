@@ -23,15 +23,15 @@ bool is_valid(struct ppoint_t p)
 struct ppoint_t
 ppoint_from_radial(double phi, double rho)
 {
-	struct ppoint_t pp = {0};
-	pp.r = rho;
+	struct ppoint_t p = {0};
+	p.r = rho;
 
 	if (rho != 0)
-		sincos(phi, &pp.ny, &pp.nx);
+		sincos(phi, &p.ny, &p.nx);
 
-	assert(is_valid(pp));
+	assert(is_valid(p));
 
-	return pp;
+	return p;
 }
 
 bool
@@ -51,23 +51,23 @@ ppoint_normal(struct ppoint_t a, bool up)
 {
 	assert(is_valid(a));
 
-	struct ppoint_t pp = {0};
+	struct ppoint_t p = {0};
 	if (fabs(a.r) < PSC_EPS)
-		return pp;
+		return p;
 
-	pp.r = 1;
+	p.r = 1;
 
 	if (up) {
-		pp.nx = -a.ny;
-		pp.ny = a.nx;
+		p.nx = -a.ny;
+		p.ny = a.nx;
 	} else {
-		pp.nx = a.ny;
-		pp.ny = -a.nx;
+		p.nx = a.ny;
+		p.ny = -a.nx;
 	}
 
-	assert(is_valid(pp));
+	assert(is_valid(p));
 
-	return pp;
+	return p;
 }
 
 struct ppoint_t
@@ -80,19 +80,19 @@ ppoint_add(struct ppoint_t a, struct ppoint_t b)
 	double y = a.r*a.ny + b.r*b.ny;
 	double r = sqrt(x*x + y*y);
 
-	struct ppoint_t pp = {0};
+	struct ppoint_t p = {0};
 
 	if (fabs(r) > PSC_EPS) {
-		pp.r = r;
-		pp.nx = x / r;
-		pp.ny = y / r;
+		p.r = r;
+		p.nx = x / r;
+		p.ny = y / r;
 	} else {
-		pp.r = 0;
-		pp.nx = 0;
-		pp.ny = 0;
+		p.r = 0;
+		p.nx = 0;
+		p.ny = 0;
 	}
 
-	assert(is_valid(pp));
+	assert(is_valid(p));
 	
-	return pp;
+	return p;
 }

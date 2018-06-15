@@ -32,3 +32,38 @@ TEST(color_from_hex, hex_3_digits) {
 	EXPECT_NEAR(c.b, 204./255, EPS);
 	EXPECT_NEAR(c.a, 1, EPS);
 }
+
+TEST(color_between, at_0) {
+	color_t a = {0.8, 0.1, 0.5, 0.2};
+	color_t b = {0.4, 0.9, 0.8, 0.9};
+	color_t c = color_between(a, b, 0);
+
+	EXPECT_NEAR(c.r, 0.8, EPS);
+	EXPECT_NEAR(c.g, 0.1, EPS);
+	EXPECT_NEAR(c.b, 0.5, EPS);
+	EXPECT_NEAR(c.a, 0.2, EPS);
+}
+
+TEST(color_between, at_1) {
+	color_t a = {0.8, 0.1, 0.5, 0.2};
+	color_t b = {0.4, 0.9, 0.8, 0.9};
+	color_t c = color_between(a, b, 1);
+
+	EXPECT_NEAR(c.r, 0.4, EPS);
+	EXPECT_NEAR(c.g, 0.9, EPS);
+	EXPECT_NEAR(c.b, 0.8, EPS);
+	EXPECT_NEAR(c.a, 0.9, EPS);
+}
+
+TEST(color_between, between_0_and_1) {
+	color_t a = {0.8, 0.1, 0.5, 0.2};
+	color_t b = {0.4, 0.9, 0.8, 0.9};
+
+	for (double k = 0.1; k <= 0.9; k += 0.1) {
+		color_t c = color_between(a, b, k);
+		EXPECT_NEAR(c.r, a.r + k * (b.r - a.r), EPS);
+		EXPECT_NEAR(c.g, a.g + k * (b.g - a.g), EPS);
+		EXPECT_NEAR(c.b, a.b + k * (b.b - a.b), EPS);
+		EXPECT_NEAR(c.a, a.a + k * (b.a - a.a), EPS);
+	}
+}

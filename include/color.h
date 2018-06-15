@@ -11,3 +11,6 @@ struct color_t {
 
 struct color_t
 color_from_hex(const char *hstr);
+
+struct color_t
+color_between(struct color_t a, struct color_t b, double k);

@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <assert.h>
 
 #include "color.h"
 
@@ -49,3 +50,17 @@ error:
 	exit(EXIT_FAILURE);
 }
 
+struct color_t
+color_between(struct color_t a, struct color_t b, double k)
+{
+	assert(k >= 0 && k <= 1);
+
+	struct color_t col = {
+		.r = a.r + k * (b.r - a.r),
+		.g = a.g + k * (b.g - a.g),
+		.b = a.b + k * (b.b - a.b),
+		.a = a.a + k * (b.a - a.a)
+	};
+
+	return col;
+}
