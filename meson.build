@@ -65,29 +65,6 @@ executable(
 	install: true
 )
 
-tests = [
-	['test_color', ['tests/test_color.cpp']]
-]
-
 if ['debug', 'debugoptimized'].contains(get_option('buildtype'))
-	add_languages('cpp')
-	gtest_dep = dependency('gtest', main : true, required : true)
-
-	#if gtest_dep.found()
-		deps += gtest_dep
-
-		foreach t : tests
-			exe = executable(
-				t[0],
-				t[1],
-				include_directories : incdir,
-				link_with : psc_library,
-				dependencies : deps,
-			)
-
-			test(t[0], exe)
-		endforeach
-
-	#endif
-
+	subdir('tests')
 endif
