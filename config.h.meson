@@ -1,5 +1,11 @@
+#pragma once
+
 #define VERSION_STR "@version@"
 
 #mesondefine NDEBUG
 
 #define PSC_EPS FLT_EPSILON
+
+#define PSC_USE_FLOAT 0
+
+#define PSC_NODE_COUNT_TYPE uint_fast16_t

@@ -6,8 +6,6 @@
 
 #include "ppoint.h"
 
-#include "config.h"
-
 bool is_valid(ppoint_t p)
 {
 	if (p.r < 0)
@@ -16,18 +14,18 @@ bool is_valid(ppoint_t p)
 	if (p.r == 0)
 		return p.nx == 0 && p.ny == 0;
 
-	double d = sqrt(p.nx*p.nx + p.ny*p.ny);
-	return fabs(d - 1.) < PSC_EPS;
+	real_t d = R(sqrt)(p.nx*p.nx + p.ny*p.ny);
+	return R(fabs)(d - 1) < PSC_EPS;
 }
 
 ppoint_t
-ppoint_from_radial(double phi, double rho)
+ppoint_from_radial(real_t phi, real_t rho)
 {
 	ppoint_t p = {0};
 	p.r = rho;
 
 	if (rho != 0)
-		sincos(phi, &p.ny, &p.nx);
+		R(sincos)(phi, &p.ny, &p.nx);
 
 	assert(is_valid(p));
 
@@ -40,10 +38,10 @@ ppoint_codirectinal(ppoint_t a, ppoint_t b)
 	assert(is_valid(a));
 	assert(is_valid(b));
 
-	if (fabs(a.r) < PSC_EPS || fabs(b.r) < PSC_EPS)
+	if (R(fabs)(a.r) < PSC_EPS || R(fabs)(b.r) < PSC_EPS)
 		return true;
 
-	return (fabs(a.nx - b.nx) < PSC_EPS) && (fabs(a.ny - b.ny) < PSC_EPS);
+	return (R(fabs)(a.nx - b.nx) < PSC_EPS) && (R(fabs)(a.ny - b.ny) < PSC_EPS);
 }
 
 ppoint_t
@@ -52,7 +50,7 @@ ppoint_normal(ppoint_t a, bool up)
 	assert(is_valid(a));
 
 	ppoint_t p = {0};
-	if (fabs(a.r) < PSC_EPS)
+	if (R(fabs)(a.r) < PSC_EPS)
 		return p;
 
 	p.r = 1;
@@ -76,13 +74,13 @@ ppoint_add(ppoint_t a, ppoint_t b)
 	assert(is_valid(a));
 	assert(is_valid(b));
 
-	double x = a.r*a.nx + b.r*b.nx;
-	double y = a.r*a.ny + b.r*b.ny;
-	double r = sqrt(x*x + y*y);
+	real_t x = a.r*a.nx + b.r*b.nx;
+	real_t y = a.r*a.ny + b.r*b.ny;
+	real_t r = R(sqrt)(x*x + y*y);
 
 	ppoint_t p = {0};
 
-	if (fabs(r) > PSC_EPS) {
+	if (R(fabs)(r) > PSC_EPS) {
 		p.r = r;
 		p.nx = x / r;
 		p.ny = y / r;

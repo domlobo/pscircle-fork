@@ -2,14 +2,16 @@
 
 #include <stdbool.h>
 
+#include "types.h"
+
 typedef struct {
-	double nx;
-	double ny;
-	double r;
+	real_t nx;
+	real_t ny;
+	real_t r;
 } ppoint_t;
 
 ppoint_t
-ppoint_from_radial(double phi, double rho);
+ppoint_from_radial(real_t phi, real_t rho);
 
 bool
 ppoint_codirectinal(ppoint_t a, ppoint_t b);

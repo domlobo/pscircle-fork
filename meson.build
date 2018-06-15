@@ -53,7 +53,7 @@ foreach flag : test_flags
 	endif
 endforeach
 
-psc_library = library(
+psc_library = static_library(
 	'pscircle',
 	sources : psc_sources,
 	include_directories : incdir,
