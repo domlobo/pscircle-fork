@@ -6,7 +6,7 @@ flags = [
     '-Wall',
     '-Wextra',
     '-Wpedantic',
-    '-x', 'c',
+    '-x', 'c11',
     '-std=c11',
     '-I', 'include',
     '-I', 'build',

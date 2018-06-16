@@ -6,4 +6,25 @@
 
 #define PSC_USE_FLOAT 0
 
+#define PSC_OUTPUT "pscircle.png"
+
+#define PSC_OUTPUT_WIDTH 3200
+
+#define PSC_OUTPUT_HEIGHT 1800
+
 #define PSC_NODE_COUNT_TYPE uint_fast16_t
+
+#define PSC_PID_TYPE uint_fast16_t
+
+#define PSC_TOPLIST_MAX_ROWS 10
+
+#define PSC_MAX_NAME_LENGHT 10
+
+#define PSC_MEMORY_UNIT 1
+
+#define PSC_INITIAL_PROCESS_COUNT 1024
+
+#define PSC_ROOT_PID 0
+
+#define PSC_MAX_CHILDREN 90
+

@@ -1,6 +1,8 @@
 #include "config.h"
 #include <stdint.h>
 
+#include <sys/types.h>
+
 #ifdef PSC_USE_FLOAT
 #define R(x) x##f
 typedef float real_t;
