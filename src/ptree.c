@@ -25,23 +25,23 @@ read_proccesses(ptree_t *ptree, FILE *input);
 void
 link_process(ptree_t *ptree);
 
-process_t *
+pnode_t *
 get_new_process(ptree_t *ptree);
 
-process_t *
+pnode_t *
 find_by_pid(ptree_t *ptree, pid_t pid);
 
 void
 reserve_root_memory(ptree_t *ptree);
 
 void
-count_as_stub(process_t *parent, process_t *child);
+count_as_stub(pnode_t *parent, pnode_t *child);
 
 void
-update_mem_toplist(ptree_t *ptree, process_t *p);
+update_mem_toplist(ptree_t *ptree, pnode_t *p);
 
 void
-update_cpu_toplist(ptree_t *ptree, process_t *p);
+update_cpu_toplist(ptree_t *ptree, pnode_t *p);
 
 void
 sort_top_lists(ptree_t *ptree);
@@ -57,10 +57,10 @@ ptree_create(FILE *input)
 	ptree_t *ptree = calloc(1, sizeof(ptree_t));
 	CHECK(ptree);
 
-	ptree->cpu_toplist = calloc(config.toplist_max_rows, sizeof(process_t *));
+	ptree->cpu_toplist = calloc(config.toplist_max_rows, sizeof(pnode_t *));
 	CHECK(ptree->cpu_toplist);
 
-	ptree->mem_toplist = calloc(config.toplist_max_rows, sizeof(process_t *));
+	ptree->mem_toplist = calloc(config.toplist_max_rows, sizeof(pnode_t *));
 	CHECK(ptree->mem_toplist);
 
 	reserve_root_memory(ptree);
@@ -98,14 +98,14 @@ read_proccesses(ptree_t *ptree, FILE *input)
 	assert(ptree);
 	assert(input);
 
-	process_t p;
+	pnode_t p;
 
 	while (!feof(input)) {
 
 #ifdef PSC_USE_FLOAT
-		int rc = fscanf(input, "%d %d %f %zd ", &p.pid, &p.ppid, &p.pcpu, &p.mem);
+		int rc = fscanf(input, "%d %d %f %zd ", &p.pid, &p.ppid, &p.cpu, &p.mem);
 #else
-		int rc = fscanf(input, "%d %d %lf %zd ", &p.pid, &p.ppid, &p.pcpu, &p.mem);
+		int rc = fscanf(input, "%d %d %lf %zd ", &p.pid, &p.ppid, &p.cpu, &p.mem);
 #endif
 		if (rc == EOF)
 			break;
@@ -113,38 +113,42 @@ read_proccesses(ptree_t *ptree, FILE *input)
 		for (size_t u = 0; u < config.memory_unit; ++u)
 			p.mem *= 1024;
 
-		process_t *pp = get_new_process(ptree);
+		pnode_t *pp = get_new_process(ptree);
 		assert(pp);
 
 		read_word_and_skip_to_lf(input, pp->comm, config.max_name_lenght);
 
 		pp->pid = p.pid;
 		pp->ppid = p.ppid;
-		pp->pcpu = p.pcpu;
+		pp->cpu = p.cpu;
 		pp->mem = p.mem;
 	}
 }
 
-process_t *
+pnode_t *
 get_new_process(ptree_t *ptree)
 {
 	assert(ptree);
+
 	if (ptree->nprocesses == ptree->_processes_size) {
 		size_t prev = ptree->_processes_size;
 
 		if (ptree->_processes_size == 0) {
 			ptree->_processes_size = config.initial_process_count;
 		} else {
+			assert(config.initial_process_count > 1);
 			ptree->_processes_size *= 2;
 		}
 
-		ptree->processes = realloc(ptree->processes, ptree->_processes_size);
+		ptree->processes = realloc(ptree->processes,
+				ptree->_processes_size * sizeof(pnode_t));
 		CHECK(ptree->processes);
 
-		bzero(ptree->processes + prev, ptree->_processes_size - prev);
+		bzero(ptree->processes + prev,
+				(ptree->_processes_size - prev) * sizeof(pnode_t));
 	}
 
-	process_t *p = ptree->processes + ptree->nprocesses++;
+	pnode_t *p = ptree->processes + ptree->nprocesses++;
 
 	p->comm = calloc(config.max_name_lenght, sizeof(char));
 	CHECK(p->comm);
@@ -179,7 +183,7 @@ read_word_and_skip_to_lf(FILE *input, char *buf, size_t len)
 	return;
 }
 
-process_t *
+pnode_t *
 find_by_pid(ptree_t *ptree, pid_t pid)
 {
 	for (size_t i = 0; i < ptree->nprocesses; ++i) {
@@ -194,17 +198,19 @@ void
 link_process(ptree_t *ptree)
 {
 	assert(ptree);
-	assert(ptree->root);
+	assert(!ptree->root);
 
-	process_t *found = find_by_pid(ptree, config.root_pid);
-	if (!found)
+	pnode_t *found = find_by_pid(ptree, config.root_pid);
+	if (!found) {
+		ptree->root = ptree->processes;
 		ptree->root->pid = config.root_pid;
-	else
+	} else {
 		ptree->root = found;
+	}
 
 	// starts from 1 to skip reserved root
 	for (size_t i = 1; i < ptree->nprocesses; ++i) {
-		process_t *p = ptree->processes + i;
+		pnode_t *p = ptree->processes + i;
 
 		update_cpu_toplist(ptree, p);
 
@@ -213,9 +219,9 @@ link_process(ptree_t *ptree)
 		if (p == ptree->root)
 			continue;
 
-		process_t *parent = find_by_pid(ptree, p->ppid);
+		pnode_t *parent = find_by_pid(ptree, p->ppid);
 		if (!parent) {
-			fprintf(stderr, "Orphan process: %d\n", parent->pid);
+			fprintf(stderr, "Orphan process: %d\n", p->pid);
 			continue;
 		}
 
@@ -232,12 +238,12 @@ link_process(ptree_t *ptree)
 void
 reserve_root_memory(ptree_t *ptree)
 {
-	ptree->root = get_new_process(ptree);
-	ptree->root->pid = -1;
+	pnode_t *r = get_new_process(ptree);
+	r->pid = -1;
 }
 
 void
-count_as_stub(process_t *parent, process_t *p)
+count_as_stub(pnode_t *parent, pnode_t *p)
 {
 	assert(parent);
 	assert(p);
@@ -253,28 +259,28 @@ count_as_stub(process_t *parent, process_t *p)
 
 	if (p->mem > parent->stub->mem)
 		parent->stub->mem = p->mem;
-	if (p->pcpu > parent->stub->pcpu)
-		parent->stub->pcpu = p->pcpu;
+	if (p->cpu > parent->stub->cpu)
+		parent->stub->cpu = p->cpu;
 
 	parent->nstubs++;
 }
 
 void
-update_cpu_toplist(ptree_t *ptree, process_t *p)
+update_cpu_toplist(ptree_t *ptree, pnode_t *p)
 {
 	assert(ptree);
 	assert(p);
 
-	process_t **found = NULL;
+	pnode_t **found = NULL;
 
 	for (size_t i = 0; i < config.toplist_max_rows; ++i) {
-		process_t **pp = &(ptree->cpu_toplist[i]);
+		pnode_t **pp = &(ptree->cpu_toplist[i]);
 		if (*pp == NULL) {
 			found = pp;
 			break;
 		}
 
-		if ((*pp)->pcpu < p->pcpu)
+		if ((*pp)->cpu < p->cpu)
 			found = pp;
 	}
 
@@ -283,15 +289,15 @@ update_cpu_toplist(ptree_t *ptree, process_t *p)
 }
 
 void
-update_mem_toplist(ptree_t *ptree, process_t *p)
+update_mem_toplist(ptree_t *ptree, pnode_t *p)
 {
 	assert(ptree);
 	assert(p);
 
-	process_t **found = NULL;
+	pnode_t **found = NULL;
 
 	for (size_t i = 0; i < config.toplist_max_rows; ++i) {
-		process_t **pp = &(ptree->mem_toplist[i]);
+		pnode_t **pp = &(ptree->mem_toplist[i]);
 		if (*pp == NULL) {
 			found = pp;
 			break;
@@ -306,8 +312,8 @@ update_mem_toplist(ptree_t *ptree, process_t *p)
 }
 
 int cpu_comp(const void *a, const void *b) {
-	const process_t *pa = *(const process_t **) a;
-	const process_t *pb = *(const process_t **) b;
+	const pnode_t *pa = *(const pnode_t **) a;
+	const pnode_t *pb = *(const pnode_t **) b;
 
 	if (!pa && !pb)
 		return 0;
@@ -316,15 +322,15 @@ int cpu_comp(const void *a, const void *b) {
 	if (pa && !pb)
 		return -1;
 
-	if (pa->pcpu < pb->pcpu)
+	if (pa->cpu < pb->cpu)
 		return 1;
 
 	return -1;
 }
 
 int mem_comp(const void *a, const void *b) {
-	const process_t *pa = *(const process_t **) a;
-	const process_t *pb = *(const process_t **) b;
+	const pnode_t *pa = *(const pnode_t **) a;
+	const pnode_t *pb = *(const pnode_t **) b;
 
 	if (!pa && !pb)
 		return 0;
@@ -345,17 +351,17 @@ sort_top_lists(ptree_t *ptree)
 	assert(ptree);
 
 	qsort(ptree->cpu_toplist, config.toplist_max_rows,
-			sizeof(process_t *), cpu_comp);
+			sizeof(pnode_t *), cpu_comp);
 
 	qsort(ptree->mem_toplist, config.toplist_max_rows,
-			sizeof(process_t *), mem_comp);
+			sizeof(pnode_t *), mem_comp);
 }
 
 void
 add_stubs(ptree_t *ptree)
 {
 	for (size_t i = 0; i < ptree->nprocesses; ++i) {
-		process_t *p = ptree->processes + i;
+		pnode_t *p = ptree->processes + i;
 		if (!p->stub)
 			continue;
 		assert(p->nstubs > 0);

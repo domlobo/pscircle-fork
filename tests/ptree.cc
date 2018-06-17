@@ -10,265 +10,336 @@ extern "C" {
 using namespace std;
 using namespace ::testing;
 
-TEST(ptree_create, processes_pid_ppid_mem_comm_are_set) {
-	config.max_name_lenght = 20;
-	config.max_children = 100;
-	config.root_pid = 0;
-	config.memory_unit = 1;
+class ptree_test: public Test
+{
+public:
+	ptree_test() {};
+	virtual ~ptree_test() {};
 
-	FILE *fptr = tmpfile();
+	FILE *input;
 
-	fputs(
+	virtual void SetUp() {
+		config.max_name_lenght = 20;
+		config.max_children = 90;
+		config.root_pid = 0;
+		config.memory_unit = 1;
+		config.toplist_max_rows = 10;
+
+		input = tmpfile();
+	}
+
+	virtual void TearDown(){
+		fclose(input);
+	}
+
+	void put(const char *s) {
+		fputs(s, input);
+		rewind(input);
+	}
+};
+
+TEST_F(ptree_test, read__pid_is_set) {
+	put(
 "1     0  3.14  4212 systemd\n"
-	, fptr);
-	rewind(fptr);
+	);
 
-	auto ptree = ptree_create(fptr);
+	auto ptree = ptree_create(input);
 
-	fclose(fptr);
+	ASSERT_NE(ptree->root,  nullptr);
+	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(p,  nullptr);
 
-	auto r = ptree->root;
-	EXPECT_EQ(r->pid, 0);
-	process_t *p = (process_t *)r->node.first;
 	EXPECT_EQ(p->pid, 1);
-	EXPECT_EQ(p->ppid, 0);
-	EXPECT_NEAR(p->pcpu, 3.14, EPS);
-	EXPECT_EQ(p->mem, 4212u*1024);
-	EXPECT_EQ(string(p->comm), "systemd");
-
-	ptree_destroy(ptree);
 }
 
-TEST(ptree_create, comm_name_is_too_long) {
-	config.max_name_lenght = 3;
-	config.max_children = 100;
-	config.root_pid = 0;
-	config.memory_unit = 1;
-
-	FILE *fptr = tmpfile();
-
-	fputs(
+TEST_F(ptree_test, read__ppid_is_set) {
+	put(
 "1     0  3.14  4212 systemd\n"
-	, fptr);
-	rewind(fptr);
+	);
 
-	auto ptree = ptree_create(fptr);
+	auto ptree = ptree_create(input);
 
-	fclose(fptr);
+	ASSERT_NE(ptree->root,  nullptr);
+	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(p,  nullptr);
 
-	process_t *p = (process_t *)ptree->root->node.first;
-	EXPECT_EQ(string(p->comm), "sy");
-
-	ptree_destroy(ptree);
+	EXPECT_EQ(p->ppid, 0);
 }
 
-TEST(ptree_create, comm_multipel_words) {
-	config.max_name_lenght = 3;
-	config.max_children = 100;
-	config.root_pid = 0;
-	config.memory_unit = 1;
+TEST_F(ptree_test, read_cpu_is_set) {
+	put(
+"1     0  3.14  4212 systemd\n"
+	);
 
-	FILE *fptr = tmpfile();
+	auto ptree = ptree_create(input);
 
-	fputs(
-"1     0  3.14  4212 systemd abc ab\n"
-	, fptr);
-	rewind(fptr);
+	ASSERT_NE(ptree->root,  nullptr);
+	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(p,  nullptr);
 
-	auto ptree = ptree_create(fptr);
-
-	fclose(fptr);
-
-	process_t *p = (process_t *)ptree->root->node.first;
-	EXPECT_EQ(string(p->comm), "sy");
-
-	ptree_destroy(ptree);
+	EXPECT_NEAR(p->cpu, 3.14, EPS);
 }
 
-TEST(ptree_create, root_pid_found) {
+TEST_F(ptree_test, read__mem_in_mb) {
+	config.memory_unit = 2;
+
+	put(
+"1     0  3.14  4212 systemd\n"
+	);
+
+	auto ptree = ptree_create(input);
+
+	ASSERT_NE(ptree->root,  nullptr);
+	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(p,  nullptr);
+
+	EXPECT_EQ(p->mem, 4212ul * 1024 * 1024);
+}
+
+TEST_F(ptree_test, read__comm_is_set) {
 	config.max_name_lenght = 20;
-	config.max_children = 100;
+
+	put(
+"1     0  3.14  4212 systemd\n"
+	);
+
+	auto ptree = ptree_create(input);
+
+	ASSERT_NE(ptree->root,  nullptr);
+	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(p,  nullptr);
+
+	EXPECT_STREQ(p->comm, "systemd");
+}
+
+TEST_F(ptree_test, read__multiple_words) {
+	config.max_name_lenght = 20;
+
+	put(
+"1     0  3.14  4212 systemd abc\n"
+	);
+
+	auto ptree = ptree_create(input);
+	ASSERT_NE(ptree->root,  nullptr);
+	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(p,  nullptr);
+
+	EXPECT_STREQ(p->comm, "systemd");
+}
+
+TEST_F(ptree_test, read__multiple_words_longer_than_max) {
+	config.max_name_lenght = 9;
+
+	put(
+"1     0  3.14  4212 systemd abc\n"
+	);
+
+	auto ptree = ptree_create(input);
+	ASSERT_NE(ptree->root,  nullptr);
+	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(p,  nullptr);
+
+	EXPECT_STREQ(p->comm, "systemd");
+}
+
+TEST_F(ptree_test, read__name_is_too_long) {
+	config.max_name_lenght = 2;
+
+	put(
+"1     0  3.14  4212 systemd\n"
+	);
+
+	auto ptree = ptree_create(input);
+	ASSERT_NE(ptree->root,  nullptr);
+	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(p,  nullptr);
+
+	EXPECT_STREQ(p->comm, "s");
+}
+
+TEST_F(ptree_test, links__root_pid_found) {
 	config.root_pid = 1;
-	config.memory_unit = 1;
 
-	FILE *fptr = tmpfile();
+	put(
+"1     0  0.0  0 p1\n"
+"2     1  0.0  0 p2\n"
+"3     1  0.0  0 p3\n"
+"4     2  0.0  0 p4\n"
+	);
 
-	fputs(
-"1     0  0.0  0 n1\n"
-"2     1  0.0  0 n12\n"
-"3     1  0.0  0 n13\n"
-"4     2  0.0  0 n121\n"
-	, fptr);
-	rewind(fptr);
-
-	auto ptree = ptree_create(fptr);
-
-	fclose(fptr);
+	auto ptree = ptree_create(input);
 
 	auto r = ptree->root;
-	EXPECT_EQ(string(r->comm), "n1");
-	process_t *p1 = (process_t *)r->node.first;
-	EXPECT_EQ(string(p1->comm), "n12");
-	process_t *p2 = (process_t *)p1->node.next;
-	EXPECT_EQ(string(p2->comm), "n13");
-	process_t *p21 = (process_t *)p1->node.first;
-	EXPECT_EQ(string(p21->comm), "n121");
+	ASSERT_NE(r,  nullptr);
+	auto p = (pnode_t *)r->node.first;
+	ASSERT_NE(p,  nullptr);
 
-	ptree_destroy(ptree);
+	EXPECT_STREQ(r->comm, "p1");
+	EXPECT_STREQ(p->comm, "p2");
 }
 
-TEST(ptree_create, mem_toplists_empty_rows) {
-	config.max_name_lenght = 20;
-	config.max_children = 100;
-	config.root_pid = 1;
-	config.memory_unit = 1;
+TEST_F(ptree_test, links__root_pid_not_found__empty_tree) {
+	config.root_pid = 10;
+
+	put(
+"1     0  0.0  0 p1\n"
+"2     1  0.0  0 p2\n"
+"3     1  0.0  0 p3\n"
+"4     2  0.0  0 p4\n"
+	);
+
+	auto ptree = ptree_create(input);
+
+	auto r = ptree->root;
+	ASSERT_NE(r,  nullptr);
+	auto p1 = (pnode_t *)r->node.first;
+	EXPECT_EQ(p1,  nullptr);
+}
+
+TEST_F(ptree_test, links__too_much_processes__array_resized) {
+	config.initial_process_count = 2;
+
+	put(
+"1     0  0.0  0 p1\n"
+"2     1  0.0  0 p2\n"
+"3     1  0.0  0 p3\n"
+"4     2  0.0  0 p4\n"
+	);
+
+	auto ptree = ptree_create(input);
+
+	auto r = ptree->root;
+	ASSERT_NE(r,  nullptr);
+	auto p1 = (pnode_t *)r->node.first;
+	ASSERT_NE(p1,  nullptr);
+	auto p2 = (pnode_t *)p1->node.first;
+	ASSERT_NE(p2,  nullptr);
+	auto p3 = (pnode_t *)p2->node.next;
+	ASSERT_NE(p3,  nullptr);
+	auto p4 = (pnode_t *)p2->node.first;
+	ASSERT_NE(p4,  nullptr);
+
+	EXPECT_STREQ(p1->comm, "p1");
+	EXPECT_STREQ(p2->comm, "p2");
+	EXPECT_STREQ(p3->comm, "p3");
+	EXPECT_STREQ(p4->comm, "p4");
+}
+
+TEST_F(ptree_test, mem_toplist__empty_rows) {
 	config.toplist_max_rows = 10;
 
-	FILE *fptr = tmpfile();
+	put(
+"1     0  1.0  1 p1\n"
+"2     1  4.0  4 p2\n"
+"3     1  3.0  3 p3\n"
+"4     2  2.0  2 p4\n"
+	);
 
-	fputs(
-"1     0  0.0  1 n1\n"
-"2     1  0.0  4 n12\n"
-"3     1  0.0  3 n13\n"
-"4     2  0.0  2 n121\n"
-	, fptr);
-	rewind(fptr);
-
-	auto ptree = ptree_create(fptr);
-
-	fclose(fptr);
+	auto ptree = ptree_create(input);
 
 	auto l = ptree->mem_toplist;
-	EXPECT_EQ(string(l[0]->comm), "n12");
-	EXPECT_EQ(string(l[1]->comm), "n13");
-	EXPECT_EQ(string(l[2]->comm), "n121");
-	EXPECT_EQ(string(l[3]->comm), "n1");
-	for (size_t i = 4; i < config.toplist_max_rows; ++i)
-		EXPECT_EQ(l[i],  nullptr);
+	size_t i = 0;
+	for (auto &name : {"p2", "p3", "p4", "p1"}) {
+		ASSERT_NE(l[i],  nullptr);
+		EXPECT_STREQ(l[i]->comm, name);
+		i++;
+	}
 
-	ptree_destroy(ptree);
+	for (size_t i = 4; i < config.toplist_max_rows; ++i)
+		ASSERT_EQ(l[i],  nullptr);
 }
 
-TEST(ptree_create, mem_toplists_updated) {
-	config.max_name_lenght = 20;
-	config.max_children = 100;
-	config.root_pid = 1;
-	config.memory_unit = 1;
+TEST_F(ptree_test, mem_toplist__toplist_smaller_than_max_rows) {
 	config.toplist_max_rows = 2;
 
-	FILE *fptr = tmpfile();
+	put(
+"1     0  1.0  1 p1\n"
+"2     1  4.0  4 p2\n"
+"3     1  3.0  3 p3\n"
+"4     2  2.0  2 p4\n"
+	);
 
-	fputs(
-"1     0  0.0  1 n1\n"
-"2     1  0.0  4 n12\n"
-"3     1  0.0  3 n13\n"
-"4     2  0.0  2 n121\n"
-	, fptr);
-	rewind(fptr);
-
-	auto ptree = ptree_create(fptr);
-
-	fclose(fptr);
+	auto ptree = ptree_create(input);
 
 	auto l = ptree->mem_toplist;
-
-	EXPECT_EQ(string(l[0]->comm), "n12");
-	EXPECT_EQ(string(l[1]->comm), "n13");
-
-	ptree_destroy(ptree);
+	size_t i = 0;
+	for (auto &name : {"p2", "p3"}) {
+		ASSERT_NE(l[i],  nullptr);
+		EXPECT_STREQ(l[i]->comm, name);
+		i++;
+	}
 }
 
-TEST(ptree_create, pcpu_toplists_empty_rows) {
-	config.max_name_lenght = 20;
-	config.max_children = 100;
-	config.root_pid = 1;
-	config.memory_unit = 1;
+TEST_F(ptree_test, cpu_toplist__empty_rows) {
 	config.toplist_max_rows = 10;
 
-	FILE *fptr = tmpfile();
+	put(
+"1     0  1.0  1 p1\n"
+"2     1  4.0  4 p2\n"
+"3     1  3.0  3 p3\n"
+"4     2  2.0  2 p4\n"
+	);
 
-	fputs(
-"1     0  1.0  1 n1\n"
-"2     1  4.0  4 n12\n"
-"3     1  3.0  3 n13\n"
-"4     2  2.0  2 n121\n"
-	, fptr);
-	rewind(fptr);
-
-	auto ptree = ptree_create(fptr);
-
-	fclose(fptr);
+	auto ptree = ptree_create(input);
 
 	auto l = ptree->cpu_toplist;
-	EXPECT_EQ(string(l[0]->comm), "n12");
-	EXPECT_EQ(string(l[1]->comm), "n13");
-	EXPECT_EQ(string(l[2]->comm), "n121");
-	EXPECT_EQ(string(l[3]->comm), "n1");
-	for (size_t i = 4; i < config.toplist_max_rows; ++i)
-		EXPECT_EQ(l[i],  nullptr);
+	size_t i = 0;
+	for (auto &name : {"p2", "p3", "p4", "p1"}) {
+		ASSERT_NE(l[i],  nullptr);
+		EXPECT_STREQ(l[i]->comm, name);
+		i++;
+	}
 
-	ptree_destroy(ptree);
+	for (size_t i = 4; i < config.toplist_max_rows; ++i)
+		ASSERT_EQ(l[i],  nullptr);
 }
 
-TEST(ptree_create, pcpu_toplists_updated) {
-	config.max_name_lenght = 20;
-	config.max_children = 100;
-	config.root_pid = 1;
-	config.memory_unit = 1;
+TEST_F(ptree_test, cpu_toplist__toplist_smaller_than_max_rows) {
 	config.toplist_max_rows = 2;
 
-	FILE *fptr = tmpfile();
+	put(
+"1     0  1.0  1 p1\n"
+"2     1  4.0  4 p2\n"
+"3     1  3.0  3 p3\n"
+"4     2  2.0  2 p4\n"
+	);
 
-	fputs(
-"1     0  1.0  1 n1\n"
-"2     1  4.0  4 n12\n"
-"3     1  3.0  3 n13\n"
-"4     2  2.0  2 n121\n"
-	, fptr);
-	rewind(fptr);
-
-	auto ptree = ptree_create(fptr);
-
-	fclose(fptr);
+	auto ptree = ptree_create(input);
 
 	auto l = ptree->cpu_toplist;
-
-	EXPECT_EQ(string(l[0]->comm), "n12");
-	EXPECT_EQ(string(l[1]->comm), "n13");
-
-	ptree_destroy(ptree);
+	size_t i = 0;
+	for (auto &name : {"p2", "p3"}) {
+		ASSERT_NE(l[i],  nullptr);
+		EXPECT_STREQ(l[i]->comm, name);
+		i++;
+	}
 }
 
-TEST(ptree_create, stubs_are_added) {
-	config.max_name_lenght = 20;
+TEST_F(ptree_test, stubs__too_much_procs) {
 	config.max_children = 1;
-	config.root_pid = 1;
-	config.memory_unit = 1;
-	config.toplist_max_rows = 2;
 
-	FILE *fptr = tmpfile();
+	put(
+"1     0  1.0  1 p1\n"
+"2     1  4.0  4 p2\n"
+"3     1  3.0  3 p3\n"
+"4     1  5.0  2 p4\n"
+	);
 
-	fputs(
-"1     0  1.0  1 n1\n"
-"2     1  4.0  4 n11\n"
-"3     1  3.0  3 n12\n"
-"4     1  5.0  2 n13\n"
-	, fptr);
-	
-	rewind(fptr);
-
-	auto ptree = ptree_create(fptr);
-
-	fclose(fptr);
-
+	auto ptree = ptree_create(input);
+	ASSERT_NE(ptree, nullptr);
 	auto r = ptree->root;
-	process_t *p1 = (process_t *)r->node.first;
-	process_t *p2 = (process_t *)p1->node.next;
+	ASSERT_NE(r, nullptr);
+	auto p1 = (pnode_t *)r->node.first;
+	ASSERT_NE(p1, nullptr);
+	auto p2 = (pnode_t *)p1->node.first;
+	ASSERT_NE(p2, nullptr);
+	auto p3 = (pnode_t *)p2->node.next;
+	ASSERT_NE(p3, nullptr);
 
-	EXPECT_EQ(string(p1->comm), "n11");
-	EXPECT_EQ(string(p2->comm), "<2 omitted>");
-	EXPECT_EQ(p2->mem, 3u*1024);
-	EXPECT_NEAR(p2->pcpu, 5, EPS);
-
-	ptree_destroy(ptree);
+	EXPECT_STREQ(p1->comm, "p1");
+	EXPECT_STREQ(p2->comm, "p2");
+	EXPECT_STREQ(p3->comm, "<2 omitted>");
+	EXPECT_EQ(p3->mem, 3u*1024);
+	EXPECT_NEAR(p3->cpu, 5, EPS);
 }
+

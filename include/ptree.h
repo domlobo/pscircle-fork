@@ -4,17 +4,17 @@
 
 #include "node.h"
 
-#include "process.h"
+#include "pnode.h"
 
 typedef struct {
-	process_t *root;
+	pnode_t *root;
 
 	size_t nprocesses;
-	process_t *processes;
+	pnode_t *processes;
 	size_t _processes_size;
 
-	process_t **cpu_toplist;
-	process_t **mem_toplist;
+	pnode_t **cpu_toplist;
+	pnode_t **mem_toplist;
 } ptree_t;
 
 ptree_t *
