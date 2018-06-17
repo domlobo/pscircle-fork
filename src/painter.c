@@ -4,11 +4,12 @@
 #include <string.h>
 #include <assert.h>
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
 #include "painter.h"
+#include "cfg.h"
+
+#ifndef M_PI
+#define M_PI R(3.14159265358979323846)
+#endif
 
 #define CHECK(x) do { \
 	if (x) break; \
@@ -18,7 +19,7 @@
 } while (0)
 
 void
-painter_init(painter_t *painter, size_t width, size_t height)
+painter_init(painter_t *painter)
 {
 #ifndef NDEBUG
 	uint8_t zeros[sizeof(painter_t)];
@@ -26,20 +27,19 @@ painter_init(painter_t *painter, size_t width, size_t height)
 	assert(memcmp(zeros, painter, sizeof(painter_t)) == 0);
 #endif
 
-	painter->width = width;
-	painter->height = height;
+	assert(config.output_width > 0);
+	assert(config.output_height > 0);
 
 	painter->_surface = cairo_image_surface_create(
-		CAIRO_FORMAT_ARGB32, painter->width, painter->height); 
+		CAIRO_FORMAT_ARGB32, config.output_width, config.output_height); 
 	CHECK(painter->_surface);
 
 	painter->_cr = cairo_create(painter->_surface);
 	CHECK(painter->_cr);
 
-	cairo_translate(painter->_cr,
-			R(.5) * painter->width, R(.5) * painter->height);
+	painter_fill_backgound(painter, config.background);
 
-	return painter;
+	painter_center(painter);
 }
 
 void
@@ -70,12 +70,12 @@ painter_restore(painter_t *painter)
 }
 
 void
-painter_write(painter_t *painter, const char *filename)
+painter_write(painter_t *painter)
 {
 	assert(painter);
-	assert(filename);
+	assert(config.output);
 
-	cairo_surface_write_to_png(painter->_surface, filename);
+	cairo_surface_write_to_png(painter->_surface, config.output);
 }
 
 point_t
@@ -96,6 +96,15 @@ painter_text_size(painter_t *painter, const char *str)
 }
 
 void
+painter_center(painter_t *painter)
+{
+	assert(painter);
+
+	cairo_translate(painter->_cr,
+			config.output_width/2, config.output_height/2);
+}
+
+void
 painter_translate(painter_t *painter, point_t position)
 {
 	assert(painter);
@@ -104,9 +113,10 @@ painter_translate(painter_t *painter, point_t position)
 }
 
 void
-fill_backgound(painter_t *painter, color_t background)
+painter_fill_backgound(painter_t *painter, color_t background)
 {
-	cairo_rectangle(painter->_cr, 0, 0, painter->width, painter->height);
+	cairo_rectangle(painter->_cr, 0, 0, config.output_width, config.output_height);
+
 	cairo_set_source_rgba(painter->_cr,
 		background.r,
 		background.g,
@@ -118,7 +128,7 @@ fill_backgound(painter_t *painter, color_t background)
 }
 
 void
-set_font_face(painter_t *painter, const char *fontface)
+painter_set_font_face(painter_t *painter, const char *fontface)
 {
 	cairo_select_font_face(
 		painter->_cr, 
@@ -129,13 +139,13 @@ set_font_face(painter_t *painter, const char *fontface)
 }
 
 void
-set_font_size(painter_t *painter, real_t fontsize)
+painter_set_font_size(painter_t *painter, real_t fontsize)
 {
 	cairo_set_font_size(painter->_cr, fontsize);
 }
 
 void
-draw_circle(painter_t *painter, circle_t circle)
+painter_draw_circle(painter_t *painter, circle_t circle)
 {
 	cairo_arc(
 		painter->_cr,
@@ -174,7 +184,7 @@ draw_circle(painter_t *painter, circle_t circle)
 }
 
 void
-draw_line(painter_t *painter, line_t line)
+painter_draw_line(painter_t *painter, line_t line)
 {
 	cairo_move_to(painter->_cr, line.a.x, line.a.y);
 	cairo_line_to(painter->_cr, line.b.x, line.b.y);
@@ -194,7 +204,7 @@ draw_line(painter_t *painter, line_t line)
 }
 
 void
-draw_curve(painter_t *painter, curve_t curve)
+painter_draw_curve(painter_t *painter, curve_t curve)
 {
 	cairo_move_to(painter->_cr, curve.a.x, curve.a.y);
 
@@ -220,7 +230,7 @@ draw_curve(painter_t *painter, curve_t curve)
 }
 
 void
-draw_text(painter_t *painter, text_t text)
+painter_draw_text(painter_t *painter, text_t text)
 {
 	cairo_save(painter->_cr);
 

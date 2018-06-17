@@ -267,7 +267,7 @@ TEST(arrange, four_levels_a) {
 		EXPECT_NEAR(r41_[i].x,  n * (i+3), EPS);
 }
 
-TEST(reorder_by_leaves, single_level) {
+TEST(node_reorder_by_leaves, single_level) {
 	node_t r = {};
 	static const size_t N = 5;
 	node_t c[N] = {};
@@ -275,7 +275,7 @@ TEST(reorder_by_leaves, single_level) {
 	for (size_t i = 0; i < N; ++i)
 		node_add(&r, &c[i]);
 
-	reorder_by_leaves(&r);
+	node_reorder_by_leaves(&r);
 
 	for (size_t i = 0; i < N; ++i) {
 		bool found = false;
@@ -287,7 +287,7 @@ TEST(reorder_by_leaves, single_level) {
 	}
 }
 
-TEST(reorder_by_leaves, single_child) {
+TEST(node_reorder_by_leaves, single_child) {
 	node_t r = {};
 	static const size_t N = 5;
 	node_t c[N] = {};
@@ -298,7 +298,7 @@ TEST(reorder_by_leaves, single_child) {
 		node_add(&c[i], &c2[i]);
 	}
 
-	reorder_by_leaves(&r);
+	node_reorder_by_leaves(&r);
 
 	for (size_t i = 0; i < N; ++i) {
 		bool found = false;
@@ -313,7 +313,7 @@ TEST(reorder_by_leaves, single_child) {
 }
 
 
-TEST(reorder_by_leaves, two_levels_odd) {
+TEST(node_reorder_by_leaves, two_levels_odd) {
 	node_t r = {};
 	static const size_t N = 5;
 	node_t c1[N] = {};
@@ -326,7 +326,7 @@ TEST(reorder_by_leaves, two_levels_odd) {
 		}
 	}
 
-	reorder_by_leaves(&r);
+	node_reorder_by_leaves(&r);
 
 	node_t *n = r.first;
 	for (int i : {0, 2, 4, 3, 1}) {
@@ -335,7 +335,7 @@ TEST(reorder_by_leaves, two_levels_odd) {
 	}
 }
 
-TEST(reorder_by_leaves, two_elements) {
+TEST(node_reorder_by_leaves, two_elements) {
 	node_t r = {};
 	static const size_t N = 2;
 	node_t c1[N] = {};
@@ -348,7 +348,7 @@ TEST(reorder_by_leaves, two_elements) {
 		}
 	}
 
-	reorder_by_leaves(&r);
+	node_reorder_by_leaves(&r);
 
 	node_t *n = r.first;
 	for (int i : {0, 1}) {
@@ -357,7 +357,7 @@ TEST(reorder_by_leaves, two_elements) {
 	}
 }
 
-TEST(reorder_by_leaves, two_levels_even) {
+TEST(node_reorder_by_leaves, two_levels_even) {
 	node_t r = {};
 	static const size_t N = 6;
 	node_t c1[N] = {};
@@ -370,7 +370,7 @@ TEST(reorder_by_leaves, two_levels_even) {
 		}
 	}
 
-	reorder_by_leaves(&r);
+	node_reorder_by_leaves(&r);
 
 	auto n = r.first;
 	for (int i : {0, 2, 4, 5, 3, 1}) {
@@ -380,7 +380,7 @@ TEST(reorder_by_leaves, two_levels_even) {
 	}
 }
 
-TEST(widest_child, two_levels) {
+TEST(node_widest_child, two_levels) {
 	node_t p = {};
 	node_t c1 = {};
 	node_t c2 = {};
@@ -406,5 +406,5 @@ TEST(widest_child, two_levels) {
 
 	node_arrange(&p);
 
-	EXPECT_EQ(widest_child(&p), &c2);
+	EXPECT_EQ(node_widest_child(&p), &c2);
 }

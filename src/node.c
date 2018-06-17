@@ -162,7 +162,7 @@ int leafs_comp(const void *a, const void *b) {
 }
 
 nnodes_t
-reorder_by_leaves(node_t *node)
+node_reorder_by_leaves(node_t *node)
 {
 	if (!node->first)
 		return 1;
@@ -174,7 +174,7 @@ reorder_by_leaves(node_t *node)
 
 	nnodes_t i = 0;
 	FOR_CHILDREN(node) {
-		nnodes_t nl = reorder_by_leaves(n);
+		nnodes_t nl = node_reorder_by_leaves(n);
 		nleaves += nl;
 		children[i].node = n;
 		children[i].nleaves = nl;
@@ -386,7 +386,7 @@ find_widest_rec(node_t *node, real_t *max, node_t **argmax, real_t depth)
 }
 
 node_t *
-widest_child(node_t *node)
+node_widest_child(node_t *node)
 {
 	real_t max = 0;
 	node_t *argmax = NULL;

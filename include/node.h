@@ -34,7 +34,7 @@ nnodes_t
 node_nchildren(node_t *node);
 
 nnodes_t
-reorder_by_leaves(node_t *node);
+node_reorder_by_leaves(node_t *node);
 
 node_t *
-widest_child(node_t *node);
+node_widest_child(node_t *node);

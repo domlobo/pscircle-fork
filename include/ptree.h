@@ -21,3 +21,6 @@ ptree_init(ptree_t *ptree, FILE *input);
 
 void
 ptree_dinit(ptree_t *ptree);
+
+pnode_t *
+ptree_child_by_pid(ptree_t *ptree, pid_t pid);

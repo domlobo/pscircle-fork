@@ -28,9 +28,6 @@ link_process(ptree_t *ptree);
 pnode_t *
 get_new_process(ptree_t *ptree);
 
-pnode_t *
-find_by_pid(ptree_t *ptree, pid_t pid);
-
 void
 reserve_root_memory(ptree_t *ptree);
 
@@ -48,6 +45,9 @@ sort_top_lists(ptree_t *ptree);
 
 void
 add_stubs(ptree_t *ptree);
+
+pnode_t *
+find_by_pid(ptree_t *ptree, pid_t pid);
 
 void
 ptree_init(ptree_t *ptree, FILE *input)
@@ -191,10 +191,8 @@ link_process(ptree_t *ptree)
 			continue;
 
 		pnode_t *parent = find_by_pid(ptree, p->ppid);
-		if (!parent) {
-			fprintf(stderr, "Orphan process: %d\n", p->pid);
+		if (!parent)
 			continue;
-		}
 
 		if (node_nchildren(&parent->node) < config.max_children) {
 			node_add((node_t *)parent, (node_t *)p);
@@ -343,4 +341,29 @@ add_stubs(ptree_t *ptree)
 
 		node_add((node_t *)p, (node_t *)p->stub);
 	}
+}
+
+void
+ptree_child_by_pid_recurcive(pnode_t **found, pnode_t *p, pid_t pid)
+{
+	if (*found)
+		return;
+
+	if (p->pid == pid) {
+		*found = p;
+		return;
+	}
+
+	for (node_t *n = p->node.first; n != NULL; n = n->next)
+		ptree_child_by_pid_recurcive(found, (pnode_t *) n, pid);
+}
+
+pnode_t *
+ptree_child_by_pid(ptree_t *ptree, pid_t pid)
+{
+	pnode_t *found = NULL;
+
+	ptree_child_by_pid_recurcive(&found, ptree->root, pid);
+
+	return found;
 }

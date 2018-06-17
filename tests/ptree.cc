@@ -293,7 +293,6 @@ TEST_F(ptree_test, cpu_toplist__toplist_smaller_than_max_rows) {
 }
 
 
-
 TEST_F(ptree_test, stubs__too_much_procs) {
 	config.max_children = 1;
 
@@ -321,3 +320,49 @@ TEST_F(ptree_test, stubs__too_much_procs) {
 	EXPECT_NEAR(p3->cpu, 5, EPS);
 }
 
+TEST_F(ptree_test, find__existing_processes) {
+	create(
+"1     0  1.0  1 p1\n"
+"2     1  4.0  4 p2\n"
+"3     1  3.0  3 p3\n"
+"4     1  5.0  2 p4\n"
+"5     3  3.0  3 p5\n"
+"6     3  3.0  3 p6\n"
+"7     3  3.0  3 p7\n"
+"8     4  5.0  2 p8\n"
+	);
+
+	auto c = ptree_child_by_pid(ptree, 6);
+	ASSERT_NE(c, nullptr);
+	EXPECT_STREQ(c->comm, "p6");
+}
+
+TEST_F(ptree_test, find__not_in_tree__returns_nullptr) {
+	config.root_pid = 3;
+
+	create(
+"1     0  1.0  1 p1\n"
+"2     1  4.0  4 p2\n"
+"3     1  3.0  3 p3\n"
+"4     1  5.0  2 p4\n"
+"5     3  3.0  3 p5\n"
+"6     3  3.0  3 p6\n"
+"7     3  3.0  3 p7\n"
+"8     4  5.0  2 p8\n"
+	);
+
+	auto c = ptree_child_by_pid(ptree, 8);
+	EXPECT_EQ(c, nullptr);
+}
+
+TEST_F(ptree_test, find__unknown_process__returns_nullptr) {
+	create(
+"1     0  1.0  1 p1\n"
+"2     1  4.0  4 p2\n"
+"3     2  3.0  3 p3\n"
+"4     2  5.0  2 p4\n"
+	);
+
+	auto c = ptree_child_by_pid(ptree, 10);
+	EXPECT_EQ(c, nullptr);
+}

@@ -3,6 +3,7 @@
 #include "types.h"
 
 #include "node.h"
+#include "ppoint.h"
 
 typedef uint_fast16_t mem_t;
 
@@ -17,4 +18,5 @@ struct pnode_t {
 	char comm[PSC_MAX_NAME_LENGHT];
 	pnode_t *stub;
 	nnodes_t nstubs;
+	ppoint_t position;
 };

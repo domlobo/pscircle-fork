@@ -21,6 +21,7 @@ psc_sources = [
 	'src/painter.c',
 	'src/ptree.c',
 	'src/cfg.c',
+	'src/visualizer.c'
 ]
 
 configure_file(
