@@ -94,3 +94,16 @@ ppoint_add(ppoint_t a, ppoint_t b)
 	
 	return p;
 }
+
+point_t
+ppoint_to_point(ppoint_t a)
+{
+	assert(is_valid(a));
+
+	point_t p = {
+		.x = a.r * a.nx,
+		.y = a.r * a.ny
+	};
+
+	return p;
+}

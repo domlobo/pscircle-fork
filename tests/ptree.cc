@@ -106,7 +106,7 @@ TEST_F(ptree_test, read__comm_is_set) {
 	auto p = (pnode_t *)ptree->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
-	EXPECT_STREQ(p->comm, "systemd");
+	EXPECT_STREQ(p->name, "systemd");
 }
 
 TEST_F(ptree_test, read__multiple_words) {
@@ -118,7 +118,7 @@ TEST_F(ptree_test, read__multiple_words) {
 	auto p = (pnode_t *)ptree->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
-	EXPECT_STREQ(p->comm, "systemd");
+	EXPECT_STREQ(p->name, "systemd");
 }
 
 TEST_F(ptree_test, read__multiple_words_longer_than_max) {
@@ -134,7 +134,7 @@ TEST_F(ptree_test, read__multiple_words_longer_than_max) {
 	auto p = (pnode_t *)ptree->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
-	EXPECT_EQ(string(p->comm), n);
+	EXPECT_EQ(string(p->name), n);
 }
 
 TEST_F(ptree_test, read__name_is_too_long) {
@@ -150,7 +150,7 @@ TEST_F(ptree_test, read__name_is_too_long) {
 	auto p = (pnode_t *)ptree->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
-	EXPECT_EQ(string(p->comm), n);
+	EXPECT_EQ(string(p->name), n);
 }
 
 TEST_F(ptree_test, links__root_pid_found) {
@@ -168,8 +168,8 @@ TEST_F(ptree_test, links__root_pid_found) {
 	auto p = (pnode_t *)r->node.first;
 	ASSERT_NE(p,  nullptr);
 
-	EXPECT_STREQ(r->comm, "p1");
-	EXPECT_STREQ(p->comm, "p2");
+	EXPECT_STREQ(r->name, "p1");
+	EXPECT_STREQ(p->name, "p2");
 }
 
 TEST_F(ptree_test, links__root_pid_not_found__empty_tree) {
@@ -208,10 +208,10 @@ TEST_F(ptree_test, links__too_much_processes__array_resized) {
 	auto pl = (pnode_t *)p1->node.last;
 	ASSERT_NE(pl,  nullptr);
 
-	EXPECT_STREQ(p1->comm, "p1");
-	EXPECT_STREQ(pf->comm, "p2");
+	EXPECT_STREQ(p1->name, "p1");
+	EXPECT_STREQ(pf->name, "p2");
 	string last = "p" + std::to_string(N-1);
-	EXPECT_STREQ(pl->comm, last.c_str());
+	EXPECT_STREQ(pl->name, last.c_str());
 }
 
 TEST_F(ptree_test, mem_toplist__empty_rows) {
@@ -225,7 +225,7 @@ TEST_F(ptree_test, mem_toplist__empty_rows) {
 	size_t i = 0;
 	for (auto &name : {"p2", "p3", "p1"}) {
 		ASSERT_NE(l[i],  nullptr);
-		EXPECT_STREQ(l[i]->comm, name);
+		EXPECT_STREQ(l[i]->name, name);
 		i++;
 	}
 
@@ -248,7 +248,7 @@ TEST_F(ptree_test, mem_toplist__toplist_smaller_than_max_rows) {
 	size_t i = 0;
 	for (auto &name : {"p2", "p5"}) {
 		ASSERT_NE(l[i],  nullptr);
-		EXPECT_STREQ(l[i]->comm, name);
+		EXPECT_STREQ(l[i]->name, name);
 		i++;
 	}
 }
@@ -264,7 +264,7 @@ TEST_F(ptree_test, cpu_toplist__empty_rows) {
 	size_t i = 0;
 	for (auto &name : {"p2", "p3", "p1"}) {
 		ASSERT_NE(l[i],  nullptr);
-		EXPECT_STREQ(l[i]->comm, name);
+		EXPECT_STREQ(l[i]->name, name);
 		i++;
 	}
 
@@ -287,7 +287,7 @@ TEST_F(ptree_test, cpu_toplist__toplist_smaller_than_max_rows) {
 	size_t i = 0;
 	for (auto &name : {"p2", "p5"}) {
 		ASSERT_NE(l[i],  nullptr);
-		EXPECT_STREQ(l[i]->comm, name);
+		EXPECT_STREQ(l[i]->name, name);
 		i++;
 	}
 }
@@ -313,9 +313,9 @@ TEST_F(ptree_test, stubs__too_much_procs) {
 	auto p3 = (pnode_t *)p2->node.next;
 	ASSERT_NE(p3, nullptr);
 
-	EXPECT_STREQ(p1->comm, "p1");
-	EXPECT_STREQ(p2->comm, "p2");
-	EXPECT_STREQ(p3->comm, "<2 omitted>");
+	EXPECT_STREQ(p1->name, "p1");
+	EXPECT_STREQ(p2->name, "p2");
+	EXPECT_STREQ(p3->name, "<2 omitted>");
 	EXPECT_EQ(p3->mem, 3u*1024);
 	EXPECT_NEAR(p3->cpu, 5, EPS);
 }
@@ -334,7 +334,7 @@ TEST_F(ptree_test, find__existing_processes) {
 
 	auto c = ptree_child_by_pid(ptree, 6);
 	ASSERT_NE(c, nullptr);
-	EXPECT_STREQ(c->comm, "p6");
+	EXPECT_STREQ(c->name, "p6");
 }
 
 TEST_F(ptree_test, find__not_in_tree__returns_nullptr) {

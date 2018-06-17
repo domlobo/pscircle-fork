@@ -116,3 +116,12 @@ TEST(ppoint_add, two_opposite) {
 	EXPECT_NEAR(c.ny, 0, EPS);
 }
 
+
+TEST(ppoint_to_point, valid_ppoint) {
+	ppoint_t a = {sqrt(3)/2, 0.5, 2.};
+
+	point_t c = ppoint_to_point(a);
+
+	EXPECT_NEAR(c.x, sqrt(3), EPS);
+	EXPECT_NEAR(c.y, 1, EPS);
+}

@@ -39,6 +39,12 @@ draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *ptree, int d
 void
 draw_dot(painter_t *painter, pnode_t *pnode);
 
+void
+draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child);
+
+void
+draw_label(visualizer_t *vis, painter_t *painter, pnode_t *child, real_t angle);
+
 real_t
 calc_cpu_percentage(pnode_t *node);
 
@@ -146,10 +152,10 @@ draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, int 
 
 		draw_dot(painter, child);
 
-		/* draw_label(); */
-        /*  */
-		/* if (depth > 0) */
-		/* 	draw_link(); */
+		draw_label(vis, painter, child, ca);
+
+		if (depth > 0)
+			draw_link(vis, painter, parent, child);
 	}
 
 }
@@ -160,10 +166,7 @@ draw_dot(painter_t *painter, pnode_t *pnode)
 	real_t mem = calc_mem_percentage(pnode);
 	real_t cpu = calc_cpu_percentage(pnode);
 
-	point_t center =  {
-		.x = pnode->position.r * pnode->position.nx,
-		.y = pnode->position.r * pnode->position.ny
-	};
+	point_t center = ppoint_to_point(pnode->position);
 
 	color_t bg = color_between(config.dot.bg_min, config.dot.bg_max, cpu);
 
@@ -178,6 +181,78 @@ draw_dot(painter_t *painter, pnode_t *pnode)
 	};
 
 	painter_draw_circle(painter, c);
+}
+
+void
+draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child)
+{
+	ppoint_t a = parent->position;
+	a.r += vis->link_offset;
+
+	ppoint_t b = child->position;
+	b.r -= vis->link_offset;
+
+	real_t mem = calc_mem_percentage(child);
+	color_t col = color_between(config.link.color_min, config.link.color_max, mem);
+
+	if (ppoint_codirectinal(a, b)) {
+		line_t line = {
+			.a = ppoint_to_point(a),
+			.b = ppoint_to_point(b),
+			.width = config.link.width,
+			.color = col
+		};
+
+		painter_draw_line(painter, line);
+		return;
+	}
+
+	real_t conv = config.link.convexity * config.tree.radius_inc;
+	ppoint_t ac = parent->position;
+	ac.r += conv;
+	ppoint_t bc = child->position;
+	bc.r -= conv;
+
+	curve_t curve = {
+		.a = ppoint_to_point(a),
+		.b = ppoint_to_point(b),
+		.ac = ppoint_to_point(ac),
+		.bc = ppoint_to_point(bc),
+		.width = config.link.width,
+		.color = col
+	};
+
+	painter_draw_curve(painter, curve);
+}
+
+void
+draw_label(visualizer_t *vis, painter_t *painter, pnode_t *child, real_t angle)
+{
+	point_t dim = painter_text_size(painter, child->name);
+
+	ppoint_t p = child->position;
+
+	if (p.nx < 0) {
+		angle += M_PI;
+		p.r += dim.x;
+	}
+
+	ppoint_t np = ppoint_normal(p, p.nx > 0);
+	np.r = dim.y / 2;
+
+
+	p = ppoint_add(p, np);
+
+	p.r += vis->lable_offset;
+
+	text_t text = {
+		.refpoint = ppoint_to_point(p),
+		.angle = angle,
+		.foreground = config.tree.font_color,
+		.str = child->name
+	};
+
+	painter_draw_text(painter, text);
 }
 
 real_t

@@ -101,7 +101,7 @@ read_proccesses(ptree_t *ptree, FILE *input)
 		if (!pp)
 			break;
 
-		read_word_and_skip_to_lf(input, pp->comm, PSC_MAX_NAME_LENGHT);
+		read_word_and_skip_to_lf(input, pp->name, PSC_MAX_NAME_LENGHT);
 
 		pp->pid = p.pid;
 		pp->ppid = p.ppid;
@@ -336,7 +336,7 @@ add_stubs(ptree_t *ptree)
 			continue;
 		assert(p->nstubs > 0);
 
-		snprintf(p->stub->comm, PSC_MAX_NAME_LENGHT,
+		snprintf(p->stub->name, PSC_MAX_NAME_LENGHT,
 				"<%zd omitted>", p->nstubs);
 
 		node_add((node_t *)p, (node_t *)p->stub);

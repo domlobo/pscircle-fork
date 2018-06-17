@@ -25,7 +25,7 @@ typedef struct {
 	point_t a;
 	point_t b;
 	real_t width;
-	color_t background;
+	color_t color;
 } line_t;
 
 typedef struct {
@@ -34,7 +34,7 @@ typedef struct {
 	point_t ac;
 	point_t bc;
 	real_t width;
-	color_t background;
+	color_t color;
 } curve_t;
 
 typedef struct {

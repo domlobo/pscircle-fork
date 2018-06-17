@@ -28,6 +28,7 @@ cfg_t config = {
 	.tree = {
 		.font_face  = PSC_TREE_FONT_FACE,
 		.font_size  = PSC_TREE_FONT_SIZE,
+		.font_color = PSC_TREE_FONT_COLOR,
 		.radius_inc = PSC_TREE_RADIUS_INCREMENT,
 		.sector     = PSC_TREE_SECTOR,
 		.rotate     = PSC_TREE_ROTATE,
@@ -42,5 +43,12 @@ cfg_t config = {
 		.fg_max = PSC_DOT_BORDER_COLOR_MAX,
 		.bg_min = PSC_DOT_BACKGROUND_COLOR_MIN,
 		.bg_max = PSC_DOT_BACKGROUND_COLOR_MAX,
+	},
+
+	.link = {
+		.width     = PSC_LINK_WIDTH,
+		.convexity = PSC_LINK_CONVIXITY,
+		.color_min = PSC_LINK_COLOR_MIN,
+		.color_max = PSC_LINK_COLOR_MAX
 	}
 };

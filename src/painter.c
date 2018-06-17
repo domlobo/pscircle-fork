@@ -191,10 +191,10 @@ painter_draw_line(painter_t *painter, line_t line)
 
 	cairo_set_source_rgba(
 		painter->_cr,
-		line.background.r,
-		line.background.g,
-		line.background.b,
-		line.background.a
+		line.color.r,
+		line.color.g,
+		line.color.b,
+		line.color.a
 	);
 
 	if (line.width > 0)
@@ -217,10 +217,10 @@ painter_draw_curve(painter_t *painter, curve_t curve)
 
 	cairo_set_source_rgba(
 		painter->_cr,
-		curve.background.r,
-		curve.background.g,
-		curve.background.b,
-		curve.background.a
+		curve.color.r,
+		curve.color.g,
+		curve.color.b,
+		curve.color.a
 	);
 
 	if (curve.width > 0)

@@ -9,6 +9,7 @@
 typedef struct {
 	const char *font_face;
 	double font_size;
+	color_t font_color;
 
 	real_t radius_inc;
 	real_t sector;
@@ -29,6 +30,13 @@ typedef struct {
 } dot_t;
 
 typedef struct {
+	real_t width;
+	real_t convexity;
+	color_t color_min;
+	color_t color_max;
+} link_t;
+
+typedef struct {
 	size_t output_width;
 	size_t output_height;
 	char *output;
@@ -42,6 +50,7 @@ typedef struct {
 
 	tree_t tree;
 	dot_t dot;
+	link_t link;
 
 	real_t max_mem;
 	real_t min_mem;
