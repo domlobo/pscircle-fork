@@ -47,11 +47,11 @@ typedef struct {
 	const char *str;
 } text_t;
 
-painter_t *
-painter_create(size_t width, size_t height);
+void
+painter_init(painter_t *painter, size_t width, size_t height);
 
 void
-painter_destroy(painter_t *painter);
+painter_dinit(painter_t *painter);
 
 void
 painter_save(painter_t *painter);

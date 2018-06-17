@@ -10,15 +10,14 @@ typedef struct {
 	pnode_t *root;
 
 	size_t nprocesses;
-	pnode_t *processes;
-	size_t _processes_size;
+	pnode_t processes[PSC_MAX_PROCS_COUNT];
 
-	pnode_t **cpu_toplist;
-	pnode_t **mem_toplist;
+	pnode_t *cpu_toplist[PSC_TOPLIST_MAX_ROWS];
+	pnode_t *mem_toplist[PSC_TOPLIST_MAX_ROWS];
 } ptree_t;
 
-ptree_t *
-ptree_create(FILE *input);
+void
+ptree_init(ptree_t *ptree, FILE *input);
 
 void
-ptree_destroy(ptree_t *ptree);
+ptree_dinit(ptree_t *ptree);

@@ -49,19 +49,17 @@ sort_top_lists(ptree_t *ptree);
 void
 add_stubs(ptree_t *ptree);
 
-ptree_t *
-ptree_create(FILE *input)
+void
+ptree_init(ptree_t *ptree, FILE *input)
 {
 	assert(input);
+	assert(ptree);
 
-	ptree_t *ptree = calloc(1, sizeof(ptree_t));
-	CHECK(ptree);
-
-	ptree->cpu_toplist = calloc(config.toplist_max_rows, sizeof(pnode_t *));
-	CHECK(ptree->cpu_toplist);
-
-	ptree->mem_toplist = calloc(config.toplist_max_rows, sizeof(pnode_t *));
-	CHECK(ptree->mem_toplist);
+#ifndef NDEBUG
+	uint8_t zeros[sizeof(ptree_t)];
+	memset(zeros, 0, sizeof(zeros));
+	assert(memcmp(zeros, ptree, sizeof(ptree_t)) == 0);
+#endif
 
 	reserve_root_memory(ptree);
 
@@ -70,26 +68,12 @@ ptree_create(FILE *input)
 	link_process(ptree);
 
 	sort_top_lists(ptree);
-
-	return ptree;
 }
 
 void
-ptree_destroy(ptree_t *ptree)
+ptree_dinit(ptree_t *ptree)
 {
 	assert(ptree);
-
-	for (size_t i = 0; i < ptree->nprocesses; ++i)
-		free(ptree->processes[i].comm);
-
-	if (ptree->processes)
-		free(ptree->processes);
-
-	free(ptree->mem_toplist);
-
-	free(ptree->cpu_toplist);
-
-	free(ptree);
 }
 
 void
@@ -114,9 +98,10 @@ read_proccesses(ptree_t *ptree, FILE *input)
 			p.mem *= 1024;
 
 		pnode_t *pp = get_new_process(ptree);
-		assert(pp);
+		if (!pp)
+			break;
 
-		read_word_and_skip_to_lf(input, pp->comm, config.max_name_lenght);
+		read_word_and_skip_to_lf(input, pp->comm, PSC_MAX_NAME_LENGHT);
 
 		pp->pid = p.pid;
 		pp->ppid = p.ppid;
@@ -130,30 +115,16 @@ get_new_process(ptree_t *ptree)
 {
 	assert(ptree);
 
-	if (ptree->nprocesses == ptree->_processes_size) {
-		size_t prev = ptree->_processes_size;
-
-		if (ptree->_processes_size == 0) {
-			ptree->_processes_size = config.initial_process_count;
-		} else {
-			assert(config.initial_process_count > 1);
-			ptree->_processes_size *= 2;
-		}
-
-		ptree->processes = realloc(ptree->processes,
-				ptree->_processes_size * sizeof(pnode_t));
-		CHECK(ptree->processes);
-
-		bzero(ptree->processes + prev,
-				(ptree->_processes_size - prev) * sizeof(pnode_t));
+	if (ptree->nprocesses == PSC_MAX_PROCS_COUNT) {
+		fprintf(stderr,
+				"Maximum number of processes (%d) is reached, skipping the rest.\n",
+				PSC_MAX_PROCS_COUNT);
+		fprintf(stderr, "To increase this value change PSC_MAX_PROCS_COUNT and recompile\n");
+		return NULL;
 	}
 
-	pnode_t *p = ptree->processes + ptree->nprocesses++;
-
-	p->comm = calloc(config.max_name_lenght, sizeof(char));
-	CHECK(p->comm);
-
-	return p;
+	assert(ptree->processes);
+	return ptree->processes + ptree->nprocesses++;
 }
 
 void
@@ -239,6 +210,7 @@ void
 reserve_root_memory(ptree_t *ptree)
 {
 	pnode_t *r = get_new_process(ptree);
+	assert(r);
 	r->pid = -1;
 }
 
@@ -273,7 +245,7 @@ update_cpu_toplist(ptree_t *ptree, pnode_t *p)
 
 	pnode_t **found = NULL;
 
-	for (size_t i = 0; i < config.toplist_max_rows; ++i) {
+	for (size_t i = 0; i < PSC_TOPLIST_MAX_ROWS; ++i) {
 		pnode_t **pp = &(ptree->cpu_toplist[i]);
 		if (*pp == NULL) {
 			found = pp;
@@ -296,7 +268,7 @@ update_mem_toplist(ptree_t *ptree, pnode_t *p)
 
 	pnode_t **found = NULL;
 
-	for (size_t i = 0; i < config.toplist_max_rows; ++i) {
+	for (size_t i = 0; i < PSC_TOPLIST_MAX_ROWS; ++i) {
 		pnode_t **pp = &(ptree->mem_toplist[i]);
 		if (*pp == NULL) {
 			found = pp;
@@ -350,10 +322,10 @@ sort_top_lists(ptree_t *ptree)
 {
 	assert(ptree);
 
-	qsort(ptree->cpu_toplist, config.toplist_max_rows,
+	qsort(ptree->cpu_toplist, PSC_TOPLIST_MAX_ROWS,
 			sizeof(pnode_t *), cpu_comp);
 
-	qsort(ptree->mem_toplist, config.toplist_max_rows,
+	qsort(ptree->mem_toplist, PSC_TOPLIST_MAX_ROWS,
 			sizeof(pnode_t *), mem_comp);
 }
 
@@ -366,7 +338,7 @@ add_stubs(ptree_t *ptree)
 			continue;
 		assert(p->nstubs > 0);
 
-		snprintf(p->stub->comm, config.max_name_lenght,
+		snprintf(p->stub->comm, PSC_MAX_NAME_LENGHT,
 				"<%zd omitted>", p->nstubs);
 
 		node_add((node_t *)p, (node_t *)p->stub);

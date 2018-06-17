@@ -10,36 +10,31 @@
 
 #include "painter.h"
 
-/*
 #define CHECK(x) do { \
-	int rc = (x); \
-	if (rc == 0) break; \
-	fprintf(stderr, "%s:%d %s returned %d: %s:", \
-			__FILE__, __LINE__, #x, rc, strerror(errno)); \
-	exit(EXIT_FAILURE); \
-} while (0)
-*/
-
-#define CHECK(x) do { \
-	if (!(x)) break; \
-	fprintf(stderr, "%s:%d %s failed: %s:", \
-			__FILE__, __LINE__, #x, strerror(errno)); \
+	if (x) break; \
+	fprintf(stderr, "%s:%d error: %s\n", \
+			__FILE__, __LINE__, strerror(errno)); \
 	exit(EXIT_FAILURE); \
 } while (0)
 
-painter_t *
-painter_create(size_t width, size_t height)
+void
+painter_init(painter_t *painter, size_t width, size_t height)
 {
-	painter_t *painter = calloc(1, sizeof(painter_t));
-	CHECK(painter);
+#ifndef NDEBUG
+	uint8_t zeros[sizeof(painter_t)];
+	memset(zeros, 0, sizeof(zeros));
+	assert(memcmp(zeros, painter, sizeof(painter_t)) == 0);
+#endif
 
 	painter->width = width;
 	painter->height = height;
 
 	painter->_surface = cairo_image_surface_create(
 		CAIRO_FORMAT_ARGB32, painter->width, painter->height); 
+	CHECK(painter->_surface);
 
 	painter->_cr = cairo_create(painter->_surface);
+	CHECK(painter->_cr);
 
 	cairo_translate(painter->_cr,
 			R(.5) * painter->width, R(.5) * painter->height);
@@ -48,7 +43,7 @@ painter_create(size_t width, size_t height)
 }
 
 void
-painter_destroy(painter_t *painter)
+painter_dinit(painter_t *painter)
 {
 	assert(painter);
 	assert(painter->_cr);
@@ -56,7 +51,6 @@ painter_destroy(painter_t *painter)
 
 	cairo_destroy(painter->_cr);
 	cairo_surface_destroy(painter->_surface);
-	free(painter);
 }
 
 void

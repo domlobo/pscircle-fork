@@ -4,21 +4,26 @@
 
 #mesondefine NDEBUG
 
+
 #define PSC_USE_FLOAT 0
+
+#define PSC_TOPLIST_MAX_ROWS 4
+
+#define PSC_MAX_NAME_LENGHT 20
+
+#define PSC_MAX_PROCS_COUNT 512
+
+#define PSC_NODE_COUNT_TYPE uint_fast16_t
+
+#define PSC_PID_TYPE uint_fast16_t
+
+// Can be changed via command line arguments
 
 #define PSC_OUTPUT "pscircle.png"
 
 #define PSC_OUTPUT_WIDTH 3200
 
 #define PSC_OUTPUT_HEIGHT 1800
-
-#define PSC_NODE_COUNT_TYPE uint_fast16_t
-
-#define PSC_PID_TYPE uint_fast16_t
-
-#define PSC_TOPLIST_MAX_ROWS 10
-
-#define PSC_MAX_NAME_LENGHT 10
 
 #define PSC_MEMORY_UNIT 1
 
@@ -27,4 +32,3 @@
 #define PSC_ROOT_PID 0
 
 #define PSC_MAX_CHILDREN 90
-

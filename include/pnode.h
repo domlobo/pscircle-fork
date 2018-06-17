@@ -14,7 +14,7 @@ struct pnode_t {
 	pid_t ppid;
 	real_t cpu;
 	mem_t mem;
-	char *comm;
+	char comm[PSC_MAX_NAME_LENGHT];
 	pnode_t *stub;
 	nnodes_t nstubs;
 };
