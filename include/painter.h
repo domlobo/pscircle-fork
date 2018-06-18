@@ -7,10 +7,16 @@
 #include "color.h"
 
 #include <cairo.h>
+#include <cairo-xlib.h>
 
 typedef struct {
 	cairo_t *_cr;
 	cairo_surface_t *_surface;
+#ifdef HAVE_X11
+	Display *_display;
+	Window _window;
+	Pixmap _pixmap;
+#endif
 } painter_t;
 
 typedef struct {

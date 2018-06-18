@@ -22,5 +22,10 @@ int main()
 
 	painter_write(painter);
 
+	painter_dinit(painter);
+
+	free(painter);
+	free(ptree);
+
 	return 0;
 }

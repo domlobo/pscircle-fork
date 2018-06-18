@@ -14,6 +14,7 @@ cfg_t config = {
 	.output         = PSC_OUTPUT,
 	.output_width   = PSC_OUTPUT_WIDTH,
 	.output_height  = PSC_OUTPUT_HEIGHT,
+	.output_display = PSC_OUTPUT_DISPLAY,
 	.memory_unit    = PSC_MEMORY_UNIT,
 	.root_pid       = PSC_ROOT_PID,
 	.max_children   = PSC_MAX_CHILDREN,

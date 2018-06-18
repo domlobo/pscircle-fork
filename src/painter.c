@@ -19,6 +19,26 @@
 } while (0)
 
 void
+create_image_surface(painter_t *painter);
+
+void
+destroy_image_surface(painter_t *painter);
+
+void
+write_image_surface(painter_t *painter);
+
+#ifdef HAVE_X11
+void
+create_xlib_surface(painter_t *painter);
+
+void
+destroy_xlib_surface(painter_t *painter);
+
+void
+write_xlib_surface(painter_t *painter);
+#endif
+
+void
 painter_init(painter_t *painter)
 {
 #ifndef NDEBUG
@@ -30,9 +50,14 @@ painter_init(painter_t *painter)
 	assert(config.output_width > 0);
 	assert(config.output_height > 0);
 
-	painter->_surface = cairo_image_surface_create(
-		CAIRO_FORMAT_ARGB32, config.output_width, config.output_height); 
-	CHECK(painter->_surface);
+#ifdef HAVE_X11
+	if (config.output == NULL) {
+		create_xlib_surface(painter);
+	} else
+#endif
+	{
+		create_image_surface(painter);
+	}
 
 	painter->_cr = cairo_create(painter->_surface);
 	CHECK(painter->_cr);
@@ -49,9 +74,110 @@ painter_dinit(painter_t *painter)
 	assert(painter->_cr);
 	assert(painter->_surface);
 
+#ifdef HAVE_X11
+	if (config.output == NULL) {
+		destroy_xlib_surface(painter);
+	} else
+#endif
+	{
+		destroy_image_surface(painter);
+	}
+
 	cairo_destroy(painter->_cr);
+}
+
+void
+create_image_surface(painter_t *painter)
+{
+	painter->_surface = cairo_image_surface_create(
+			CAIRO_FORMAT_ARGB32, config.output_width, config.output_height); 
+	CHECK(painter->_surface);
+}
+
+void
+destroy_image_surface(painter_t *painter)
+{
 	cairo_surface_destroy(painter->_surface);
 }
+
+void
+write_image_surface(painter_t *painter)
+{
+	char *output = config.output;
+	if (!output)
+		output = "pscircle.png";
+
+	cairo_surface_write_to_png(painter->_surface, output);
+}
+
+#ifdef HAVE_X11
+
+void
+xlib_pixmap_destroy(painter_t *painter)
+{
+	assert(painter);
+	assert(painter->_display);
+	assert(painter->_pixmap);
+
+	if (!painter)
+		return;
+}
+
+void
+create_xlib_surface(painter_t *painter)
+{
+	painter->_display = XOpenDisplay(config.output_display);
+	if (!painter->_display) {
+		fprintf(stderr, "Unable to open display: '%s'\n", XDisplayName(config.output_display));
+		exit(EXIT_FAILURE);
+	}
+
+	int screen = DefaultScreen(painter->_display);
+	painter->_window = RootWindow(painter->_display, screen);
+
+	int depth = DefaultDepth(painter->_display, screen);
+	painter->_pixmap = XCreatePixmap(painter->_display, painter->_window,
+			config.output_width, config.output_height, depth);
+
+	Visual *visual = DefaultVisual(painter->_display, screen);
+	painter->_surface = cairo_xlib_surface_create(painter->_display,
+			painter->_pixmap, visual, config.output_width,
+			config.output_height);
+
+	cairo_surface_set_user_data(painter->_surface, NULL, NULL, NULL);
+
+	cairo_xlib_surface_set_size(painter->_surface,
+			config.output_width, config.output_height);
+}
+
+void
+destroy_xlib_surface(painter_t *painter)
+{
+	assert(painter);
+	assert(painter->_display);
+	assert(painter->_window);
+	assert(painter->_surface);
+
+	XFreePixmap(painter->_display, painter->_pixmap);
+
+	XClearWindow(painter->_display, painter->_window);
+
+	cairo_surface_destroy(painter->_surface);
+	XCloseDisplay(painter->_display);
+}
+
+void
+write_xlib_surface(painter_t *painter)
+{
+	assert(painter);
+	assert(painter->_display);
+	assert(painter->_window);
+	assert(painter->_pixmap);
+
+	XSetWindowBackgroundPixmap(painter->_display, painter->_window, painter->_pixmap);
+}
+#endif
+
 
 void
 painter_save(painter_t *painter)
@@ -73,9 +199,16 @@ void
 painter_write(painter_t *painter)
 {
 	assert(painter);
-	assert(config.output);
 
-	cairo_surface_write_to_png(painter->_surface, config.output);
+#ifdef HAVE_X11
+	if (config.output == NULL) {
+		write_xlib_surface(painter);
+	} else
+#endif
+
+	{
+		write_image_surface(painter);
+	}
 }
 
 point_t

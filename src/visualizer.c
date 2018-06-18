@@ -152,12 +152,11 @@ draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, int 
 
 		draw_dot(painter, child);
 
-		draw_label(vis, painter, child, ca);
-
 		if (depth > 0)
 			draw_link(vis, painter, parent, child);
-	}
 
+		draw_label(vis, painter, child, ca);
+	}
 }
 
 void

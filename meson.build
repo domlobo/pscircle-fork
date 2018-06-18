@@ -24,12 +24,6 @@ psc_sources = [
 	'src/visualizer.c'
 ]
 
-configure_file(
-	input : 'config.h.meson',
-	output : 'config.h',
-	configuration : config
-)
-
 incdir = [
 	include_directories('.'),
 	include_directories('include')
@@ -42,6 +36,10 @@ deps = [
 	dependency('libpng'),
 	cc.find_library('m', required : false),
 ]
+
+x11_dep = dependency('x11', required : false)
+config.set('HAVE_X11', x11_dep.found())
+deps += x11_dep
 
 test_flags = [
 	'-march=native',
@@ -56,6 +54,12 @@ foreach flag : test_flags
 		cflags += flag
 	endif
 endforeach
+
+configure_file(
+	input : 'config.h.meson',
+	output : 'config.h',
+	configuration : config
+)
 
 psc_library = static_library(
 	'pscircle',

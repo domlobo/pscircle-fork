@@ -40,6 +40,7 @@ typedef struct {
 	size_t output_width;
 	size_t output_height;
 	char *output;
+	char *output_display;
 
 	uint_fast8_t memory_unit;
 	pid_t root_pid;
