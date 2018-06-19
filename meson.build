@@ -18,10 +18,12 @@ psc_sources = [
 	'src/color.c',
 	'src/ppoint.c',
 	'src/node.c',
+	'src/pnode.c',
 	'src/painter.c',
 	'src/ptree.c',
 	'src/cfg.c',
-	'src/visualizer.c'
+	'src/tree_visualizer.c',
+	'src/toplist_visualizer.c'
 ]
 
 incdir = [

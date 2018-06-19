@@ -20,3 +20,9 @@ struct pnode_t {
 	nnodes_t nstubs;
 	ppoint_t position;
 };
+
+real_t
+pnode_mem_percentage(pnode_t *pnode);
+
+real_t
+pnode_cpu_percentage(pnode_t *pnode);

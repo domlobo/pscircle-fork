@@ -68,6 +68,9 @@ painter_write(painter_t *painter);
 point_t
 painter_text_size(painter_t *painter, const char *str);
 
+point_t
+painter_text_int_size(painter_t *painter, int n);
+
 void
 painter_center(painter_t *painter);
 

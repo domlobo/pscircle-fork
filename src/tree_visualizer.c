@@ -5,7 +5,7 @@
 
 #include "cfg.h"
 #include "node.h"
-#include "visualizer.h"
+#include "tree_visualizer.h"
 
 #ifndef M_PI
 #define M_PI R(3.14159265358979323846)
@@ -44,12 +44,6 @@ draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child
 
 void
 draw_label(visualizer_t *vis, painter_t *painter, pnode_t *child, real_t angle);
-
-real_t
-calc_cpu_percentage(pnode_t *node);
-
-real_t
-calc_mem_percentage(pnode_t *node);
 
 void
 draw_tree(painter_t *painter, ptree_t *ptree)
@@ -162,8 +156,8 @@ draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, int 
 void
 draw_dot(painter_t *painter, pnode_t *pnode)
 {
-	real_t mem = calc_mem_percentage(pnode);
-	real_t cpu = calc_cpu_percentage(pnode);
+	real_t mem = pnode_mem_percentage(pnode);
+	real_t cpu = pnode_cpu_percentage(pnode);
 
 	point_t center = ppoint_to_point(pnode->position);
 
@@ -191,7 +185,7 @@ draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child
 	ppoint_t b = child->position;
 	b.r -= vis->link_offset;
 
-	real_t mem = calc_mem_percentage(child);
+	real_t mem = pnode_mem_percentage(child);
 	color_t col = color_between(config.link.color_min, config.link.color_max, mem);
 
 	if (ppoint_codirectinal(a, b)) {
@@ -254,30 +248,3 @@ draw_label(visualizer_t *vis, painter_t *painter, pnode_t *child, real_t angle)
 	painter_draw_text(painter, text);
 }
 
-real_t
-calc_mem_percentage(pnode_t *pnode)
-{
-	assert(config.max_mem >= config.min_mem);
-
-	real_t m = pnode->mem;
-	if (m < config.min_mem)
-		return 0;
-	if (m > config.max_mem)
-		return 1;
-
-	return (m - config.min_mem) / (config.max_mem - config.min_mem);
-}
-
-real_t
-calc_cpu_percentage(pnode_t *pnode)
-{
-	assert(config.max_cpu >= config.min_cpu);
-
-	real_t m = pnode->cpu;
-	if (m < config.min_cpu)
-		return 0;
-	if (m > config.max_cpu)
-		return 1;
-
-	return (m - config.min_cpu) / (config.max_cpu - config.min_cpu);
-}

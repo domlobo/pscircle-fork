@@ -3,7 +3,8 @@
 
 #include "ptree.h"
 #include "painter.h"
-#include "visualizer.h"
+#include "tree_visualizer.h"
+#include "toplist_visualizer.h"
 
 int main()
 {
@@ -19,6 +20,8 @@ int main()
 	painter_init(painter);
 
 	draw_tree(painter, ptree);
+
+	draw_toplists(painter, ptree);
 
 	painter_write(painter);
 

@@ -7,6 +7,8 @@
 #include "painter.h"
 #include "cfg.h"
 
+#define INT_BUF_SIZE 16
+
 #ifndef M_PI
 #define M_PI R(3.14159265358979323846)
 #endif
@@ -226,6 +228,17 @@ painter_text_size(painter_t *painter, const char *str)
 	};
 
 	return p;
+}
+
+point_t
+painter_text_int_size(painter_t *painter, int n)
+{
+	assert(painter);
+
+	static char buf[INT_BUF_SIZE] = {0};
+	snprintf(buf, INT_BUF_SIZE, "%d", n);
+
+	return painter_text_size(painter, buf);
 }
 
 void

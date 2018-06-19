@@ -37,6 +37,36 @@ typedef struct {
 } link_t;
 
 typedef struct {
+	bool show_header;
+	char *name;
+	char *label;
+	char *value_format;
+	real_t value;
+} toplist_t;
+
+typedef struct {
+	real_t width;
+	real_t height;
+	color_t background;
+	color_t color;
+} bar_t;
+
+typedef struct {
+	point_t center;
+	real_t width;
+	real_t row_height;
+	real_t font_size;
+	color_t font_color;
+	color_t pid_font_color;
+	char *font_face;
+	real_t column_padding;
+
+	bar_t bar;
+	toplist_t cpulist;
+	toplist_t memlist;
+} toplists_t;
+
+typedef struct {
 	size_t output_width;
 	size_t output_height;
 	char *output;
@@ -47,16 +77,18 @@ typedef struct {
 	pid_t zero_angle_pid;
 	nnodes_t max_children;
 
+	real_t max_mem;
+	real_t min_mem;
+	real_t max_cpu;
+	real_t min_cpu;
+
 	color_t background;
 
 	tree_t tree;
 	dot_t dot;
 	link_t link;
+	toplists_t toplists;
 
-	real_t max_mem;
-	real_t min_mem;
-	real_t max_cpu;
-	real_t min_cpu;
 } cfg_t;
 
 extern cfg_t config;

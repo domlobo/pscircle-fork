@@ -51,5 +51,40 @@ cfg_t config = {
 		.convexity = PSC_LINK_CONVIXITY,
 		.color_min = PSC_LINK_COLOR_MIN,
 		.color_max = PSC_LINK_COLOR_MAX
+	},
+
+	.toplists = {
+		.center         = PSC_TOPLISTS_CENTER,
+		.width          = PSC_TOPLISTS_WIDTH,
+		.row_height     = PSC_TOPLISTS_ROW_HEIGHT,
+		.font_size      = PSC_TOPLISTS_FONT_SIZE,
+		.font_color     = PSC_TOPLISTS_FONT_COLOR,
+		.font_face      = PSC_TOPLISTS_FONT_FACE,
+		.pid_font_color = PSC_TOPLISTS_PID_FONT_COLOR,
+		.column_padding = PSC_TOPLISTS_COLUMN_PADDING,
+
+		.bar = {
+			.width      = PSC_TOPLISTS_BAR_WIDTH,
+			.height     = PSC_TOPLISTS_BAR_HEIGHT,
+			.background = PSC_TOPLISTS_BAR_BG,
+			.color      = PSC_TOPLISTS_BAR_COLOR,
+		},
+
+		.cpulist = {
+			.show_header  = PSC_CPULIST_SHOW_HEADER,
+			.name         = PSC_CPULIST_NAME,
+			.label        = PSC_CPULIST_LABEL,
+			.value_format = PSC_CPULIST_VALUE_FMT,
+			.value        = PSC_CPULIST_BAR_VALUE,
+		},
+
+		.memlist = {
+			.show_header  = PSC_MEMLIST_SHOW_HEADER,
+			.name         = PSC_MEMLIST_NAME,
+			.label        = PSC_MEMLIST_LABEL,
+			.value_format = PSC_MEMLIST_VALUE_FMT,
+			.value        = PSC_MEMLIST_BAR_VALUE,
+		},
+
 	}
 };
