@@ -16,6 +16,8 @@
 
 #define PSC_NODE_COUNT_TYPE uint_fast16_t
 
+#define PSC_MEMORY_UNIT_TYPE uint_fast8_t
+
 // Can be changed via command line arguments
 
 #define PSC_OUTPUT 0
@@ -70,14 +72,14 @@
 #define PSC_TOPLISTS_BAR_BG rgb(68, 68, 68)
 #define PSC_TOPLISTS_BAR_COLOR rgb(221, 221, 221)
 
-#define PSC_CPULIST_SHOW_HEADER true
+#define PSC_CPULIST_SHOW_HEADER false
 #define PSC_CPULIST_NAME "CPU"
-#define PSC_CPULIST_LABEL "0.63, 0.63, 0.56"
+#define PSC_CPULIST_LABEL "<cpu_custom_string>"
 #define PSC_CPULIST_VALUE_FMT "%s%.0s"
 #define PSC_CPULIST_BAR_VALUE 0.2
 
-#define PSC_MEMLIST_SHOW_HEADER true
+#define PSC_MEMLIST_SHOW_HEADER false
 #define PSC_MEMLIST_NAME "MEM"
-#define PSC_MEMLIST_LABEL "4.4G / 7.7G"
+#define PSC_MEMLIST_LABEL "<memory_custom_string>"
 #define PSC_MEMLIST_VALUE_FMT "%0.s%s"
 #define PSC_MEMLIST_BAR_VALUE 0.8

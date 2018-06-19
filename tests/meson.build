@@ -3,6 +3,7 @@ tests = [
 	['ppoint', ['ppoint.cc']],
 	['node', ['node.cc']],
 	['ptree', ['ptree.cc']],
+	['argparser', ['argparser.cc']],
 ]
 
 add_languages('cpp')

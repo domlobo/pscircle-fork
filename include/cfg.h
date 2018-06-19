@@ -8,7 +8,7 @@
 
 typedef struct {
 	const char *font_face;
-	double font_size;
+	real_t font_size;
 	color_t font_color;
 
 	real_t radius_inc;
@@ -72,7 +72,7 @@ typedef struct {
 	char *output;
 	char *output_display;
 
-	uint_fast8_t memory_unit;
+	memunit_t memory_unit;
 	pid_t root_pid;
 	pid_t zero_angle_pid;
 	nnodes_t max_children;

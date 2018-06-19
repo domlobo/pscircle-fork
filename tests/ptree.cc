@@ -21,7 +21,7 @@ public:
 	ptree_t *ptree;
 
 	virtual void SetUp() {
-		ASSERT_EQ(PSC_TOPLIST_MAX_ROWS, 4);
+		ASSERT_EQ(PSC_TOPLIST_MAX_ROWS, 5);
 
 		config.max_children = 90;
 		config.root_pid = 0;

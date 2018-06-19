@@ -23,7 +23,8 @@ psc_sources = [
 	'src/ptree.c',
 	'src/cfg.c',
 	'src/tree_visualizer.c',
-	'src/toplist_visualizer.c'
+	'src/toplist_visualizer.c',
+	'src/argparser.c'
 ]
 
 incdir = [

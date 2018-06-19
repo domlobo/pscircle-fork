@@ -15,3 +15,5 @@ typedef double real_t;
 
 typedef PSC_NODE_COUNT_TYPE nnodes_t;
 
+typedef PSC_MEMORY_UNIT_TYPE memunit_t;
+
