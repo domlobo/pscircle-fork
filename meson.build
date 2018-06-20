@@ -20,6 +20,7 @@ psc_sources = [
 	'src/ppoint.c',
 	'src/node.c',
 	'src/pnode.c',
+	'src/timing.c',
 	'src/painter.c',
 	'src/ptree.c',
 	'src/cfg.c',

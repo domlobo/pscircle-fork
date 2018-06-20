@@ -2,12 +2,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-
-#define NARGS 100
-#define HELP_OFFSET 3
-#define HELP_WIDTH 60
-#define HELP_DESCRIPTION_LENGHT 300
-#define KEY_BUFSIZE 100
+#include <config.h>
 
 #define QUOTE(name) #name
 
@@ -30,7 +25,7 @@ typedef struct {
 } arg_t;
 
 typedef struct {
-	arg_t args[NARGS];
+	arg_t args[PSC_MAX_ARGS];
 	size_t nargs;
 } argparser_t;
 

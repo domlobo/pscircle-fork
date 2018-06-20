@@ -15,8 +15,16 @@
 #define PSC_MAX_PROCS_COUNT 512
 
 #define PSC_NODE_COUNT_TYPE uint_fast16_t
-
 #define PSC_MEMORY_UNIT_TYPE uint_fast8_t
+#define PSC_PID_TYPE int
+
+#define PSC_PRINT_TIME 1
+#define PSC_MAX_ARGS 100
+#define PSC_HELPLIST_OFFSET 3
+#define PSC_HELPLIST_WIDTH 60
+#define PSC_ARG_DESCRIPTION_BUFSIZE 300
+#define PSC_ARG_KEY_BUFSIZE 100
+
 
 // Can be changed via command line arguments
 

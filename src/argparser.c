@@ -38,7 +38,7 @@ argparser_add(argparser_t *argparser, arg_t arg)
 	assert(arg.output);
 	assert(arg.parser);
 	assert(argparser);
-	assert(argparser->nargs < NARGS);
+	assert(argparser->nargs < PSC_MAX_ARGS);
 	
 	argparser->args[argparser->nargs++] = arg;
 }
@@ -50,7 +50,7 @@ argparser_parse(argparser_t *argparser, int argc, char const * argv[])
 	assert(argc > 0);
 	assert(argv);
 
-	char key[KEY_BUFSIZE + 1] = {0};
+	char key[PSC_ARG_KEY_BUFSIZE + 1] = {0};
 
 	for (int i = 1; i < argc; ++i) {
 		const char *a = argv[i];
@@ -63,8 +63,8 @@ argparser_parse(argparser_t *argparser, int argc, char const * argv[])
 
 		assert(eq > a);
 		size_t l = eq - a;
-		if (l > KEY_BUFSIZE)
-			l = KEY_BUFSIZE;
+		if (l > PSC_ARG_KEY_BUFSIZE)
+			l = PSC_ARG_KEY_BUFSIZE;
 
 		strncpy(key, a, l);
 		key[l + 1] = '\0';
@@ -135,17 +135,17 @@ print_help_and_exit(argparser_t *argparser)
 		"Options:\n"
 	);
 
-	char buf[HELP_DESCRIPTION_LENGHT] = {0};
+	char buf[PSC_ARG_DESCRIPTION_BUFSIZE] = {0};
 
 	for (size_t i = 0; i < argparser->nargs; ++i) {
 		arg_t *a = argparser->args + i;
-		printf("%*s%s=%s\n", HELP_OFFSET, " ", a->name, a->defaults);
-		strncpy(buf, a->description, HELP_DESCRIPTION_LENGHT);
-		wrap(buf, HELP_WIDTH);
+		printf("%*s%s=%s\n", PSC_HELPLIST_OFFSET, " ", a->name, a->defaults);
+		strncpy(buf, a->description, PSC_ARG_DESCRIPTION_BUFSIZE);
+		wrap(buf, PSC_HELPLIST_WIDTH);
 		
 		char *line = strtok(buf, "\n");
 		while (line) {
-			printf("%*s%s\n", 3*HELP_OFFSET, " ", line);
+			printf("%*s%s\n", 3*PSC_HELPLIST_OFFSET, " ", line);
 			line = strtok(NULL, "\n");
 		}
 		printf("\n");

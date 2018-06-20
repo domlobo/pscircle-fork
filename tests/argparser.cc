@@ -114,7 +114,7 @@ TEST_F(args_test, long_key) {
 	char *arg1 = nullptr;
 
 	stringstream ss;
-	ss << setw(KEY_BUFSIZE + 10) << setfill('0') << "a";
+	ss << setw(PSC_ARG_KEY_BUFSIZE + 10) << setfill('0') << "a";
 	string s = ss.str();
 
 	ARG(argparser, "--a", arg1, parser_string, "d", "d");
