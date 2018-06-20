@@ -6,7 +6,7 @@
 
 #include "ppoint.h"
 
-bool is_valid(ppoint_t p)
+bool ppoint_is_valid(ppoint_t p)
 {
 	if (p.r < 0)
 		return false;
@@ -27,7 +27,7 @@ ppoint_from_radial(real_t phi, real_t rho)
 	if (rho != 0)
 		R(sincos)(phi, &p.ny, &p.nx);
 
-	assert(is_valid(p));
+	assert(ppoint_is_valid(p));
 
 	return p;
 }
@@ -35,8 +35,8 @@ ppoint_from_radial(real_t phi, real_t rho)
 bool
 ppoint_codirectinal(ppoint_t a, ppoint_t b)
 {
-	assert(is_valid(a));
-	assert(is_valid(b));
+	assert(ppoint_is_valid(a));
+	assert(ppoint_is_valid(b));
 
 	if (R(fabs)(a.r) < PSC_EPS || R(fabs)(b.r) < PSC_EPS)
 		return true;
@@ -47,7 +47,7 @@ ppoint_codirectinal(ppoint_t a, ppoint_t b)
 ppoint_t
 ppoint_normal(ppoint_t a, bool up)
 {
-	assert(is_valid(a));
+	assert(ppoint_is_valid(a));
 
 	ppoint_t p = {0};
 	if (R(fabs)(a.r) < PSC_EPS)
@@ -63,7 +63,7 @@ ppoint_normal(ppoint_t a, bool up)
 		p.ny = -a.nx;
 	}
 
-	assert(is_valid(p));
+	assert(ppoint_is_valid(p));
 
 	return p;
 }
@@ -71,8 +71,8 @@ ppoint_normal(ppoint_t a, bool up)
 ppoint_t
 ppoint_add(ppoint_t a, ppoint_t b)
 {
-	assert(is_valid(a));
-	assert(is_valid(b));
+	assert(ppoint_is_valid(a));
+	assert(ppoint_is_valid(b));
 
 	real_t x = a.r*a.nx + b.r*b.nx;
 	real_t y = a.r*a.ny + b.r*b.ny;
@@ -90,7 +90,7 @@ ppoint_add(ppoint_t a, ppoint_t b)
 		p.ny = 0;
 	}
 
-	assert(is_valid(p));
+	assert(ppoint_is_valid(p));
 	
 	return p;
 }
@@ -98,7 +98,7 @@ ppoint_add(ppoint_t a, ppoint_t b)
 point_t
 ppoint_to_point(ppoint_t a)
 {
-	assert(is_valid(a));
+	assert(ppoint_is_valid(a));
 
 	point_t p = {
 		.x = a.r * a.nx,

@@ -1,13 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cfg.h"
 #include "ptree.h"
 #include "painter.h"
 #include "tree_visualizer.h"
 #include "toplist_visualizer.h"
 
-int main()
+int main(int argc, const char *argv[])
 {
+	parse_cmdline(argc, argv);
+
 	ptree_t *ptree = calloc(1, sizeof(ptree_t));
 	ptree_init(ptree, stdin);
 
@@ -21,7 +24,8 @@ int main()
 
 	draw_tree(painter, ptree);
 
-	draw_toplists(painter, ptree);
+	if (config.toplists.visible)
+		draw_toplists(painter, ptree);
 
 	painter_write(painter);
 

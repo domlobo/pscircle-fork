@@ -38,6 +38,8 @@ argparser_add(argparser_t *argparser, arg_t arg)
 	assert(arg.output);
 	assert(arg.parser);
 	assert(argparser);
+	assert(argparser->nargs < NARGS);
+	
 	argparser->args[argparser->nargs++] = arg;
 }
 
@@ -48,6 +50,8 @@ argparser_parse(argparser_t *argparser, int argc, char const * argv[])
 	assert(argc > 0);
 	assert(argv);
 
+	char key[KEY_BUFSIZE + 1] = {0};
+
 	for (int i = 1; i < argc; ++i) {
 		const char *a = argv[i];
 		if (strcmp(a, "-h") == 0 || strcmp(a, "--help") == 0)
@@ -57,16 +61,21 @@ argparser_parse(argparser_t *argparser, int argc, char const * argv[])
 		if (!eq || eq == a)
 			print_unknown_and_exit(a);
 
-		*(eq) = '\0';
+		assert(eq > a);
+		size_t l = eq - a;
+		if (l > KEY_BUFSIZE)
+			l = KEY_BUFSIZE;
 
-		char *v = eq + 1;
+		strncpy(key, a, l);
+		key[l + 1] = '\0';
+		char *val = eq + 1;
 
-		arg_t *arg = find_by_key(argparser, a);
+		arg_t *arg = find_by_key(argparser, key);
 
 		if (!arg)
 			print_unknown_and_exit(a);
 
-		if (!arg->parser(v, arg->output))
+		if (!arg->parser(val, arg->output))
 			print_parse_error_and_exit(a);
 	}
 }
@@ -103,6 +112,12 @@ wrap(char *str, size_t width)
 
 		q++;
 	}
+
+	if (p) {
+		assert(q > p);
+		if (line + (q - p) >= width)
+			*p = '\n';
+	}
 }
 
 void
@@ -124,10 +139,16 @@ print_help_and_exit(argparser_t *argparser)
 
 	for (size_t i = 0; i < argparser->nargs; ++i) {
 		arg_t *a = argparser->args + i;
-		printf("%*s%s = %s\n", HELP_OFFSET, " ", a->name, a->defaults);
+		printf("%*s%s=%s\n", HELP_OFFSET, " ", a->name, a->defaults);
 		strncpy(buf, a->description, HELP_DESCRIPTION_LENGHT);
 		wrap(buf, HELP_WIDTH);
-		printf("%*s%s\n\n", 3*HELP_OFFSET, " ", buf);
+		
+		char *line = strtok(buf, "\n");
+		while (line) {
+			printf("%*s%s\n", 3*HELP_OFFSET, " ", line);
+			line = strtok(NULL, "\n");
+		}
+		printf("\n");
 	}
 
 	puts(

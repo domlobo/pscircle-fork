@@ -105,7 +105,7 @@ destroy_image_surface(painter_t *painter)
 void
 write_image_surface(painter_t *painter)
 {
-	char *output = config.output;
+	const char *output = config.output;
 	if (!output)
 		output = "pscircle.png";
 

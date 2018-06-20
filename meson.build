@@ -16,6 +16,7 @@ psc_main = [
 
 psc_sources = [
 	'src/color.c',
+	'src/point.c',
 	'src/ppoint.c',
 	'src/node.c',
 	'src/pnode.c',

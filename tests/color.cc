@@ -67,3 +67,10 @@ TEST(color_between, between_0_and_1) {
 		EXPECT_NEAR(c.a, a.a + k * (b.a - a.a), EPS);
 	}
 }
+
+TEST(color_to_hex, valid_color) {
+	color_t a = {10./255, 20./255, 30./255, 40./255};
+	char *c = color_to_hex(a);
+	EXPECT_STREQ(c, "0A141E28");
+	free(c);
+}

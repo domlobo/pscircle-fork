@@ -29,7 +29,7 @@ void
 draw_toplists_row(visualizer_t *vis, toplist_t *cfg, pnode_t *node, point_t pos, real_t pid_width);
 
 void
-draw_text(visualizer_t *vis, char *text, point_t pos);
+draw_text(visualizer_t *vis, const char *text, point_t pos);
 
 void
 draw_bar(visualizer_t *vis, real_t valur, point_t pos);
@@ -231,7 +231,7 @@ draw_pid(visualizer_t *vis, pid_t pid, point_t pos)
 }
 
 void
-draw_text(visualizer_t *vis, char *text, point_t pos)
+draw_text(visualizer_t *vis, const char *text, point_t pos)
 {
 	text_t t = {
 		.refpoint = pos,

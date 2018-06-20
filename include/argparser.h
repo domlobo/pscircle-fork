@@ -7,15 +7,16 @@
 #define HELP_OFFSET 3
 #define HELP_WIDTH 60
 #define HELP_DESCRIPTION_LENGHT 300
+#define KEY_BUFSIZE 100
 
 #define QUOTE(name) #name
 
-#define ARGQ(argparser, name, output, parser, description, defaults) do { \
+#define ARGQ(argparser, name, output, parser, defaults, description) do { \
 	arg_t arg = {name, description, QUOTE(defaults), (void *) &(output), parser}; \
 	argparser_add(argparser, arg); \
 } while (0);
 
-#define ARG(argparser, name, output, parser, description, defaults) do { \
+#define ARG(argparser, name, output, parser, defaults, description) do { \
 	arg_t arg = {name, description, defaults, (void *) &(output), parser}; \
 	argparser_add(argparser, arg); \
 } while (0);

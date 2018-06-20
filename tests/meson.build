@@ -1,9 +1,11 @@
 tests = [
 	['color', ['color.cc']],
+	['point', ['point.cc']],
 	['ppoint', ['ppoint.cc']],
 	['node', ['node.cc']],
 	['ptree', ['ptree.cc']],
 	['argparser', ['argparser.cc']],
+	['cfg', ['cfg.cc']],
 ]
 
 add_languages('cpp')

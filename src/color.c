@@ -3,8 +3,23 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #include "color.h"
+
+#define TOHEX_BUFSIZE 9
+
+bool color_is_valid(color_t c) {
+	if (c.r < 0 || c.r > 1) 
+		return false;
+	if (c.g < 0 || c.g > 1) 
+		return false;
+	if (c.b < 0 || c.b > 1) 
+		return false;
+	if (c.a < 0 || c.a > 1) 
+		return false;
+	return true;
+}
 
 color_t color_from_hex(const char *hstr)
 {
@@ -43,6 +58,7 @@ color_t color_from_hex(const char *hstr)
 		.a = (real_t) a / 255
 	};
 
+	assert(color_is_valid(col));
 	return col;
 
 error:
@@ -53,6 +69,8 @@ error:
 color_t
 color_between(color_t a, color_t b, real_t k)
 {
+	assert(color_is_valid(a));
+	assert(color_is_valid(b));
 	assert(k >= 0 && k <= 1);
 
 	color_t col = {
@@ -63,4 +81,21 @@ color_between(color_t a, color_t b, real_t k)
 	};
 
 	return col;
+}
+
+char *
+color_to_hex(color_t col)
+{
+	assert(color_is_valid(col));
+
+	uint_fast8_t r = col.r * 255;
+	uint_fast8_t g = col.g * 255;
+	uint_fast8_t b = col.b * 255;
+	uint_fast8_t a = col.a * 255;
+
+	char *buf = calloc(TOHEX_BUFSIZE, sizeof(char));
+
+	snprintf(buf, TOHEX_BUFSIZE, "%02X%01X%02X%02X", r, g, b, a);
+
+	return buf;
 }

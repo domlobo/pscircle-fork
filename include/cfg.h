@@ -15,6 +15,7 @@ typedef struct {
 	real_t sector;
 	bool rotate;
 	real_t rotation;
+	pid_t zero_pid;
 
 	point_t center;
 
@@ -38,9 +39,9 @@ typedef struct {
 
 typedef struct {
 	bool show_header;
-	char *name;
-	char *label;
-	char *value_format;
+	const char *name;
+	const char *label;
+	const char *value_format;
 	real_t value;
 } toplist_t;
 
@@ -52,13 +53,14 @@ typedef struct {
 } bar_t;
 
 typedef struct {
+	bool visible;
 	point_t center;
 	real_t width;
 	real_t row_height;
 	real_t font_size;
 	color_t font_color;
 	color_t pid_font_color;
-	char *font_face;
+	const char *font_face;
 	real_t column_padding;
 
 	bar_t bar;
@@ -67,18 +69,17 @@ typedef struct {
 } toplists_t;
 
 typedef struct {
+	const char *output;
+	const char *output_display;
 	size_t output_width;
 	size_t output_height;
-	char *output;
-	char *output_display;
 
-	memunit_t memory_unit;
 	pid_t root_pid;
-	pid_t zero_angle_pid;
 	nnodes_t max_children;
+	memunit_t memory_unit;
 
-	real_t max_mem;
-	real_t min_mem;
+	size_t max_mem;
+	size_t min_mem;
 	real_t max_cpu;
 	real_t min_cpu;
 
@@ -92,3 +93,8 @@ typedef struct {
 } cfg_t;
 
 extern cfg_t config;
+
+
+void
+parse_cmdline(int argc, char const * argv[]);
+

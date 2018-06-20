@@ -86,11 +86,11 @@ calc_rotation(visualizer_t *vis, ptree_t *ptree)
 		return;
 	}
 
-	if (config.zero_angle_pid != config.root_pid) {
-		pnode_t *zp = ptree_child_by_pid(ptree, config.zero_angle_pid);
+	if (config.tree.zero_pid != config.root_pid) {
+		pnode_t *zp = ptree_child_by_pid(ptree, config.tree.zero_pid);
 		if (!zp) {
 			fprintf(stderr, "PID %d (from --zero-angle-pid option) is not found\n",
-					config.zero_angle_pid);
+					config.tree.zero_pid);
 			exit(EXIT_FAILURE);
 		}
 		vis->rotation = -vis->sector * zp->node.x;

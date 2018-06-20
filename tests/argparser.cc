@@ -110,6 +110,18 @@ TEST_F(args_test, empry_string) {
 	EXPECT_STREQ(arg1, "");
 }
 
+TEST_F(args_test, long_key) {
+	char *arg1 = nullptr;
+
+	stringstream ss;
+	ss << setw(KEY_BUFSIZE + 10) << setfill('0') << "a";
+	string s = ss.str();
+
+	ARG(argparser, "--a", arg1, parser_string, "d", "d");
+
+	EXPECT_EXIT(parse({s + "=value"}), ExitedWithCode(1), ".*");
+}
+
 TEST(parser_memory_unit, unknown) {
 	memunit_t u;
 	EXPECT_FALSE(parser_memory_unit("S", &u));
