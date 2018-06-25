@@ -9,10 +9,6 @@
 
 #include "proc_linux.h"
 
-#define PATH_BUFSIZE 30
-#define CPU_LABEL_BUFSIZE 50
-#define MEM_LABEL_BUFSIZE 50
-
 #define CHECK(x) do { \
 	if (x) break; \
 	fprintf(stderr, "%s:%d error: %s\n", \
@@ -190,12 +186,12 @@ linux_cpu_utilization(linux_procs_t *ctx)
 const char *
 linux_loadavg()
 {
-	static char buf[CPU_LABEL_BUFSIZE + 1] = {0};
+	static char buf[PSC_LABEL_BUFSIZE + 1] = {0};
 
 	FILE *f = fopen("/proc/loadavg", "r");
 	CHECK(f);
 
-	fgets(buf, CPU_LABEL_BUFSIZE, f);
+	fgets(buf, PSC_LABEL_BUFSIZE, f);
 
 	char *end = buf;
 	for (size_t i = 0; i < 4; ++i) {
@@ -322,7 +318,7 @@ read_uptime()
 proc_t *
 read_proc(pid_t pid, proc_t *proc)
 {
-	static char path[PATH_BUFSIZE];
+	static char path[30];
 	snprintf(path, sizeof(path), "/proc/%d/stat", pid);
 
 	FILE *f = fopen(path, "r");

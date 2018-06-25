@@ -13,6 +13,8 @@ bytes_to_human(double *n, const char **u)
 		"B", "K", "M", "G", "T", "P", "E", "Z", "Y"
 	};
 
+	*u = units[0];
+
 	for (size_t i = 0; i < sizeof(units)/sizeof(*units); ++i) {
 		if (*n < 1024) {
 			*u = units[i];

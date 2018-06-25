@@ -17,8 +17,6 @@
 	exit(EXIT_FAILURE); \
 } while (0)
 
-#define LMEM_BUFSIZE 100
-
 void
 read_procs_stream(procs_t *procs, FILE *fp);
 
@@ -107,8 +105,8 @@ procs_update_mem_stats()
 	const char *u2 = NULL;
 	bytes_to_human(&m2, &u2);
 
-	static char buf[LMEM_BUFSIZE + 1] = {0};
-	snprintf(buf, LMEM_BUFSIZE, "%1.1lf%s / %1.1lf%s", m1, u1, m2, u2);
+	static char buf[PSC_LABEL_BUFSIZE + 1] = {0};
+	snprintf(buf, PSC_LABEL_BUFSIZE, "%1.1lf%s / %1.1lf%s", m1, u1, m2, u2);
 
 	config.toplists.memlist.label = buf;
 }

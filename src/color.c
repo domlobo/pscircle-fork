@@ -7,8 +7,6 @@
 
 #include "color.h"
 
-#define TOHEX_BUFSIZE 9
-
 bool color_is_valid(color_t c) {
 	if (c.r < 0 || c.r > 1) 
 		return false;
@@ -93,9 +91,9 @@ color_to_hex(color_t col)
 	uint_fast8_t b = col.b * 255;
 	uint_fast8_t a = col.a * 255;
 
-	char *buf = calloc(TOHEX_BUFSIZE, sizeof(char));
+	char *buf = calloc(PSC_COLOR_BUFSIZE, sizeof(char));
 
-	snprintf(buf, TOHEX_BUFSIZE, "%02X%01X%02X%02X", r, g, b, a);
+	snprintf(buf, PSC_COLOR_BUFSIZE, "%02X%01X%02X%02X", r, g, b, a);
 
 	return buf;
 }

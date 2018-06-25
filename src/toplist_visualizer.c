@@ -8,8 +8,6 @@
 #include "toplist_visualizer.h"
 #include "utils.h"
 
-#define VAL_BUFSIZE 32
-
 typedef struct {
 	bool offset_headers;
 	painter_t *painter;
@@ -129,8 +127,8 @@ draw_toplists_header(visualizer_t *vis, toplist_t *cfg, point_t pos)
 char *
 cpu_string(real_t n)
 {
-	static char buf[VAL_BUFSIZE] = {0};
-	snprintf(buf, VAL_BUFSIZE, "%.1f%%", n);
+	static char buf[PSC_LABEL_BUFSIZE] = {0};
+	snprintf(buf, PSC_LABEL_BUFSIZE, "%.1f%%", n);
 	return buf;
 }
 
@@ -150,20 +148,20 @@ mem_string(real_t n)
 		n /= 1024;
 	}
 
-	static char buf[VAL_BUFSIZE] = {0};
-	snprintf(buf, VAL_BUFSIZE, "%.1f%s", n, unit);
+	static char buf[PSC_LABEL_BUFSIZE] = {0};
+	snprintf(buf, PSC_LABEL_BUFSIZE, "%.1f%s", n, unit);
 	return buf;
 }
 
 void
 draw_toplists_row(visualizer_t *vis, toplist_t *cfg, pnode_t *node, point_t pos, real_t pid_width) 
 {
-	static char value[VAL_BUFSIZE] = {0};
+	static char value[PSC_LABEL_BUFSIZE] = {0};
 	double m = node->mem;
 	const char *u;
 	bytes_to_human(&m, &u);
 
-	snprintf(value, VAL_BUFSIZE, cfg->value_format,
+	snprintf(value, PSC_LABEL_BUFSIZE, cfg->value_format,
 			cpu_string(node->cpu), m, u);
 
 	point_t vdim = painter_text_size(vis->painter, value);
@@ -222,8 +220,8 @@ draw_pdot(visualizer_t *vis, pnode_t *node, point_t pos)
 void
 draw_pid(visualizer_t *vis, pid_t pid, point_t pos)
 {
-	static char buf[VAL_BUFSIZE] = {0};
-	snprintf(buf, VAL_BUFSIZE, "%d", pid);
+	static char buf[PSC_LABEL_BUFSIZE] = {0};
+	snprintf(buf, PSC_LABEL_BUFSIZE, "%d", pid);
 
 	text_t t = {
 		.refpoint = pos,

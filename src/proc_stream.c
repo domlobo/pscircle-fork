@@ -15,9 +15,9 @@ stream_get_next_proc(FILE *procs, pnode_t *pnode)
 	while (!feof(procs)) {
 
 #ifdef PSC_USE_FLOAT
-		int rc = fscanf(procs, "%d %d %f %u ", &p.pid, &p.ppid, &p.cpu, &p.mem);
+		int rc = fscanf(procs, "%d %d %f %lu ", &p.pid, &p.ppid, &p.cpu, &p.mem);
 #else
-		int rc = fscanf(procs, "%d %d %lf %u ", &p.pid, &p.ppid, &p.cpu, &p.mem);
+		int rc = fscanf(procs, "%d %d %lf %lu ", &p.pid, &p.ppid, &p.cpu, &p.mem);
 #endif
 		if (rc == EOF)
 			return NULL;

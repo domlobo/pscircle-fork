@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdint.h>
 #include "types.h"
 
 #include "node.h"
@@ -12,7 +13,7 @@ struct pnode_t {
 	int pid;
 	int ppid;
 	real_t cpu;
-	unsigned mem;
+	uint64_t mem;
 	char name[PSC_MAX_NAME_LENGHT];
 
 	real_t cputime;
