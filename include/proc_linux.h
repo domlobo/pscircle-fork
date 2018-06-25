@@ -14,6 +14,8 @@ typedef struct {
 	DIR *procdir;
 	ctime_t cputime_st;
 	ctime_t cputime_en;
+	ctime_t idletime_st;
+	ctime_t idletime_en;
 	long hertz;
 	long uptime;
 	int pagesize;
@@ -29,7 +31,16 @@ pnode_t *
 linux_get_next_proc(linux_procs_t *linux_procs, pnode_t *pnode);
 
 void
-linux_delay(linux_procs_t *linux_procs, real_t delay);
+linux_wait(linux_procs_t *linux_procs, real_t delay);
 
 void
 linux_update_proc(linux_procs_t *linux_procs, pnode_t *pnode);
+
+real_t
+linux_cpu_utilization(linux_procs_t *linux_procs);
+
+const char *
+linux_loadavg();
+
+void
+linux_meminfo(unsigned long *mtotal, unsigned long *mused, unsigned long *mfree);

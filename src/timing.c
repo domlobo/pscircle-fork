@@ -6,14 +6,38 @@
 #include "timing.h"
 #include "config.h"
 
-#define TIME_FMT "%15s: %.4lf seconds\n"
+#define TIME_FMT "%13s: %.4lf / %.4lf seconds\n"
+
+double
+tm_cpudiff(clock_t a, clock_t b)
+{
+	double dt = (double) (a - b) / CLOCKS_PER_SEC;
+	if (dt < 0)
+		dt = 0;
+	return dt;
+}
+
+double
+tm_walldiff(struct timespec *a, struct timespec *b)
+{
+	double tn = (double) (a->tv_nsec - b->tv_nsec) * 1e-9;
+	double ts = difftime(a->tv_sec, b->tv_sec);
+	double dt = ts + tn;
+	if (dt < 0)
+		return 0;
+	return dt;
+}
 
 void
 tm_start(timing_t *tm)
 {
 #ifdef PSC_PRINT_TIME
-	tm->t = clock();
-	tm->total = 0;
+	tm->cputime = clock();
+	clock_gettime(CLOCK_REALTIME, &tm->walltime);
+	tm->ctotal = 0;
+	tm->wtotal = 0;
+
+	fprintf(stderr, "%13s  %6s / %6s \n", " ", "cpu", "wall");
 #endif
 }
 
@@ -21,18 +45,23 @@ void
 tm_tick(timing_t *tm, const char *message)
 {
 #ifdef PSC_PRINT_TIME
-	clock_t t2 = clock();
-
 	assert(tm);
 	assert(message);
-	double dt = (double) (t2 - tm->t) / CLOCKS_PER_SEC;
-	if (dt < 0)
-		dt = 0;
 
-	fprintf(stderr, TIME_FMT, message, dt);
+	clock_t ct2 = clock();
+	struct timespec wt2 = {0};
+	clock_gettime(CLOCK_REALTIME, &wt2);
 
-	tm->total += dt;
-	tm->t += clock();
+	double cdt = tm_cpudiff(ct2, tm->cputime);
+	double wdt = tm_walldiff(&wt2, &tm->walltime);
+
+	fprintf(stderr, TIME_FMT, message, cdt, wdt);
+
+	tm->ctotal += cdt;
+	tm->wtotal += wdt;
+
+	tm->cputime = clock();
+	clock_gettime(CLOCK_REALTIME, &tm->walltime);
 #endif
 }
 
@@ -40,6 +69,6 @@ void
 tm_total(timing_t *tm)
 {
 #ifdef PSC_PRINT_TIME
-	fprintf(stderr, TIME_FMT, "total", tm->total);
+	fprintf(stderr, TIME_FMT, "total", tm->ctotal, tm->wtotal);
 #endif
 }

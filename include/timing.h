@@ -4,8 +4,11 @@
 #include <time.h>
 
 typedef struct {
-	clock_t t;
-	double total;
+	clock_t cputime;
+	struct timespec walltime;
+
+	double ctotal;
+	double wtotal;
 } timing_t;
 
 void

@@ -22,13 +22,14 @@ psc_sources = [
 	'src/pnode.c',
 	'src/timing.c',
 	'src/painter.c',
-	'src/ptree.c',
-	'src/input_linux.c',
-	'src/input_stream.c',
+	'src/procs.c',
+	'src/proc_linux.c',
+	'src/proc_stream.c',
 	'src/cfg.c',
 	'src/tree_visualizer.c',
 	'src/toplist_visualizer.c',
-	'src/argparser.c'
+	'src/argparser.c',
+	'src/utils.c',
 ]
 
 incdir = [

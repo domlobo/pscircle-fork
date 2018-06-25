@@ -3,7 +3,7 @@ tests = [
 	['point', ['point.cc']],
 	['ppoint', ['ppoint.cc']],
 	['node', ['node.cc']],
-	['ptree', ['ptree.cc']],
+	['procs', ['procs.cc']],
 	['argparser', ['argparser.cc']],
 	['cfg', ['cfg.cc']],
 ]

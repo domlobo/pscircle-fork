@@ -19,10 +19,10 @@ typedef struct {
 } visualizer_t ;
 
 void
-calc_rotation(visualizer_t *vis, ptree_t *ptree);
+calc_rotation(visualizer_t *vis, procs_t *procs);
 
 void
-calc_sector(visualizer_t *vis, ptree_t *ptree);
+calc_sector(visualizer_t *vis, procs_t *procs);
 
 void
 calc_offsets(visualizer_t *vis);
@@ -34,7 +34,7 @@ void
 dinit_tree_painter(painter_t *painter);
 
 void
-draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *ptree, int depth);
+draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *procs, int depth);
 
 void
 draw_dot(painter_t *painter, pnode_t *pnode);
@@ -46,27 +46,27 @@ void
 draw_label(visualizer_t *vis, painter_t *painter, pnode_t *child, real_t angle);
 
 void
-draw_tree(painter_t *painter, ptree_t *ptree)
+draw_tree(painter_t *painter, procs_t *procs)
 {
 	visualizer_t vis = {0};
 
-	calc_sector(&vis, ptree);
+	calc_sector(&vis, procs);
 
-	calc_rotation(&vis, ptree);
+	calc_rotation(&vis, procs);
 
 	calc_offsets(&vis);
 
 	init_tree_painter(painter);
 
-	draw_tree_recurcive(&vis, painter, ptree->root, 0);
+	draw_tree_recurcive(&vis, painter, procs->root, 0);
 
 	dinit_tree_painter(painter);
 }
 
 void
-calc_sector(visualizer_t *vis, ptree_t *ptree)
+calc_sector(visualizer_t *vis, procs_t *procs)
 {
-	assert(ptree);
+	assert(procs);
 
 	if (config.tree.sector) {
 		vis->sector = config.tree.sector;
@@ -79,7 +79,7 @@ calc_sector(visualizer_t *vis, ptree_t *ptree)
 }
 
 void
-calc_rotation(visualizer_t *vis, ptree_t *ptree)
+calc_rotation(visualizer_t *vis, procs_t *procs)
 {
 	if (config.tree.rotate) {
 		vis->rotation = -config.tree.rotation;
@@ -87,7 +87,7 @@ calc_rotation(visualizer_t *vis, ptree_t *ptree)
 	}
 
 	if (config.tree.zero_pid != config.root_pid) {
-		pnode_t *zp = ptree_child_by_pid(ptree, config.tree.zero_pid);
+		pnode_t *zp = procs_child_by_pid(procs, config.tree.zero_pid);
 		if (!zp) {
 			fprintf(stderr, "PID %d (from --zero-angle-pid option) is not found\n",
 					config.tree.zero_pid);
@@ -97,8 +97,8 @@ calc_rotation(visualizer_t *vis, ptree_t *ptree)
 		return;
 	}
 
-	assert(ptree->root);
-	node_t *w = node_widest_child((node_t *)ptree->root);
+	assert(procs->root);
+	node_t *w = node_widest_child((node_t *)procs->root);
 	assert(w);
 
 	assert(vis->sector > 0);

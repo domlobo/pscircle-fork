@@ -6,6 +6,9 @@
 
 #include "pnode.h"
 
+#include "proc_linux.h"
+#include "proc_stream.h"
+
 typedef struct {
 	pnode_t *root;
 
@@ -14,13 +17,13 @@ typedef struct {
 
 	pnode_t *cpu_toplist[PSC_TOPLIST_MAX_ROWS];
 	pnode_t *mem_toplist[PSC_TOPLIST_MAX_ROWS];
-} ptree_t;
+} procs_t;
 
 void
-ptree_init(ptree_t *ptree, FILE *input);
+procs_init(procs_t *procs, FILE *fp);
 
 void
-ptree_dinit(ptree_t *ptree);
+procs_dinit(procs_t *procs);
 
 pnode_t *
-ptree_child_by_pid(ptree_t *ptree, pid_t pid);
+procs_child_by_pid(procs_t *procs, pid_t pid);

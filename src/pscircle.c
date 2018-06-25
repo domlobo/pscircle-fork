@@ -5,7 +5,7 @@
 #include <strings.h>
 
 #include "cfg.h"
-#include "ptree.h"
+#include "procs.h"
 #include "timing.h"
 #include "painter.h"
 #include "tree_visualizer.h"
@@ -25,20 +25,20 @@ int main(int argc, const char *argv[])
 
 	parse_cmdline(argc, argv);
 
-	ptree_t *ptree = calloc(1, sizeof(ptree_t));
-	CHECK(ptree);
+	procs_t *procs = calloc(1, sizeof(procs_t));
+	CHECK(procs);
 
-	FILE *input = NULL;
+	FILE *fp = NULL;
 	if (config.read_stdin)
-		input = stdin;
+		fp = stdin;
 
-	ptree_init(ptree, input);
+	procs_init(procs, fp);
 
 	tm_tick(&tm, "init");
 
-	node_reorder_by_leaves((node_t *)ptree->root);
+	node_reorder_by_leaves((node_t *)procs->root);
 
-	node_arrange((node_t *)ptree->root);
+	node_arrange((node_t *)procs->root);
 
 	tm_tick(&tm, "arrange");
 
@@ -47,12 +47,12 @@ int main(int argc, const char *argv[])
 
 	painter_init(painter);
 
-	draw_tree(painter, ptree);
+	draw_tree(painter, procs);
 
 	tm_tick(&tm, "draw tree");
 
 	if (config.toplists.visible) {
-		draw_toplists(painter, ptree);
+		draw_toplists(painter, procs);
 		tm_tick(&tm, "draw lists");
 	}
 

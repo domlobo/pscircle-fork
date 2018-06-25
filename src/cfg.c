@@ -110,9 +110,15 @@ parse_cmdline(int argc, char const * argv[])
 	argparser_init(&argp);
 
 	ARGQ(&argp, "--stdin", config.read_stdin, parser_bool, PSC_STDIN,
-		"a");
+		"If set to true, process data will be read from stdin in form of \n"
+		"`ps -e -o pid,ppid,pcpu,rss,comm --no-headers` output. Otherwise, "
+		"/proc file system will be read to obtain the list of processes and information "
+		"on memory usage, load average and CPU utilization");
 	ARGQ(&argp, "--interval", config.interval, parser_real, PSC_INTERVAL,
-		"b");
+		"If set to 0 (default), CPU utilization and processes PCPU values will be calculate "
+		"from system start time and proceess start time. Otherwise, these values will be calculated "
+		"over specified interval (in seconds, with fractions). This also implies that program exection "
+		"will be suspended to the specified intercval.");
 	ARG(&argp, "--output", config.output, parser_string, PSC_OUTPUT,
 		"Path to output image. If it's not set, X11 root window is used");
 	ARG(&argp, "--output-display", config.output_display, parser_string, PSC_OUTPUT_DISPLAY,

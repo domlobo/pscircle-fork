@@ -7,9 +7,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "input_linux.h"
+#include "proc_linux.h"
 
 #define PATH_BUFSIZE 30
+#define CPU_LABEL_BUFSIZE 50
+#define MEM_LABEL_BUFSIZE 50
 
 #define CHECK(x) do { \
 	if (x) break; \
@@ -32,8 +34,8 @@ typedef struct {
 	rss_t rss;
 } proc_t;
 
-ticks_t
-read_cputime();
+void
+read_cputime(ctime_t *cputime, ctime_t *idletime);
 
 ctime_t
 read_uptime();
@@ -60,7 +62,7 @@ linux_init(linux_procs_t *ctx)
 
 	ctx->pagesize = getpagesize();
 
-	ctx->cputime_st = read_cputime();
+	read_cputime(&ctx->cputime_st, &ctx->idletime_st);
 
 	ctx->uptime = read_uptime();
 }
@@ -130,7 +132,7 @@ proc_to_pnode(linux_procs_t *ctx, pnode_t *pnode, proc_t *proc)
 }
 
 void
-linux_delay(linux_procs_t *ctx, real_t delay)
+linux_wait(linux_procs_t *ctx, real_t delay)
 {
 	assert(ctx);
 	assert(delay > 0);
@@ -143,7 +145,7 @@ linux_delay(linux_procs_t *ctx, real_t delay)
 	if (usec < 1e6)
 		usleep(usec);
 
-	ctx->cputime_en = read_cputime();
+	read_cputime(&ctx->cputime_en, &ctx->idletime_en);
 }
 
 void
@@ -169,24 +171,137 @@ linux_update_proc(linux_procs_t *ctx, pnode_t *pnode)
 	pnode->cpu = 100. * t / dt;
 }
 
-ticks_t
-read_cputime()
+real_t
+linux_cpu_utilization(linux_procs_t *ctx)
 {
-	FILE *f = fopen("/proc/stat", "r");
+	assert(ctx);
+
+	double dt = ctx->cputime_en - ctx->cputime_st;
+	if (dt < 0)
+		dt = ctx->cputime_st;
+
+	assert(dt > 0);
+
+	double t = (double) ctx->idletime_en - ctx->idletime_st;
+
+	return 1. - t /  dt;
+}
+
+const char *
+linux_loadavg()
+{
+	static char buf[CPU_LABEL_BUFSIZE + 1] = {0};
+
+	FILE *f = fopen("/proc/loadavg", "r");
 	CHECK(f);
 
-	unsigned long ret = 0;
+	fgets(buf, CPU_LABEL_BUFSIZE, f);
 
-	fscanf(f, "%*s");
-	for (size_t i = 0; i < 10; ++i) {
-		unsigned long tmp = 0;
-		fscanf(f, "%lu", &tmp);
-		ret += tmp;
+	char *end = buf;
+	for (size_t i = 0; i < 4; ++i) {
+		end++;
+		while (*end != ' ')
+			end++;
 	}
+
+	*end = '\0';
 
 	fclose(f);
 
-	return ret;
+	return buf;
+}
+
+char *starts_with(char *str, const char *prefix)
+{
+	assert(str);
+	assert(prefix);
+
+	while (*prefix && *str) {
+		if (*prefix++ != *str++)
+			return NULL;
+	}
+
+	return str;
+}
+
+void
+linux_meminfo(unsigned long *mtotal, unsigned long *mused, unsigned long *mfree)
+{
+	assert(mtotal);
+	assert(mused);
+	assert(mfree);
+
+	FILE *f = fopen("/proc/meminfo", "r");
+	CHECK(f);
+
+	static char *line = NULL;
+	static size_t n = 0;
+	ssize_t nread = 0;
+
+	unsigned long mbuffers = 0;
+	unsigned long mcached = 0;
+
+	unsigned long fields = 0;
+
+	while ((nread = getline(&line, &n, f) != -1)) {
+		char *s;
+		if ((s = starts_with(line, "MemTotal:"))) {
+			sscanf(s, "%lu", mtotal);
+			fields |= 1;
+		}
+
+		if ((s = starts_with(line, "MemFree:"))) {
+			sscanf(s, "%lu", mfree);
+			fields |= 1 << 1;
+		}
+
+		if ((s = starts_with(line, "Buffers:"))) {
+			sscanf(s, "%lu", &mbuffers);
+			fields |= 1 << 2;
+		}
+
+		if ((s = starts_with(line, "Cached:"))) {
+			sscanf(s, "%lu", &mcached);
+			fields |= 1 << 3;
+		}
+
+		if (fields == (1 << 4) - 1)
+			break;
+	}
+
+	assert(fields == (1 << 4) - 1);
+
+	fclose(f);
+
+	*mused = *mtotal - *mfree - mbuffers - mcached;
+
+	*mtotal *= 1024;
+	*mused *= 1024;
+	*mfree *= 1024;
+}
+
+void
+read_cputime(ctime_t *cputime, ctime_t *idletime)
+{
+	assert(cputime);
+	assert(idletime);
+
+	FILE *f = fopen("/proc/stat", "r");
+	CHECK(f);
+
+	*cputime = 0;
+
+	fscanf(f, "%*s");
+	for (size_t i = 1; i < 11; ++i) {
+		unsigned long tmp = 0;
+		fscanf(f, "%lu", &tmp);
+		*cputime += tmp;
+
+		if (i == 4)
+			*idletime = tmp;
+	}
+
+	fclose(f);
 }
 
 ctime_t
@@ -270,3 +385,4 @@ read_proc(pid_t pid, proc_t *proc)
 
 	return proc;
 }
+

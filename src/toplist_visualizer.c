@@ -6,6 +6,7 @@
 #include "cfg.h"
 #include "node.h"
 #include "toplist_visualizer.h"
+#include "utils.h"
 
 #define VAL_BUFSIZE 32
 
@@ -41,7 +42,7 @@ void
 draw_pdot(visualizer_t *vis, pnode_t *node, point_t pos);
 
 void
-draw_toplists(painter_t *painter, ptree_t *ptree)
+draw_toplists(painter_t *painter, procs_t *procs)
 {
 	visualizer_t vis = {
 		.painter = painter,
@@ -66,14 +67,14 @@ draw_toplists(painter_t *painter, ptree_t *ptree)
 		.y = config.toplists.center.y - h
 	};
 
-	draw_toplist(&vis, &config.toplists.cpulist, ptree->cpu_toplist, pos_cpu);
+	draw_toplist(&vis, &config.toplists.cpulist, procs->cpu_toplist, pos_cpu);
 
 	point_t pos_mem = {
 		.x = config.toplists.center.x + w,
 		.y = config.toplists.center.y - h
 	};
 
-	draw_toplist(&vis, &config.toplists.memlist, ptree->mem_toplist, pos_mem);
+	draw_toplist(&vis, &config.toplists.memlist, procs->mem_toplist, pos_mem);
 }
 
 void
@@ -158,8 +159,12 @@ void
 draw_toplists_row(visualizer_t *vis, toplist_t *cfg, pnode_t *node, point_t pos, real_t pid_width) 
 {
 	static char value[VAL_BUFSIZE] = {0};
+	double m = node->mem;
+	const char *u;
+	bytes_to_human(&m, &u);
+
 	snprintf(value, VAL_BUFSIZE, cfg->value_format,
-			cpu_string(node->cpu), mem_string(node->mem));
+			cpu_string(node->cpu), m, u);
 
 	point_t vdim = painter_text_size(vis->painter, value);
 

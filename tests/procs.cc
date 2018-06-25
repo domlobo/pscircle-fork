@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
 extern "C" {
-#include "ptree.h"
+#include "procs.h"
 #include "cfg.h"
 }
 
@@ -10,15 +10,15 @@ extern "C" {
 using namespace std;
 using namespace ::testing;
 
-class ptree_test: public Test
+class procs_test: public Test
 {
 public:
-	ptree_test() {};
-	virtual ~ptree_test() {};
+	procs_test() {};
+	virtual ~procs_test() {};
 
-	FILE *input;
+	FILE *fp;
 
-	ptree_t *ptree;
+	procs_t *procs;
 
 	virtual void SetUp() {
 		ASSERT_EQ(PSC_TOPLIST_MAX_ROWS, 5);
@@ -27,101 +27,101 @@ public:
 		config.root_pid = 0;
 		config.memory_unit = 1;
 
-		input = tmpfile();
+		fp = tmpfile();
 
-		ptree = new ptree_t();
+		procs = new procs_t();
 	}
 
 	virtual void TearDown(){
-		fclose(input);
-		ptree_dinit(ptree);
+		fclose(fp);
+		procs_dinit(procs);
 
-		delete ptree;
+		delete procs;
 	}
 
 	void create(const char *s) {
-		fputs(s, input);
-		rewind(input);
+		fputs(s, fp);
+		rewind(fp);
 
-		ptree_init(ptree, input);
+		procs_init(procs, fp);
 	}
 };
 
-TEST_F(ptree_test, read__pid_is_set) {
+TEST_F(procs_test, read__pid_is_set) {
 	create(
 "1     0  3.14  4212 systemd\n"
 	);
 
-	ASSERT_NE(ptree->root,  nullptr);
-	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(procs->root,  nullptr);
+	auto p = (pnode_t *)procs->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
 	EXPECT_EQ(p->pid, 1);
 }
 
-TEST_F(ptree_test, read__ppid_is_set) {
+TEST_F(procs_test, read__ppid_is_set) {
 	create(
 "1     0  3.14  4212 systemd\n"
 	);
 
-	ASSERT_NE(ptree->root,  nullptr);
-	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(procs->root,  nullptr);
+	auto p = (pnode_t *)procs->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
 	EXPECT_EQ(p->ppid, 0);
 }
 
-TEST_F(ptree_test, read_cpu_is_set) {
+TEST_F(procs_test, read_cpu_is_set) {
 	create(
 "1     0  3.14  4212 systemd\n"
 	);
 
-	ASSERT_NE(ptree->root,  nullptr);
-	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(procs->root,  nullptr);
+	auto p = (pnode_t *)procs->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
 	EXPECT_NEAR(p->cpu, 3.14, EPS);
 }
 
-TEST_F(ptree_test, read__mem_in_mb) {
+TEST_F(procs_test, read__mem_in_mb) {
 	config.memory_unit = 2;
 
 	create(
 "1     0  3.14  4212 systemd\n"
 	);
 
-	ASSERT_NE(ptree->root,  nullptr);
-	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(procs->root,  nullptr);
+	auto p = (pnode_t *)procs->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
 	EXPECT_EQ(p->mem, 4212ul * 1024 * 1024);
 }
 
-TEST_F(ptree_test, read__comm_is_set) {
+TEST_F(procs_test, read__comm_is_set) {
 	create(
 "1     0  3.14  4212 systemd\n"
 	);
 
-	ASSERT_NE(ptree->root,  nullptr);
-	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(procs->root,  nullptr);
+	auto p = (pnode_t *)procs->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
 	EXPECT_STREQ(p->name, "systemd");
 }
 
-TEST_F(ptree_test, read__multiple_words) {
+TEST_F(procs_test, read__multiple_words) {
 	create(
 "1     0  3.14  4212 systemd abc\n"
 	);
 
-	ASSERT_NE(ptree->root,  nullptr);
-	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(procs->root,  nullptr);
+	auto p = (pnode_t *)procs->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
 	EXPECT_STREQ(p->name, "systemd");
 }
 
-TEST_F(ptree_test, read__multiple_words_longer_than_max) {
+TEST_F(procs_test, read__multiple_words_longer_than_max) {
 	string s = "1     0  3.14  4212 ";
 	string n = "";
 	for (size_t i = 0; i < PSC_MAX_NAME_LENGHT - 1; ++i)
@@ -130,14 +130,14 @@ TEST_F(ptree_test, read__multiple_words_longer_than_max) {
 
 	create(s.c_str());
 
-	ASSERT_NE(ptree->root,  nullptr);
-	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(procs->root,  nullptr);
+	auto p = (pnode_t *)procs->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
 	EXPECT_EQ(string(p->name), n);
 }
 
-TEST_F(ptree_test, read__name_is_too_long) {
+TEST_F(procs_test, read__name_is_too_long) {
 	string s = "1     0  3.14  4212 ";
 	string n = "";
 	for (size_t i = 0; i < PSC_MAX_NAME_LENGHT - 1; ++i)
@@ -146,14 +146,14 @@ TEST_F(ptree_test, read__name_is_too_long) {
 
 	create(s.c_str());
 
-	ASSERT_NE(ptree->root,  nullptr);
-	auto p = (pnode_t *)ptree->root->node.first;
+	ASSERT_NE(procs->root,  nullptr);
+	auto p = (pnode_t *)procs->root->node.first;
 	ASSERT_NE(p,  nullptr);
 
 	EXPECT_EQ(string(p->name), n);
 }
 
-TEST_F(ptree_test, links__root_pid_found) {
+TEST_F(procs_test, links__root_pid_found) {
 	config.root_pid = 1;
 
 	create(
@@ -163,7 +163,7 @@ TEST_F(ptree_test, links__root_pid_found) {
 "4     2  0.0  0 p4\n"
 	);
 
-	auto r = ptree->root;
+	auto r = procs->root;
 	ASSERT_NE(r,  nullptr);
 	auto p = (pnode_t *)r->node.first;
 	ASSERT_NE(p,  nullptr);
@@ -172,7 +172,7 @@ TEST_F(ptree_test, links__root_pid_found) {
 	EXPECT_STREQ(p->name, "p2");
 }
 
-TEST_F(ptree_test, links__root_pid_not_found__empty_tree) {
+TEST_F(procs_test, links__root_pid_not_found__empty_tree) {
 	config.root_pid = 10;
 
 	create(
@@ -182,13 +182,13 @@ TEST_F(ptree_test, links__root_pid_not_found__empty_tree) {
 "4     2  0.0  0 p4\n"
 	);
 
-	auto r = ptree->root;
+	auto r = procs->root;
 	ASSERT_NE(r,  nullptr);
 	auto p1 = (pnode_t *)r->node.first;
 	EXPECT_EQ(p1,  nullptr);
 }
 
-TEST_F(ptree_test, links__too_much_processes__array_resized) {
+TEST_F(procs_test, links__too_much_processes__array_resized) {
 	string s = "1     0  0.0  0 p1\n";
 	size_t N = PSC_MAX_PROCS_COUNT;
 
@@ -199,7 +199,7 @@ TEST_F(ptree_test, links__too_much_processes__array_resized) {
 
 	create(s.c_str());
 
-	auto r = ptree->root;
+	auto r = procs->root;
 	ASSERT_NE(r,  nullptr);
 	auto p1 = (pnode_t *)r->node.first;
 	ASSERT_NE(p1,  nullptr);
@@ -214,14 +214,14 @@ TEST_F(ptree_test, links__too_much_processes__array_resized) {
 	EXPECT_STREQ(pl->name, last.c_str());
 }
 
-TEST_F(ptree_test, mem_toplist__empty_rows) {
+TEST_F(procs_test, mem_toplist__empty_rows) {
 	create(
 "1     0  1.0  1 p1\n"
 "2     1  4.0  4 p2\n"
 "3     1  3.0  3 p3\n"
 	);
 
-	auto l = ptree->mem_toplist;
+	auto l = procs->mem_toplist;
 	size_t i = 0;
 	for (auto &name : {"p2", "p3", "p1"}) {
 		ASSERT_NE(l[i],  nullptr);
@@ -233,7 +233,7 @@ TEST_F(ptree_test, mem_toplist__empty_rows) {
 		ASSERT_EQ(l[i],  nullptr);
 }
 
-TEST_F(ptree_test, mem_toplist__toplist_smaller_than_max_rows) {
+TEST_F(procs_test, mem_toplist__toplist_smaller_than_max_rows) {
 	create(
 "1     0  1.0  10 p1\n"
 "2     1  4.0  40 p2\n"
@@ -244,7 +244,7 @@ TEST_F(ptree_test, mem_toplist__toplist_smaller_than_max_rows) {
 "7     4  2.2  22 p7\n"
 	);
 
-	auto l = ptree->mem_toplist;
+	auto l = procs->mem_toplist;
 	size_t i = 0;
 	for (auto &name : {"p2", "p5"}) {
 		ASSERT_NE(l[i],  nullptr);
@@ -253,14 +253,14 @@ TEST_F(ptree_test, mem_toplist__toplist_smaller_than_max_rows) {
 	}
 }
 
-TEST_F(ptree_test, cpu_toplist__empty_rows) {
+TEST_F(procs_test, cpu_toplist__empty_rows) {
 	create(
 "1     0  1.0  1 p1\n"
 "2     1  4.0  4 p2\n"
 "3     1  3.0  3 p3\n"
 	);
 
-	auto l = ptree->cpu_toplist;
+	auto l = procs->cpu_toplist;
 	size_t i = 0;
 	for (auto &name : {"p2", "p3", "p1"}) {
 		ASSERT_NE(l[i],  nullptr);
@@ -272,7 +272,7 @@ TEST_F(ptree_test, cpu_toplist__empty_rows) {
 		ASSERT_EQ(l[i],  nullptr);
 }
 
-TEST_F(ptree_test, cpu_toplist__toplist_smaller_than_max_rows) {
+TEST_F(procs_test, cpu_toplist__toplist_smaller_than_max_rows) {
 	create(
 "1     0  1.0  10 p1\n"
 "2     1  4.0  40 p2\n"
@@ -283,7 +283,7 @@ TEST_F(ptree_test, cpu_toplist__toplist_smaller_than_max_rows) {
 "7     4  2.2  22 p7\n"
 	);
 
-	auto l = ptree->cpu_toplist;
+	auto l = procs->cpu_toplist;
 	size_t i = 0;
 	for (auto &name : {"p2", "p5"}) {
 		ASSERT_NE(l[i],  nullptr);
@@ -293,7 +293,7 @@ TEST_F(ptree_test, cpu_toplist__toplist_smaller_than_max_rows) {
 }
 
 
-TEST_F(ptree_test, stubs__too_much_procs) {
+TEST_F(procs_test, stubs__too_much_procs) {
 	config.max_children = 1;
 
 	create(
@@ -303,8 +303,8 @@ TEST_F(ptree_test, stubs__too_much_procs) {
 "4     1  5.0  2 p4\n"
 	);
 
-	ASSERT_NE(ptree, nullptr);
-	auto r = ptree->root;
+	ASSERT_NE(procs, nullptr);
+	auto r = procs->root;
 	ASSERT_NE(r, nullptr);
 	auto p1 = (pnode_t *)r->node.first;
 	ASSERT_NE(p1, nullptr);
@@ -320,7 +320,7 @@ TEST_F(ptree_test, stubs__too_much_procs) {
 	EXPECT_NEAR(p3->cpu, 5, EPS);
 }
 
-TEST_F(ptree_test, find__existing_processes) {
+TEST_F(procs_test, find__existing_processes) {
 	create(
 "1     0  1.0  1 p1\n"
 "2     1  4.0  4 p2\n"
@@ -332,12 +332,12 @@ TEST_F(ptree_test, find__existing_processes) {
 "8     4  5.0  2 p8\n"
 	);
 
-	auto c = ptree_child_by_pid(ptree, 6);
+	auto c = procs_child_by_pid(procs, 6);
 	ASSERT_NE(c, nullptr);
 	EXPECT_STREQ(c->name, "p6");
 }
 
-TEST_F(ptree_test, find__not_in_tree__returns_nullptr) {
+TEST_F(procs_test, find__not_in_tree__returns_nullptr) {
 	config.root_pid = 3;
 
 	create(
@@ -351,11 +351,11 @@ TEST_F(ptree_test, find__not_in_tree__returns_nullptr) {
 "8     4  5.0  2 p8\n"
 	);
 
-	auto c = ptree_child_by_pid(ptree, 8);
+	auto c = procs_child_by_pid(procs, 8);
 	EXPECT_EQ(c, nullptr);
 }
 
-TEST_F(ptree_test, find__unknown_process__returns_nullptr) {
+TEST_F(procs_test, find__unknown_process__returns_nullptr) {
 	create(
 "1     0  1.0  1 p1\n"
 "2     1  4.0  4 p2\n"
@@ -363,6 +363,6 @@ TEST_F(ptree_test, find__unknown_process__returns_nullptr) {
 "4     2  5.0  2 p4\n"
 	);
 
-	auto c = ptree_child_by_pid(ptree, 10);
+	auto c = procs_child_by_pid(procs, 10);
 	EXPECT_EQ(c, nullptr);
 }
