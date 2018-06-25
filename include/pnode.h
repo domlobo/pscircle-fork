@@ -5,17 +5,18 @@
 #include "node.h"
 #include "ppoint.h"
 
-typedef uint_fast16_t mem_t;
-
 typedef struct pnode_t pnode_t;
 
 struct pnode_t {
 	node_t node;
-	pid_t pid;
-	pid_t ppid;
+	int pid;
+	int ppid;
 	real_t cpu;
-	mem_t mem;
+	unsigned mem;
 	char name[PSC_MAX_NAME_LENGHT];
+
+	real_t cputime;
+	
 	pnode_t *stub;
 	nnodes_t nstubs;
 	ppoint_t position;

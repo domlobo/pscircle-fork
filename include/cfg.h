@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "types.h"
 #include "color.h"
@@ -69,6 +70,9 @@ typedef struct {
 } toplists_t;
 
 typedef struct {
+	bool read_stdin;
+	real_t interval;
+
 	const char *output;
 	const char *output_display;
 	size_t output_width;

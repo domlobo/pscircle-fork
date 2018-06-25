@@ -9,6 +9,9 @@
 #include "ptree.h"
 #include "cfg.h"
 
+#include "input_stream.h"
+#include "input_linux.h"
+
 #define CHECK(x) do { \
 	if (x) break; \
 	fprintf(stderr, "%s:%d error: %s\n", \
@@ -17,10 +20,10 @@
 } while (0)
 
 void
-read_word_and_skip_to_lf(FILE *input, char *buf, size_t len);
+read_procs_stream(ptree_t *ptree, FILE *input);
 
 void
-read_proccesses(ptree_t *ptree, FILE *input);
+read_procs_linux(ptree_t *ptree);
 
 void
 link_process(ptree_t *ptree);
@@ -52,7 +55,6 @@ find_by_pid(ptree_t *ptree, pid_t pid);
 void
 ptree_init(ptree_t *ptree, FILE *input)
 {
-	assert(input);
 	assert(ptree);
 
 #ifndef NDEBUG
@@ -63,7 +65,10 @@ ptree_init(ptree_t *ptree, FILE *input)
 
 	reserve_root_memory(ptree);
 
-	read_proccesses(ptree, input);
+	if (!input)
+		read_procs_linux(ptree);
+	else
+		read_procs_stream(ptree, input);
 
 	link_process(ptree);
 
@@ -77,37 +82,48 @@ ptree_dinit(ptree_t *ptree)
 }
 
 void
-read_proccesses(ptree_t *ptree, FILE *input)
+read_procs_stream(ptree_t *ptree, FILE *input)
 {
 	assert(ptree);
-	assert(input);
 
-	pnode_t p;
+	while (true) {
+		pnode_t *p = get_new_process(ptree);
+		if (!p)
+			break;
 
-	while (!feof(input)) {
-
-#ifdef PSC_USE_FLOAT
-		int rc = fscanf(input, "%d %d %f %zd ", &p.pid, &p.ppid, &p.cpu, &p.mem);
-#else
-		int rc = fscanf(input, "%d %d %lf %zd ", &p.pid, &p.ppid, &p.cpu, &p.mem);
-#endif
-		if (rc == EOF)
+		if (!stream_get_next_proc(input, p))
 			break;
 
 		for (size_t u = 0; u < config.memory_unit; ++u)
-			p.mem *= 1024;
+			p->mem *= 1024;
+	}
+}
 
-		pnode_t *pp = get_new_process(ptree);
-		if (!pp)
+void
+read_procs_linux(ptree_t *ptree)
+{
+	assert(ptree);
+
+	linux_procs_t lprocs = {0};
+	linux_init(&lprocs);
+
+	while (true) {
+		pnode_t *p = get_new_process(ptree);
+		if (!p)
 			break;
 
-		read_word_and_skip_to_lf(input, pp->name, PSC_MAX_NAME_LENGHT);
-
-		pp->pid = p.pid;
-		pp->ppid = p.ppid;
-		pp->cpu = p.cpu;
-		pp->mem = p.mem;
+		if (!linux_get_next_proc(&lprocs, p))
+			break;
 	}
+
+	if (config.interval > 0) {
+		linux_delay(&lprocs, config.interval);
+
+		for (size_t i = 0; i < ptree->nprocesses; ++i)
+			linux_update_proc(&lprocs, ptree->processes + i);
+	}
+
+	linux_dinit(&lprocs);
 }
 
 pnode_t *
@@ -127,32 +143,6 @@ get_new_process(ptree_t *ptree)
 	return ptree->processes + ptree->nprocesses++;
 }
 
-void
-read_word_and_skip_to_lf(FILE *input, char *buf, size_t len)
-{
-	assert(input);
-	assert(buf);
-
-	int c = 0;
-	for (size_t i = 0; i < len - 1; ++i) {
-		c = fgetc(input);
-		if (c == ' ' || c == '\n' || c == EOF) {
-			buf[i] = '\0';
-			if (c == ' ')
-				break;
-			return;
-		}
-		buf[i] = c;
-	}
-
-	buf[len - 1] = '\0';
-
-	do {
-		c = fgetc(input);
-	} while (c != '\n' && c != EOF);
-
-	return;
-}
 
 pnode_t *
 find_by_pid(ptree_t *ptree, pid_t pid)

@@ -15,6 +15,9 @@
 #include "config.h"
 
 cfg_t config = {
+	.read_stdin = PSC_STDIN,
+	.interval   = PSC_INTERVAL,
+
 	.output         = PSC_OUTPUT,
 	.output_width   = PSC_OUTPUT_WIDTH,
 	.output_height  = PSC_OUTPUT_HEIGHT,
@@ -106,6 +109,10 @@ parse_cmdline(int argc, char const * argv[])
 	argparser_t argp = {0};
 	argparser_init(&argp);
 
+	ARGQ(&argp, "--stdin", config.read_stdin, parser_bool, PSC_STDIN,
+		"a");
+	ARGQ(&argp, "--interval", config.interval, parser_real, PSC_INTERVAL,
+		"b");
 	ARG(&argp, "--output", config.output, parser_string, PSC_OUTPUT,
 		"Path to output image. If it's not set, X11 root window is used");
 	ARG(&argp, "--output-display", config.output_display, parser_string, PSC_OUTPUT_DISPLAY,

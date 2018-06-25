@@ -23,6 +23,8 @@ psc_sources = [
 	'src/timing.c',
 	'src/painter.c',
 	'src/ptree.c',
+	'src/input_linux.c',
+	'src/input_stream.c',
 	'src/cfg.c',
 	'src/tree_visualizer.c',
 	'src/toplist_visualizer.c',

@@ -28,7 +28,11 @@ int main(int argc, const char *argv[])
 	ptree_t *ptree = calloc(1, sizeof(ptree_t));
 	CHECK(ptree);
 
-	ptree_init(ptree, stdin);
+	FILE *input = NULL;
+	if (config.read_stdin)
+		input = stdin;
+
+	ptree_init(ptree, input);
 
 	tm_tick(&tm, "init");
 

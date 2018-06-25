@@ -28,6 +28,9 @@
 
 // Can be changed via command line arguments
 
+#define PSC_STDIN false
+#define PSC_INTERVAL 1
+
 #define PSC_OUTPUT 0
 #define PSC_OUTPUT_DISPLAY 0
 #define PSC_OUTPUT_WIDTH 3200
