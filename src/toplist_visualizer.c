@@ -132,27 +132,6 @@ cpu_string(real_t n)
 	return buf;
 }
 
-char *
-mem_string(real_t n)
-{
-	static const char *units[] = {
-		"B", "K", "M", "G", "T", "P", "E", "Z", "Y"
-	};
-
-	const char *unit;
-	for (size_t i = 0; i < sizeof(units)/sizeof(*units); ++i) {
-		if (n < 1024) {
-			unit = units[i];
-			break;
-		}
-		n /= 1024;
-	}
-
-	static char buf[PSC_LABEL_BUFSIZE] = {0};
-	snprintf(buf, PSC_LABEL_BUFSIZE, "%.1f%s", n, unit);
-	return buf;
-}
-
 void
 draw_toplists_row(visualizer_t *vis, toplist_t *cfg, pnode_t *node, point_t pos, real_t pid_width) 
 {

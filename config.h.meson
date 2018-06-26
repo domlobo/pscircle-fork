@@ -18,7 +18,7 @@
 #define PSC_MEMORY_UNIT_TYPE uint_fast8_t
 #define PSC_PID_TYPE int
 
-#define PSC_PRINT_TIME 1
+#mesondefine PSC_PRINT_TIME
 #define PSC_MAX_ARGS 100
 #define PSC_HELPLIST_OFFSET 3
 #define PSC_HELPLIST_WIDTH 60
