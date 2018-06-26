@@ -122,6 +122,30 @@ TEST_F(args_test, long_key) {
 	EXPECT_EXIT(parse({s + "=value"}), ExitedWithCode(1), ".*");
 }
 
+TEST_F(args_test, multiple_args) {
+	char *arg1 = nullptr;
+	char *arg2 = nullptr;
+	char *arg3 = nullptr;
+	char *arg4 = nullptr;
+
+	ARG(argparser, "--a", arg1, parser_string, "d", "d");
+	ARG(argparser, "--bb", arg2, parser_string, "d", "d");
+	ARG(argparser, "--c", arg3, parser_string, "d", "d");
+	ARG(argparser, "--ddd", arg4, parser_string, "d", "d");
+
+	parse({"--a=1", "--bb=2", "--c=3", "--ddd=4"});
+
+	ASSERT_NE(arg1, nullptr);
+	ASSERT_NE(arg2, nullptr);
+	ASSERT_NE(arg3, nullptr);
+	ASSERT_NE(arg4, nullptr);
+
+	EXPECT_STREQ(arg1, "1");
+	EXPECT_STREQ(arg2, "2");
+	EXPECT_STREQ(arg3, "3");
+	EXPECT_STREQ(arg4, "4");
+}
+
 TEST(parser_memory_unit, unknown) {
 	memunit_t u;
 	EXPECT_FALSE(parser_memory_unit("S", &u));
@@ -250,6 +274,7 @@ TEST(parse_color, valid) {
 
 TEST(parse_real, invalid) {
 	real_t val;
+
 	EXPECT_FALSE(parser_real("10a", &val));
 }
 

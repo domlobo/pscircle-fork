@@ -3,7 +3,7 @@
 #include "gtest/gtest.h"
 
 extern "C" {
-#include "ppoint.h"
+#include "point.h"
 }
 
 #define EPS PSC_EPS
