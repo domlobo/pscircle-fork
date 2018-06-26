@@ -110,7 +110,7 @@ parse_cmdline(int argc, char const * argv[])
 	argparser_init(&argp);
 
 	ARGQ(&argp, "--stdin", config.read_stdin, parser_bool, PSC_STDIN,
-		"If set to true, process data will be read from stdin in form of \n"
+		"If set to true, process data will be read from stdin in form of"
 		"`ps -e -o pid,ppid,pcpu,rss,comm --no-headers` output. Otherwise, "
 		"/proc file system will be read to obtain the list of processes and information "
 		"on memory usage, load average and CPU utilization");

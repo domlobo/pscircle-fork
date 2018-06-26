@@ -67,8 +67,10 @@ argparser_parse(argparser_t *argparser, int argc, char const * argv[])
 			l = PSC_ARG_KEY_BUFSIZE;
 
 		strncpy(key, a, l);
-		key[l + 1] = '\0';
+		key[l] = '\0';
 		char *val = eq + 1;
+
+		/* fprintf(stderr, "%s = %s\n", key, val); */
 
 		arg_t *arg = find_by_key(argparser, key);
 

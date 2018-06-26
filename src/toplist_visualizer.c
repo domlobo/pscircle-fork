@@ -47,7 +47,7 @@ draw_toplists(painter_t *painter, procs_t *procs)
 		.pad     = config.toplists.column_padding,
 		.barw    = config.toplists.bar.width,
 		.offset_headers =
-			config.toplists.cpulist.show_header && config.toplists.memlist.show_header,
+			config.toplists.cpulist.show_header || config.toplists.memlist.show_header,
 	};
 
 	painter_set_font_face(painter, config.toplists.font_face);
