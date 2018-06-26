@@ -78,7 +78,10 @@ void
 painter_translate(painter_t *painter, point_t position);
 
 void
-painter_fill_backgound(painter_t *painter, color_t background);
+painter_fill_backgound_color(painter_t *painter, color_t background);
+
+void
+painter_fill_backgound_image(painter_t *painter, const char *imgpath);
 
 void
 painter_set_font_face(painter_t *painter, const char *fontface);

@@ -88,6 +88,7 @@ typedef struct {
 	real_t min_cpu;
 
 	color_t background;
+	const char *background_image;
 
 	tree_t tree;
 	dot_t dot;

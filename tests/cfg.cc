@@ -46,6 +46,14 @@ void parse(const char *arg, point_t &src, real_t x, real_t y) {
 	EXPECT_NEAR(src.y, y, EPS);
 }
 
+TEST(parse_cmdline, read_stdin) {
+	parse<bool>("--stdin=true", config.read_stdin, true);
+}
+
+TEST(parse_cmdline, interval) {
+	parse<real_t>("--interval=31", config.interval, 31);
+}
+
 TEST(parse_cmdline, output) {
 	parse("--output=aaa.png", config.output, "aaa.png");
 }
@@ -88,6 +96,10 @@ TEST(parse_cmdline, cpu_max_value) {
 
 TEST(parse_cmdline, background_color) {
 	parse("--background-color=DEADBEEF", config.background, "DEADBEEF");
+}
+
+TEST(parse_cmdline, background_image) {
+	parse("--background-image=file.png", config.background_image, "file.png");
 }
 
 TEST(parse_cmdline, tree_center) {

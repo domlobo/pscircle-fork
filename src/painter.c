@@ -22,6 +22,9 @@ void
 create_image_surface(painter_t *painter);
 
 void
+create_image_surface_from_png(painter_t *painter);
+
+void
 destroy_image_surface(painter_t *painter);
 
 void
@@ -62,7 +65,10 @@ painter_init(painter_t *painter)
 	painter->_cr = cairo_create(painter->_surface);
 	CHECK(painter->_cr);
 
-	painter_fill_backgound(painter, config.background);
+	painter_fill_backgound_color(painter, config.background);
+
+	if (config.background_image)
+		painter_fill_backgound_image(painter, config.background_image);
 
 	painter_center(painter);
 }
@@ -84,6 +90,27 @@ painter_dinit(painter_t *painter)
 	}
 
 	cairo_destroy(painter->_cr);
+}
+
+void
+create_image_surface_from_png(painter_t *painter)
+{
+	assert(painter);
+	assert(config.background_image);
+
+	cairo_surface_t *sf = cairo_image_surface_create_from_png(config.background_image); 
+
+	if (!sf) {
+		fprintf(stderr,
+				"Can not create surface from %s. (Only PNG is supported)\n", 
+				config.background_image);
+		exit(EXIT_FAILURE);
+	}
+
+	painter->_surface = sf;
+
+	config.output_width = cairo_image_surface_get_width(sf);
+	config.output_height = cairo_image_surface_get_height(sf);
 }
 
 void
@@ -257,7 +284,7 @@ painter_translate(painter_t *painter, point_t position)
 }
 
 void
-painter_fill_backgound(painter_t *painter, color_t background)
+painter_fill_backgound_color(painter_t *painter, color_t background)
 {
 	cairo_rectangle(painter->_cr, 0, 0, config.output_width, config.output_height);
 
@@ -269,6 +296,25 @@ painter_fill_backgound(painter_t *painter, color_t background)
 	);
 
 	cairo_fill(painter->_cr);
+}
+
+void
+painter_fill_backgound_image(painter_t *painter, const char *imgpah)
+{
+	assert(painter);
+	assert(imgpah);
+
+	cairo_surface_t *img = cairo_image_surface_create_from_png(imgpah); 
+	if (!img) {
+		fprintf(stderr, "Can not open image %s. (Only PNG is supported)\n", imgpah);
+		exit(EXIT_FAILURE);
+	}
+
+	// XXX: Can not draw at 0:0 on Xlib surfaces for some reasons
+	cairo_set_source_surface(painter->_cr, img, 0.05, 0.05);
+	cairo_paint(painter->_cr);
+
+	cairo_surface_destroy(img);
 }
 
 void

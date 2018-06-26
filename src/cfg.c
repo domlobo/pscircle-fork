@@ -18,14 +18,15 @@ cfg_t config = {
 	.read_stdin = PSC_STDIN,
 	.interval   = PSC_INTERVAL,
 
-	.output         = PSC_OUTPUT,
-	.output_width   = PSC_OUTPUT_WIDTH,
-	.output_height  = PSC_OUTPUT_HEIGHT,
-	.output_display = PSC_OUTPUT_DISPLAY,
-	.memory_unit    = PSC_MEMORY_UNIT,
-	.root_pid       = PSC_ROOT_PID,
-	.max_children   = PSC_MAX_CHILDREN,
-	.background     = PSC_BACKGROUND_COLOR,
+	.output           = PSC_OUTPUT,
+	.output_width     = PSC_OUTPUT_WIDTH,
+	.output_height    = PSC_OUTPUT_HEIGHT,
+	.output_display   = PSC_OUTPUT_DISPLAY,
+	.memory_unit      = PSC_MEMORY_UNIT,
+	.root_pid         = PSC_ROOT_PID,
+	.max_children     = PSC_MAX_CHILDREN,
+	.background       = PSC_BACKGROUND_COLOR,
+	.background_image = PSC_BACKGROUND_IMAGE,
 
 	.max_mem = PSC_MEM_MAX,
 	.min_mem = PSC_MEM_MIN,
@@ -148,6 +149,8 @@ parse_cmdline(int argc, char const * argv[])
 
 	ARG(&argp, "--background-color", config.background, parser_color, color_to_hex((color_t) PSC_BACKGROUND_COLOR),
 			"Image backgound color");
+	ARG(&argp, "--background-image", config.background_image, parser_string, PSC_BACKGROUND_IMAGE,
+			"Path to background image. Image will be drawn at the top left corner without scaling");
 
 	ARG(&argp, "--tree-center", config.tree.center, parser_point, point_to_str((point_t) PSC_TREE_CENTER),
 			"X:Y Position of a tree center from the center of image");
