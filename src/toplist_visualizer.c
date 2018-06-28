@@ -55,21 +55,21 @@ draw_toplists(painter_t *painter, procs_t *procs)
 
 	size_t nrows = PSC_TOPLIST_MAX_ROWS;
 	if (vis.offset_headers)
-		nrows--;
+		nrows++;
 
-	real_t w = config.toplists.width / 2;
-	real_t h = config.toplists.row_height * nrows / 2;
+	real_t rh = config.toplists.row_height;
+	real_t h = rh * (nrows - 1);
 
 	point_t pos_cpu = {
-		.x = config.toplists.center.x - w,
-		.y = config.toplists.center.y - h
+		.x = config.toplists.cpulist.center.x,
+		.y = config.toplists.cpulist.center.y + rh/2 - h/2
 	};
 
 	draw_toplist(&vis, &config.toplists.cpulist, procs->cpu_toplist, pos_cpu);
 
 	point_t pos_mem = {
-		.x = config.toplists.center.x + w,
-		.y = config.toplists.center.y - h
+		.x = config.toplists.memlist.center.x,
+		.y = config.toplists.memlist.center.y + rh/2 - h/2,
 	};
 
 	draw_toplist(&vis, &config.toplists.memlist, procs->mem_toplist, pos_mem);

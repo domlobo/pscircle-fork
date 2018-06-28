@@ -182,14 +182,6 @@ TEST(parse_cmdline, toplists_show) {
 	parse<bool>("--toplists-show=true", config.toplists.visible, true);
 }
 
-TEST(parse_cmdline, toplists_center) {
-	parse("--toplists-center=5:0.9", config.toplists.center, 5, 0.9);
-}
-
-TEST(parse_cmdline, toplists_width) {
-	parse<real_t>("--toplists-width=567", config.toplists.width, 567);
-}
-
 TEST(parse_cmdline, toplists_row_height) {
 	parse<real_t>("--toplists-row-height=420", config.toplists.row_height, 420);
 }
@@ -234,6 +226,10 @@ TEST(parse_cmdline, cpulist_show_header) {
 	parse<bool>("--cpulist-show-header=true", config.toplists.cpulist.show_header, true);
 }
 
+TEST(parse_cmdline, cpulist_center) {
+	parse("--cpulist-center=5:0.9", config.toplists.cpulist.center, 5, 0.9);
+}
+
 TEST(parse_cmdline, cpulist_name) {
 	parse("--cpulist-name=p", config.toplists.cpulist.name, "p");
 }
@@ -244,6 +240,10 @@ TEST(parse_cmdline, cpulist_label) {
 
 TEST(parse_cmdline, cpulist_bar_value) {
 	parse<real_t>("--cpulist-bar-value=0.44", config.toplists.cpulist.value, 0.44);
+}
+
+TEST(parse_cmdline, memlist_center) {
+	parse("--memlist-center=3:1.9", config.toplists.memlist.center, 3, 1.9);
 }
 
 TEST(parse_cmdline, memlist_show_header) {

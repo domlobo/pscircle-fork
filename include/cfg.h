@@ -40,6 +40,7 @@ typedef struct {
 
 typedef struct {
 	bool show_header;
+	point_t center;
 	const char *name;
 	const char *label;
 	const char *value_format;
@@ -55,8 +56,6 @@ typedef struct {
 
 typedef struct {
 	bool visible;
-	point_t center;
-	real_t width;
 	real_t row_height;
 	real_t font_size;
 	color_t font_color;

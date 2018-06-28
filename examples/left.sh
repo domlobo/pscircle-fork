@@ -9,5 +9,6 @@ pscircle \
 	--tree-rotate=true \
 	--tree-rotation-angle=1.5708 \
 	--tree-center=-1580:0 \
-	--toplists-center=430:0
+	--cpulist-center=300:0 \
+	--memlist-center=800:0
 

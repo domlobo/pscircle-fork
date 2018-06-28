@@ -63,8 +63,6 @@ cfg_t config = {
 
 	.toplists = {
 		.visible        = PSC_TOPLISTS_VISIBLE,
-		.center         = PSC_TOPLISTS_CENTER,
-		.width          = PSC_TOPLISTS_WIDTH,
 		.row_height     = PSC_TOPLISTS_ROW_HEIGHT,
 		.font_size      = PSC_TOPLISTS_FONT_SIZE,
 		.font_color     = PSC_TOPLISTS_FONT_COLOR,
@@ -80,6 +78,7 @@ cfg_t config = {
 		},
 
 		.cpulist = {
+			.center       = PSC_CPULIST_CENTER,
 			.show_header  = PSC_CPULIST_SHOW_HEADER,
 			.name         = PSC_CPULIST_NAME,
 			.label        = PSC_CPULIST_LABEL,
@@ -88,6 +87,7 @@ cfg_t config = {
 		},
 
 		.memlist = {
+			.center       = PSC_MEMLIST_CENTER,
 			.show_header  = PSC_MEMLIST_SHOW_HEADER,
 			.name         = PSC_MEMLIST_NAME,
 			.label        = PSC_MEMLIST_LABEL,
@@ -201,10 +201,6 @@ parse_cmdline(int argc, char const * argv[])
 
 	ARGQ(&argp, "--toplists-show", config.toplists.visible, parser_bool, PSC_TOPLISTS_VISIBLE,
 			"Show two lists of the processes with highest PCPU and RSS values");
-	ARG(&argp, "--toplists-center", config.toplists.center, parser_point, point_to_str((point_t) PSC_TOPLISTS_CENTER),
-			"X:Y position of the center of lists from the center of the image");
-	ARGQ(&argp, "--toplists-width", config.toplists.width, parser_real, PSC_TOPLISTS_WIDTH,
-			"Horizontal distance between the dots in two lists");
 	ARGQ(&argp, "--toplists-row-height", config.toplists.row_height, parser_real, PSC_TOPLISTS_ROW_HEIGHT,
 			"Hight of each row in toplist (px)");
 	ARGQ(&argp, "--toplists-font-size", config.toplists.font_size, parser_real, PSC_TOPLISTS_FONT_SIZE,
@@ -227,6 +223,8 @@ parse_cmdline(int argc, char const * argv[])
 	ARG(&argp, "--toplists-bar-colot", config.toplists.bar.color, parser_color, color_to_hex((color_t) PSC_TOPLISTS_BAR_COLOR),
 			"Foreground color of the percentage bar");
 
+	ARG(&argp, "--cpulist-center", config.toplists.cpulist.center, parser_point, point_to_str((point_t) PSC_CPULIST_CENTER),
+			"Position of the center of CPU list");
 	ARGQ(&argp, "--cpulist-show-header", config.toplists.cpulist.show_header, parser_bool, PSC_CPULIST_SHOW_HEADER,
 			"Show the header of the CPU toplist");
 	ARG(&argp, "--cpulist-name", config.toplists.cpulist.name, parser_string, PSC_CPULIST_NAME,
@@ -236,6 +234,8 @@ parse_cmdline(int argc, char const * argv[])
 	ARGQ(&argp, "--cpulist-bar-value", config.toplists.cpulist.value, parser_real, PSC_CPULIST_BAR_VALUE,
 			"The value (0<=x<=1) of percentage bar of CPU toplist");
 
+	ARG(&argp, "--memlist-center", config.toplists.memlist.center, parser_point, point_to_str((point_t) PSC_MEMLIST_CENTER),
+			"Position of the center of MEM list");
 	ARGQ(&argp, "--memlist-show-header", config.toplists.memlist.show_header, parser_bool, PSC_MEMLIST_SHOW_HEADER,
 			"Show the header of the MEM toplist");
 	ARG(&argp, "--memlist-name", config.toplists.memlist.name, parser_string, PSC_MEMLIST_NAME,
