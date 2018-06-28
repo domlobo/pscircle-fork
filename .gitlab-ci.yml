@@ -4,4 +4,5 @@ unit_tests:
   script:
     - mkdir build && cd build
     - meson --buildtype=debug .. && ninja
-    - ninja test
+    - meson test
+    - meson test --wrap=valgrind
