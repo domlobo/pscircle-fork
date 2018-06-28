@@ -78,6 +78,9 @@ draw_toplists(painter_t *painter, procs_t *procs)
 void
 draw_toplist(visualizer_t *vis, toplist_t *cfg, pnode_t **list, point_t pos)
 {
+	if (!cfg->show)
+		return;
+
 	if (cfg->show_header)
 		draw_toplists_header(vis, cfg, pos);
 

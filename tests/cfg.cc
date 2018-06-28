@@ -178,10 +178,6 @@ TEST(parse_cmdline, link_color_max) {
 	parse("--link-color-max=DADADA", config.link.color_max, "DADADA");
 }
 
-TEST(parse_cmdline, toplists_show) {
-	parse<bool>("--toplists-show=true", config.toplists.visible, true);
-}
-
 TEST(parse_cmdline, toplists_row_height) {
 	parse<real_t>("--toplists-row-height=420", config.toplists.row_height, 420);
 }
@@ -222,6 +218,10 @@ TEST(parse_cmdline, toplists_bar_colot) {
 	parse("--toplists-bar-colot=7AB", config.toplists.bar.color, "7AB");
 }
 
+TEST(parse_cmdline, cpulist_show) {
+	parse<bool>("--cpulist-show=false", config.toplists.cpulist.show, false);
+}
+
 TEST(parse_cmdline, cpulist_show_header) {
 	parse<bool>("--cpulist-show-header=true", config.toplists.cpulist.show_header, true);
 }
@@ -240,6 +240,10 @@ TEST(parse_cmdline, cpulist_label) {
 
 TEST(parse_cmdline, cpulist_bar_value) {
 	parse<real_t>("--cpulist-bar-value=0.44", config.toplists.cpulist.value, 0.44);
+}
+
+TEST(parse_cmdline, memlist_show) {
+	parse("--memlist-show=false", config.toplists.memlist.show, false);
 }
 
 TEST(parse_cmdline, memlist_center) {

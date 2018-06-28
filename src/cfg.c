@@ -62,7 +62,6 @@ cfg_t config = {
 	},
 
 	.toplists = {
-		.visible        = PSC_TOPLISTS_VISIBLE,
 		.row_height     = PSC_TOPLISTS_ROW_HEIGHT,
 		.font_size      = PSC_TOPLISTS_FONT_SIZE,
 		.font_color     = PSC_TOPLISTS_FONT_COLOR,
@@ -78,6 +77,7 @@ cfg_t config = {
 		},
 
 		.cpulist = {
+			.show         = PSC_CPULIST_SHOW,
 			.center       = PSC_CPULIST_CENTER,
 			.show_header  = PSC_CPULIST_SHOW_HEADER,
 			.name         = PSC_CPULIST_NAME,
@@ -87,6 +87,7 @@ cfg_t config = {
 		},
 
 		.memlist = {
+			.show         = PSC_MEMLIST_SHOW,
 			.center       = PSC_MEMLIST_CENTER,
 			.show_header  = PSC_MEMLIST_SHOW_HEADER,
 			.name         = PSC_MEMLIST_NAME,
@@ -199,8 +200,6 @@ parse_cmdline(int argc, char const * argv[])
 	ARG(&argp, "--link-color-max", config.link.color_max, parser_color, color_to_hex((color_t) PSC_LINK_COLOR_MAX),
 			"Color of the curves betwwen dots. this value corresponds to --memory-max-value");
 
-	ARGQ(&argp, "--toplists-show", config.toplists.visible, parser_bool, PSC_TOPLISTS_VISIBLE,
-			"Show two lists of the processes with highest PCPU and RSS values");
 	ARGQ(&argp, "--toplists-row-height", config.toplists.row_height, parser_real, PSC_TOPLISTS_ROW_HEIGHT,
 			"Hight of each row in toplist (px)");
 	ARGQ(&argp, "--toplists-font-size", config.toplists.font_size, parser_real, PSC_TOPLISTS_FONT_SIZE,
@@ -223,6 +222,8 @@ parse_cmdline(int argc, char const * argv[])
 	ARG(&argp, "--toplists-bar-colot", config.toplists.bar.color, parser_color, color_to_hex((color_t) PSC_TOPLISTS_BAR_COLOR),
 			"Foreground color of the percentage bar");
 
+	ARGQ(&argp, "--cpulist-show", config.toplists.cpulist.show, parser_bool, PSC_CPULIST_SHOW,
+			"Shows the list of porcesses with max CPU utilization");
 	ARG(&argp, "--cpulist-center", config.toplists.cpulist.center, parser_point, point_to_str((point_t) PSC_CPULIST_CENTER),
 			"Position of the center of CPU list");
 	ARGQ(&argp, "--cpulist-show-header", config.toplists.cpulist.show_header, parser_bool, PSC_CPULIST_SHOW_HEADER,
@@ -234,6 +235,8 @@ parse_cmdline(int argc, char const * argv[])
 	ARGQ(&argp, "--cpulist-bar-value", config.toplists.cpulist.value, parser_real, PSC_CPULIST_BAR_VALUE,
 			"The value (0<=x<=1) of percentage bar of CPU toplist");
 
+	ARGQ(&argp, "--memlist-show", config.toplists.memlist.show, parser_bool, PSC_MEMLIST_SHOW,
+			"Shows the list of porcesses with max memory utilization");
 	ARG(&argp, "--memlist-center", config.toplists.memlist.center, parser_point, point_to_str((point_t) PSC_MEMLIST_CENTER),
 			"Position of the center of MEM list");
 	ARGQ(&argp, "--memlist-show-header", config.toplists.memlist.show_header, parser_bool, PSC_MEMLIST_SHOW_HEADER,

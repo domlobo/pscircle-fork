@@ -51,7 +51,7 @@ int main(int argc, const char *argv[])
 
 	tm_tick(&tm, "draw tree");
 
-	if (config.toplists.visible) {
+	if (config.toplists.cpulist.show || config.toplists.memlist.show) {
 		draw_toplists(painter, procs);
 		tm_tick(&tm, "draw lists");
 	}

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-pscircle --toplists-show=false
+pscircle --memlist-show=false --cpulist-show=false

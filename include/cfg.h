@@ -39,6 +39,7 @@ typedef struct {
 } link_t;
 
 typedef struct {
+	bool show;
 	bool show_header;
 	point_t center;
 	const char *name;
@@ -55,7 +56,6 @@ typedef struct {
 } bar_t;
 
 typedef struct {
-	bool visible;
 	real_t row_height;
 	real_t font_size;
 	color_t font_color;
