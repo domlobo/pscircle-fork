@@ -3,7 +3,6 @@
 set -e
 
 pscircle \
-	--output=/home/rk/pscircle.png \
 	--background-color=fff \
 	--link-color-min=aaa \
 	--link-color-max=900 \
