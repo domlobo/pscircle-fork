@@ -214,8 +214,8 @@ TEST(parse_cmdline, toplists_bar_background) {
 	parse("--toplists-bar-background=5AD", config.toplists.bar.background, "5AD");
 }
 
-TEST(parse_cmdline, toplists_bar_colot) {
-	parse("--toplists-bar-colot=7AB", config.toplists.bar.color, "7AB");
+TEST(parse_cmdline, toplists_bar_color) {
+	parse("--toplists-bar-color=7AB", config.toplists.bar.color, "7AB");
 }
 
 TEST(parse_cmdline, cpulist_show) {

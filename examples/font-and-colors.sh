@@ -8,8 +8,6 @@ pscircle \
 	--link-color-max=375143 \
 	--dot-color-min=7c762f \
 	--dot-color-max=b56e46 \
-	--toplists-font-color=96afba \
-	--toplists-pid-font-color=879ea7 \
 	--tree-font-size=18 \
 	--tree-font-color=94bfd1 \
 	--tree-font-face="Noto Sans" \
@@ -20,6 +18,6 @@ pscircle \
 	--toplists-font-face="Liberation Sans" \
 	--toplists-bar-height=7 \
 	--toplists-bar-background=444444 \
-	--toplists-bar-colot=7d54dd
+	--toplists-bar-color=7d54dd \
 
 

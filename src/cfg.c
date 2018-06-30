@@ -219,7 +219,7 @@ parse_cmdline(int argc, char const * argv[])
 			"Height of the percentage bar");
 	ARG(&argp, "--toplists-bar-background", config.toplists.bar.background, parser_color, color_to_hex((color_t) PSC_TOPLISTS_BAR_BG),
 			"Backgound color of the percentage bar");
-	ARG(&argp, "--toplists-bar-colot", config.toplists.bar.color, parser_color, color_to_hex((color_t) PSC_TOPLISTS_BAR_COLOR),
+	ARG(&argp, "--toplists-bar-color", config.toplists.bar.color, parser_color, color_to_hex((color_t) PSC_TOPLISTS_BAR_COLOR),
 			"Foreground color of the percentage bar");
 
 	ARGQ(&argp, "--cpulist-show", config.toplists.cpulist.show, parser_bool, PSC_CPULIST_SHOW,
