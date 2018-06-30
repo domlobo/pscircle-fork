@@ -120,7 +120,7 @@ parse_cmdline(int argc, char const * argv[])
 		"If set to 0 (default), CPU utilization and processes PCPU values will be calculate "
 		"from system start time and proceess start time. Otherwise, these values will be calculated "
 		"over specified interval (in seconds, with fractions). This also implies that program exection "
-		"will be suspended to the specified intercval.");
+		"will be suspended to the specified interval.");
 #ifdef HAVE_X11
 	ARG(&argp, "--output", config.output, parser_string, PSC_OUTPUT,
 		"Path to the output image. If it's not set, X11 root window is used");

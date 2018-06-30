@@ -137,7 +137,7 @@ print_help_and_exit(argparser_t *argparser)
 		"Options:\n"
 	);
 
-	char buf[PSC_ARG_DESCRIPTION_BUFSIZE] = {0};
+	char buf[PSC_ARG_DESCRIPTION_BUFSIZE + 1] = {0};
 
 	for (size_t i = 0; i < argparser->nargs; ++i) {
 		arg_t *a = argparser->args + i;
