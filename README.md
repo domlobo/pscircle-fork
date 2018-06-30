@@ -51,17 +51,19 @@ To view complete list of command line arguments run:
 pscircle --help
 ```
 
-* When you finish configuring command line arguments you can modify corresponding constants in [config.h.meson](config.h.meson) and recompile the application so that your configuration would be used by default.
-* By default image will be printed directly to X11 root window of the display specified in `--output-display=...`. But you can print image to PNG file by specifying `--output=pscircle.png` argument. (Check [#6 example](examples/06-output-to-image.sh))
-* *pscircle* uses `/proc.` Linux pseudo file system for collecting information about processes, uptime, CPU and memory utilization. In case *pscircle* doesn't work correctly with your kernel version, or you want to monitor remote host you can provide this information yourself. (Check [#7 example](examples/07-no-proc-fs.sh))
-* *pscircle* calculates processes pcpu values and CPU utilization value over the time interval specified in `--interval` argument. This implies that *pscircle* execution is suspended for this time interval to collect the data. If you want these values to be calculated from the process and system start time (similar to `top` or `htop` utils), you can specify `--interval=0` argument.      
-* Parameters related to visualization are described in the following diagram:
+Parameters related to visualization are described in the following diagram:
 
 [![parameters](docs/parameters-small.png)](docs/parameters.png)
 
 [full size](docs/parameters.png)
 
+By default image will be printed directly to X11 root window of the display specified in `--output-display=...`. But you can print image to PNG file by specifying `--output=pscircle.png` argument. (Check [#6 example](examples/06-output-to-image.sh))
+
+When you finish configuring command line arguments you can modify corresponding constants in [config.h.meson](config.h.meson) and recompile the application so that your configuration would be used by default.
+
 # Examples
+
+For more examples check [examples](examples/) directory.
 
 ## Default
 
@@ -93,14 +95,23 @@ pscircle --help
 
 [source](examples/04-bottom.sh) | [full size](docs/04-bottom.png)
 
+# Rationale 
 
-> For more examples check [examples](examples/) directory.
+## Using *pscircle* with desktop environments
 
-# Perfomance
+Some desktop environments (e.g. KDE or GNOME) do not display X11 root window as desktop wallpaper. You can still create image file (by using `--output=path.png`) and create a script that would set this image as wallpaper. If succeed in this, you are welcome to create a contribution, or just DM me these scripts.
+
+## How *pscircle* obtains its data
+
+*pscircle* reads `/proc` Linux pseudo file system for collecting information about processes, uptime, CPU and memory utilization. It calculates processes pcpu values and CPU utilization value over the time interval specified in `--interval` argument. This implies that *pscircle* execution is suspended for this time interval to collect the data. If you want these values to be calculated from the process and system start time (similar to `top` or `htop` utils), you can specify `--interval=0` argument.
+
+In case *pscircle* doesn't work correctly with your kernel version, or you want to monitor remote host you can provide this information yourself. (Check [example #7](examples/07-no-proc-fs.sh))
+
+## Performance
 
 When compiled with `#define PSC_PRINT_TIME 1` cpu time and wall time for different stages will be printed:
 
-Execution times for printing the image to X11 root window:
+Execution times of printing the image to X11 root window:
 
 ```
                   cpu /   wall 
@@ -112,7 +123,7 @@ Execution times for printing the image to X11 root window:
         total: 0.1149 / 1.1772 seconds
 ```
 
-Execution times for printing the image to PNG file:
+Execution times of printing the image to PNG file:
 
 ```
                   cpu /   wall 
@@ -125,7 +136,6 @@ Execution times for printing the image to PNG file:
 ```
 
 As you can see, drawing the tree to the file (on SSD disk) take almost 4 times longer that printing to X11 screen (0.11 vs 0.45 seconds of cputime). 
-
 
 # Asknowlegemnts
 
