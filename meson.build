@@ -46,8 +46,14 @@ deps = [
 ]
 
 x11_dep = dependency('x11', required : false)
-config.set('HAVE_X11', x11_dep.found())
-deps += x11_dep
+x11_opt = get_option('enable-x11')
+
+if x11_dep.found() and x11_opt
+	config.set('HAVE_X11', true)
+	deps += x11_dep
+else
+	config.set('HAVE_X11', false)
+endif
 
 test_flags = [
 	'-march=native',

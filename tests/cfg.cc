@@ -58,9 +58,11 @@ TEST(parse_cmdline, output) {
 	parse("--output=aaa.png", config.output, "aaa.png");
 }
 
+#ifdef HAVE_X11
 TEST(parse_cmdline, output_display) {
 	parse("--output-display=bbb", config.output_display, "bbb");
 }
+#endif
 
 TEST(parse_cmdline, output_width) {
 	parse<size_t>("--output-width=123", config.output_width, 123);

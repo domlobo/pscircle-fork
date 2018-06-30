@@ -121,10 +121,15 @@ parse_cmdline(int argc, char const * argv[])
 		"from system start time and proceess start time. Otherwise, these values will be calculated "
 		"over specified interval (in seconds, with fractions). This also implies that program exection "
 		"will be suspended to the specified intercval.");
+#ifdef HAVE_X11
 	ARG(&argp, "--output", config.output, parser_string, PSC_OUTPUT,
-		"Path to output image. If it's not set, X11 root window is used");
+		"Path to the output image. If it's not set, X11 root window is used");
 	ARG(&argp, "--output-display", config.output_display, parser_string, PSC_OUTPUT_DISPLAY,
 		"Name of X11 display to draw the image to");
+#else
+	ARG(&argp, "--output", config.output, parser_string, PSC_OUTPUT,
+		"Path to the output image");
+#endif
 	ARGQ(&argp, "--output-width", config.output_width, parser_ulong, PSC_OUTPUT_WIDTH,
 		"Width(px) of output image or X11 root window");
 	ARGQ(&argp, "--output-height", config.output_height, parser_ulong, PSC_OUTPUT_HEIGHT,

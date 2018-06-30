@@ -31,7 +31,7 @@ tm_walldiff(struct timespec *a, struct timespec *b)
 void
 tm_start(timing_t *tm)
 {
-#ifdef PSC_PRINT_TIME
+#if PSC_PRINT_TIME
 	tm->cputime = clock();
 	clock_gettime(CLOCK_REALTIME, &tm->walltime);
 	tm->ctotal = 0;
@@ -44,7 +44,7 @@ tm_start(timing_t *tm)
 void
 tm_tick(timing_t *tm, const char *message)
 {
-#ifdef PSC_PRINT_TIME
+#if PSC_PRINT_TIME
 	assert(tm);
 	assert(message);
 
@@ -68,7 +68,7 @@ tm_tick(timing_t *tm, const char *message)
 void
 tm_total(timing_t *tm)
 {
-#ifdef PSC_PRINT_TIME
+#if PSC_PRINT_TIME
 	fprintf(stderr, TIME_FMT, "total", tm->ctotal, tm->wtotal);
 #endif
 }

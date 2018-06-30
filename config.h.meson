@@ -6,6 +6,8 @@
 
 #mesondefine HAVE_X11
 
+#define PSC_PRINT_TIME 0
+
 #define PSC_USE_FLOAT 0
 
 #define PSC_TOPLIST_MAX_ROWS 5
@@ -18,7 +20,6 @@
 #define PSC_MEMORY_UNIT_TYPE uint_fast8_t
 #define PSC_PID_TYPE int
 
-#mesondefine PSC_PRINT_TIME
 #define PSC_MAX_ARGS 100
 #define PSC_HELPLIST_OFFSET 3
 #define PSC_HELPLIST_WIDTH 60
@@ -35,7 +36,12 @@
 #define PSC_STDIN false
 #define PSC_INTERVAL 1
 
+#ifdef HAVE_X11
 #define PSC_OUTPUT 0
+#else
+#define PSC_OUTPUT "pscirlce.png"
+#endif
+
 #define PSC_OUTPUT_DISPLAY 0
 #define PSC_OUTPUT_WIDTH 3200
 #define PSC_OUTPUT_HEIGHT 1800
