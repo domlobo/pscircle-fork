@@ -1,5 +1,4 @@
-# pscircle
-
+# pscircle 
 **pscircle** visualizes Linux processes in a form of radial tree.
 
 *by Ruslan Kuchumov, 2018*
@@ -56,36 +55,43 @@ pscircle --help
 * By default image will be pinted directly to X11 root window of the display specified in `--output-display=...`. But you can print image to PNG file by specifying `--output=pscircle.png` argument. (Check [#6 example](examples/06-output-to-image.sh))
 * *pscircle* uses `/proc.` Linux pseudo file system for collecting information about processes, uptime, CPU and memory utilization. In case *pscircle* doesn't work correctly with your kernel version, or you want to monitor remote host you can provide this information yourself. (Check [#7 example](examples/07-no-proc-fs.sh.sh))
 * *pscircle* calculates processes pcpu values and CPU utilization value over the time interval specified in `--interval` argument. This implies that *pscircle* execution is suspended for this time interval to collect the data. If you want these values to be calculated from the process and system start time (similar to `top` or `htop` utils), you can specify `--interval=0` argument.      
-* Parameters related to visualization are described in the following diagram ([full size](docs/parameters.png)):
+* Parameters related to visualization are described in the following diagram:
 
-![parameters](docs/parameters-small.png)
-
-
-# Examples
-
-## [Tree at the left](examples/01-left.sh)
-
-![tree at the left](docs/01-left-small.png)
+[![parameters](docs/parameters-small.png)](docs/parameters.png)
 
 [full size](docs/parameters.png)
 
-## [Different fonts and colors](examples/02-colors.sh)
+# Examples
 
-![Different fonts and colors](docs/02-colors-small.png)
+## Default
 
-[full size](docs/02-colors.png)
+[![default](docs/default-small.png)](docs/default.png)
 
-## [Background image](examples/04-background.sh)
+[full size](docs/default.png)
 
-![Background image](docs/03-background-small.png)
+## Tree at the left
 
-[full size](docs/03-background.png)
+[![tree at the left](docs/01-left-small.png)](docs/parameters.png)
 
-## [Tree at the bottom](examples/04-bottom.sh)
+[source](examples/01-left.sh) | [full size](docs/parameters.png)
 
-![tree at the left](docs/04-bottom-small.png)
+## Different fonts and colors
 
-[full size](docs/04-bottom.png)
+[![Different fonts and colors](docs/02-colors-small.png)](docs/02-colors.png)
+
+[source](examples/02-colors.sh) | [full size](docs/02-colors.png)
+
+## Background image
+
+[![Background image](docs/03-background-small.png)](docs/03-background.png)
+
+[source](examples/04-background.sh) | [full size](docs/03-background.png)
+
+## Tree at the bottom
+
+[![tree at the left](docs/04-bottom-small.png)](docs/04-bottom.png)
+
+[source](examples/04-bottom.sh) | [full size](docs/04-bottom.png)
 
 For more examples check [/examples](examples/).
 
