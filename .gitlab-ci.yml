@@ -7,6 +7,3 @@ unit_tests:
     - meson --buildtype=debug .. && ninja
     - meson test
     - meson test --wrap=valgrind
-  artifacts:
-    paths:
-      - pscircle.png
