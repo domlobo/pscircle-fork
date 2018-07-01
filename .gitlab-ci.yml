@@ -7,3 +7,7 @@ unit_tests:
     - meson --buildtype=debug .. && ninja
     - meson test
     - meson test --wrap=valgrind
+    - valgrind --error-exitcode=1 ./pscircle --output=pscircle.png
+  artifacts:
+    paths:
+      - pscircle.png

@@ -99,13 +99,13 @@ For more examples check [examples](examples/) directory.
 
 ## Using *pscircle* with desktop environments
 
-Some desktop environments (e.g. KDE or GNOME) do not display X11 root window as desktop wallpaper. You can still create image file (by using `--output=path.png`) and create a script that would set this image as wallpaper. If you succeed in this, you are welcome to create a contribution, or just DM me these scripts.
+Some desktop environments (e.g. KDE or GNOME) do not display X11 root window as desktop wallpaper. You can still create image file (by using `--output=path.png`) and create a script that would set this image as wallpaper. If you succeed in this, you are welcome to create a contribution, or just send me these scripts directly.
 
 ## Graph doesn't fit to my screen
 
 By default *pscircle* creates an image for 3200x1800 resolution. If you have a different screen resolution, you should manually specify it by changing `--output-width` and `--output-height` options. You will probably need to change other options related to sizes (e.g. font size, circles radii, lists positions) as their values are specified in absolute values and do not scale automatically. [Example #5](examples/05-1440x900-res.sh) may help you with this.
 
-Another reason grapth doesn't fit to the screen is that you have too much processes. In this case you can reduce circle radii (by changing `--tree-radius-increment` option), limiting the number of child processes (`--max-children` option) or changing PID of the root procces (`--root-pid` option). You can also hide lists of the processes with `--cpulist-show=false` or `--memlist-show=false` to get more free space at the screen.
+Another reason the graph doesn't fit to the screen is that you have too much processes. In this case you can reduce circle radii (by changing `--tree-radius-increment` option), limit the number of child processes (`--max-children` option) or change the PID of the root procces (`--root-pid` option). You can also hide lists of the processes with `--cpulist-show=false` or `--memlist-show=false` to get more free space at the screen.
 
 ## How does *pscircle* obtain its data?
 
@@ -115,7 +115,7 @@ In case *pscircle* doesn't work correctly with your kernel version (please, let 
 
 ## Performance
 
-When compiled with `#define PSC_PRINT_TIME 1` cpu time and wall time for different stages will be printed:
+When you compile *pscircle* with `#define PSC_PRINT_TIME 1` cpu time and wall time for different stages will be printed:
 
 Execution times of printing the image to X11 root window:
 
