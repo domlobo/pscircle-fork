@@ -36,8 +36,14 @@ ppoint_from_radial(real_t phi, real_t rho)
 	ppoint_t p = {0};
 	p.r = rho;
 
-	if (rho != 0)
+	if (rho != 0) {
+#ifdef HAVE_SINCOS
 		R(sincos)(phi, &p.ny, &p.nx);
+#else
+		p.nx = R(cos)(phi);
+		p.ny = R(sin)(phi);
+#endif
+	}
 
 	assert(ppoint_is_valid(p));
 

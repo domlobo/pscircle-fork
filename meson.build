@@ -69,6 +69,16 @@ foreach flag : test_flags
 	endif
 endforeach
 
+test_functions = [
+	'sincos'
+]
+
+foreach func : test_functions
+	if cc.has_function(func)
+		config.set('HAVE_' + func.underscorify().to_upper(), true)
+	endif
+endforeach
+
 configure_file(
 	input : 'config.h.meson',
 	output : 'config.h',

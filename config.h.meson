@@ -6,6 +6,8 @@
 
 #mesondefine HAVE_X11
 
+#mesondefine HAVE_SINCOS
+
 #define PSC_PRINT_TIME 0
 
 #define PSC_USE_FLOAT 0
