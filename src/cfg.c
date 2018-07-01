@@ -190,7 +190,7 @@ parse_cmdline(int argc, char const * argv[])
 	ARGQ(&argp, "--dot-radius", config.dot.radius, parser_real, PSC_DOT_RADIUS,
 			"Radius of the dots (px)");
 	ARGQ(&argp, "--dot-border-width", config.dot.border, parser_real, PSC_DOT_BORDER,
-			"Width of dots borsers (px)");
+			"Width of dots borders (px)");
 	ARG(&argp, "--dot-color-min", config.dot.bg_min, parser_color, color_to_hex((color_t) PSC_DOT_BACKGROUND_COLOR_MIN),
 			"Backgound color of the dots. This value corresponds to --cpu-max-value");
 	ARG(&argp, "--dot-color-max", config.dot.bg_max, parser_color, color_to_hex((color_t) PSC_DOT_BACKGROUND_COLOR_MAX),
