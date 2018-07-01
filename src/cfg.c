@@ -42,7 +42,8 @@ cfg_t config = {
 		.rotate     = PSC_TREE_ROTATE,
 		.rotation   = PSC_TREE_ROTATION,
 		.center     = PSC_TREE_CENTER,
-		.zero_pid   = PSC_ZERO_ANGLE_PID,
+		.anchor_proc_name  = PSC_ANCHOR_PROC_NAME,
+		.anchor_proc_angle = PSC_ANCHOR_PROC_ANGLE
 	},
 
 	.dot = {
@@ -165,15 +166,20 @@ parse_cmdline(int argc, char const * argv[])
 	ARGQ(&argp, "--tree-sector-angle", config.tree.sector, parser_real, PSC_TREE_SECTOR,
 			"Tree vertices will be displayed inside the sector with specified angle");
 	ARGQ(&argp, "--tree-rotate", config.tree.rotate, parser_bool, PSC_TREE_ROTATE,
-			"Tree will be rotated to the angle specified in --tree-rotation-angle");
+			"Tree will be rotated to the angle specified in --tree-rotation-angle"
+			"If this option and --tree-anchor-proc-name are not set, "
+			"then the tree will be rotated to so that its widest node is at 0 rad");
 	ARGQ(&argp, "--tree-rotation-angle", config.tree.rotation, parser_real, PSC_TREE_ROTATION,
 			"Rotation angle of a tree (radians). If --tree-rotate is not set, the tree will "
-			"be rotated to --tree-zero-angle-pid (if it differs from --root-pid) or to "
+			"be rotated to --tree-anchor-proc-angle (if --tree-anchor-proc-name is set) or to "
 			"the angle of the widest child");
-	ARGQ(&argp, "--tree-zero-anlge-pid", config.tree.zero_pid, parser_long, PSC_ZERO_ANGLE_PID,
-			"Tree will be rotated so that specified process is positioned at 0 rad, "
-			"unless --tree-rotate is set. If --tree-zero-angle-pid equals to --root-pid "
-			"the tree is rotated to so that its widest node is 0 rad");
+	ARG(&argp, "--tree-anchor-proc-name", config.tree.anchor_proc_name, parser_string, PSC_ANCHOR_PROC_NAME,
+			"Tree will be rotated so that specified process is positioned at --tree-anchor-proc-angle angle"
+			", unless --tree-rotate is set. If this option and --tree-rotate are not set or the process is not found, "
+			"then the tree will be rotated to so that its widest node is at 0 rad");
+	ARGQ(&argp, "--tree-anchor-proc-angle", config.tree.anchor_proc_angle, parser_real, PSC_ANCHOR_PROC_ANGLE,
+			"Tree will be rotated so that proccess specified by --tree-anchor-proc-name is positioned "
+			"the specified angle, unless --tree-rotate is set.");
 	ARGQ(&argp, "--tree-font-size", config.tree.font_size, parser_real, PSC_TREE_FONT_SIZE,
 			"Font size of the tree process names");
 	ARG(&argp, "--tree-font-face", config.tree.font_face, parser_string, PSC_TREE_FONT_FACE,

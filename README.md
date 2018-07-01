@@ -99,13 +99,19 @@ For more examples check [examples](examples/) directory.
 
 ## Using *pscircle* with desktop environments
 
-Some desktop environments (e.g. KDE or GNOME) do not display X11 root window as desktop wallpaper. You can still create image file (by using `--output=path.png`) and create a script that would set this image as wallpaper. If succeed in this, you are welcome to create a contribution, or just DM me these scripts.
+Some desktop environments (e.g. KDE or GNOME) do not display X11 root window as desktop wallpaper. You can still create image file (by using `--output=path.png`) and create a script that would set this image as wallpaper. If you succeed in this, you are welcome to create a contribution, or just DM me these scripts.
 
-## How *pscircle* obtains its data
+## Graph doesn't fit to my screen
 
-*pscircle* reads `/proc` Linux pseudo file system for collecting information about processes, uptime, CPU and memory utilization. It calculates processes pcpu values and CPU utilization value over the time interval specified in `--interval` argument. This implies that *pscircle* execution is suspended for this time interval to collect the data. If you want these values to be calculated from the process and system start time (similar to `top` or `htop` utils), you can specify `--interval=0` argument.
+By default *pscircle* creates an image for 3200x1800 resolution. If you have a different screen resolution, you should manually specify it by changing `--output-width` and `--output-height` options. You will probably need to change other options related to sizes (e.g. font size, circles radii, lists positions) as their values are specified in absolute values and do not scale automatically. [Example #5](examples/05-1440x900-res.sh) may help you with this.
 
-In case *pscircle* doesn't work correctly with your kernel version, or you want to monitor remote host you can provide this information yourself. (Check [example #7](examples/07-no-proc-fs.sh))
+Another reason grapth doesn't fit to the screen is that you have too much processes. In this case you can reduce circle radii (by changing `--tree-radius-increment` option), limiting the number of child processes (`--max-children` option) or changing PID of the root procces (`--root-pid` option). You can also hide lists of the processes with `--cpulist-show=false` or `--memlist-show=false` to get more free space at the screen.
+
+## How does *pscircle* obtain its data?
+
+*pscircle* reads `/proc` Linux pseudo file system for collecting information about processes, uptime, CPU and memory utilization. It calculates processes pcpu and CPU utilization values over the time interval specified in `--interval` argument. This implies that *pscircle* execution is suspended for this time interval to collect the data. If you want these values to be calculated from the process and system start time (similar to `top` or `htop` utils), you can specify `--interval=0` argument.
+
+In case *pscircle* doesn't work correctly with your kernel version (please, let me know), or you want to monitor remote host you can provide this information yourself. (Check [example #7](examples/07-no-proc-fs.sh))
 
 ## Performance
 

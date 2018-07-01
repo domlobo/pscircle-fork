@@ -379,6 +379,9 @@ add_stubs(procs_t *procs)
 void
 procs_child_by_pid_recurcive(pnode_t **found, pnode_t *p, pid_t pid)
 {
+	assert(found);
+	assert(p);
+
 	if (*found)
 		return;
 
@@ -394,9 +397,43 @@ procs_child_by_pid_recurcive(pnode_t **found, pnode_t *p, pid_t pid)
 pnode_t *
 procs_child_by_pid(procs_t *procs, pid_t pid)
 {
+	assert(procs);
+
 	pnode_t *found = NULL;
 
 	procs_child_by_pid_recurcive(&found, procs->root, pid);
+
+	return found;
+}
+
+void
+procs_child_by_name_recurcive(pnode_t **found, pnode_t *p, const char *name)
+{
+	assert(found);
+	assert(p);
+	assert(name);
+
+	if (*found)
+		return;
+
+	if (strcmp(p->name, name) == 0) {
+		*found = p;
+		return;
+	}
+
+	for (node_t *n = p->node.first; n != NULL; n = n->next)
+		procs_child_by_name_recurcive(found, (pnode_t *) n, name);
+}
+
+pnode_t *
+procs_child_by_name(procs_t *procs, const char *name)
+{
+	assert(procs);
+	assert(name);
+
+	pnode_t *found = NULL;
+
+	procs_child_by_name_recurcive(&found, procs->root, name);
 
 	return found;
 }

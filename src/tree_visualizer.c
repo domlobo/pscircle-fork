@@ -86,15 +86,13 @@ calc_rotation(visualizer_t *vis, procs_t *procs)
 		return;
 	}
 
-	if (config.tree.zero_pid != config.root_pid) {
-		pnode_t *zp = procs_child_by_pid(procs, config.tree.zero_pid);
-		if (!zp) {
-			fprintf(stderr, "PID %d (from --zero-angle-pid option) is not found\n",
-					config.tree.zero_pid);
-			exit(EXIT_FAILURE);
+	if (config.tree.anchor_proc_name) {
+		pnode_t *found = procs_child_by_name(procs, config.tree.anchor_proc_name);
+
+		if (found) {
+			vis->rotation = -vis->sector * found->node.x + config.tree.anchor_proc_angle;
+			return;
 		}
-		vis->rotation = -vis->sector * zp->node.x;
-		return;
 	}
 
 	assert(procs->root);

@@ -124,8 +124,12 @@ TEST(parse_cmdline, tree_rotation_angle) {
 	parse<real_t>("--tree-rotation-angle=13.4", config.tree.rotation, 13.4);
 }
 
-TEST(parse_cmdline, tree_zero_anlge_pid) {
-	parse<pid_t>("--tree-zero-anlge-pid=203", config.tree.zero_pid, 203);
+TEST(parse_cmdline, anchor_proc_name) {
+	parse("--tree-anchor-proc-name=aaxx", config.tree.anchor_proc_name, "aaxx");
+}
+
+TEST(parse_cmdline, anchor_proc_angle) {
+	parse<real_t>("--tree-anchor-proc-angle=0.145", config.tree.anchor_proc_angle, 0.145);
 }
 
 TEST(parse_cmdline, tree_font_size) {

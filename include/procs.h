@@ -27,3 +27,6 @@ procs_dinit(procs_t *procs);
 
 pnode_t *
 procs_child_by_pid(procs_t *procs, pid_t pid);
+
+pnode_t *
+procs_child_by_name(procs_t *procs, const char *name);

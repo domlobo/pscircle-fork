@@ -126,13 +126,10 @@ void
 print_help_and_exit(argparser_t *argparser)
 {
 	puts(
-		"pscircle -- Visualizes Linux processes in a radial tree\n"
+		"pscircle -- visualizes Linux processes in a radial tree\n"
 		"\n"
 		"Usage:\n"
 		"   pscircle [OPTION]...\n"
-		"\n"
-		"Example:\n"
-		"   ps -e -o pid,ppid,pcpu,rss,comm --no-headers | ./pscircle\n"
 		"\n"
 		"Options:\n"
 	);
@@ -155,7 +152,7 @@ print_help_and_exit(argparser_t *argparser)
 
 	puts(
 		"Author:\n"
-		"    Ruslan Kuchumov\n"
+		"    Ruslan Kuchumov, 2018\n"
 		"\n"
 		"For more info visit\n"
 		"    <https://gitlab.com/mildlyparallel/pscircle>\n"

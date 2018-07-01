@@ -14,9 +14,10 @@ typedef struct {
 
 	real_t radius_inc;
 	real_t sector;
-	bool rotate;
 	real_t rotation;
-	pid_t zero_pid;
+	bool rotate;
+	const char *anchor_proc_name;
+	real_t anchor_proc_angle;
 
 	point_t center;
 
