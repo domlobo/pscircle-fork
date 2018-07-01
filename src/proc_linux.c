@@ -16,10 +16,6 @@
 	exit(EXIT_FAILURE); \
 } while (0)
 
-typedef unsigned long ticks_t;
-typedef unsigned long long ctime_t;
-typedef unsigned long rss_t;
-
 typedef struct {
 	int pid;
 	int ppid;
@@ -308,7 +304,7 @@ read_uptime()
 
 	uint64_t uptime = 0;
 
-	fscanf(f, "%ld", &uptime);
+	fscanf(f, "%lu", &uptime);
 
 	fclose(f);
 

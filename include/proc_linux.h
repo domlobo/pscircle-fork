@@ -7,7 +7,7 @@
 typedef int pid_t;
 typedef unsigned long ticks_t;
 typedef unsigned long long ctime_t;
-typedef unsigned long rss_t;
+typedef long rss_t;
 
 typedef struct {
 	double r;
