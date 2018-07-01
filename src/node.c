@@ -265,7 +265,8 @@ void
 normilize(node_t *node, real_t minx, real_t maxx)
 {
 	node->x -= minx;
-	node->x /= maxx - minx;
+	if (minx != maxx)
+		node->x /= maxx - minx;
 
 	FOR_CHILDREN(node)
 		normilize(n, minx, maxx);
@@ -389,7 +390,7 @@ node_t *
 node_widest_child(node_t *node)
 {
 	real_t max = 0;
-	node_t *argmax = NULL;
+	node_t *argmax = node->first;
 
 	find_widest_rec(node, &max, &argmax, 1);
 	return argmax;

@@ -97,10 +97,11 @@ calc_rotation(visualizer_t *vis, procs_t *procs)
 
 	assert(procs->root);
 	node_t *w = node_widest_child((node_t *)procs->root);
-	assert(w);
 
-	assert(vis->sector > 0);
-	vis->rotation = -vis->sector * w->x;
+	if (w && (pnode_t *)w != procs->root) {
+		assert(vis->sector > 0);
+		vis->rotation = -vis->sector * w->x;
+	}
 }
 
 void

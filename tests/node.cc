@@ -58,6 +58,27 @@ TEST(node_nchildren, large_tree) {
 	EXPECT_EQ(node_nchildren(&c3), 3u);
 }
 
+TEST(arrange, in_line) {
+	node_t p = {};
+	node_t c1 = {};
+	node_t c2 = {};
+	node_t c3 = {};
+	node_t c4 = {};
+
+	node_add(&p, &c1);
+	node_add(&c1, &c2);
+	node_add(&c2, &c3);
+	node_add(&c3, &c4);
+
+	node_arrange(&p);
+
+	EXPECT_NEAR(p.x,  0., EPS);
+	EXPECT_NEAR(c1.x, 0., EPS);
+	EXPECT_NEAR(c2.x, 0., EPS);
+	EXPECT_NEAR(c3.x, 0., EPS);
+	EXPECT_NEAR(c4.x, 0., EPS);
+}
+
 TEST(arrange, one_level) {
 	node_t p = {};
 	node_t c1 = {};

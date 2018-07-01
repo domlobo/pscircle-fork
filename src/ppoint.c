@@ -3,19 +3,31 @@
 #include <assert.h>
 #include <math.h>
 #include <float.h>
+#include <stdio.h>
 
 #include "ppoint.h"
 
 bool ppoint_is_valid(ppoint_t p)
 {
-	if (p.r < 0)
-		return false;
-
-	if (p.r == 0)
-		return p.nx == 0 && p.ny == 0;
-
 	real_t d = R(sqrt)(p.nx*p.nx + p.ny*p.ny);
-	return R(fabs)(d - 1) < PSC_EPS;
+
+	if (p.r < -PSC_EPS)
+		goto invalid;
+
+	if (R(fabs)(p.r) < PSC_EPS) {
+		if (R(fabs)(p.nx) < PSC_EPS && R(fabs)(p.ny) < PSC_EPS)
+			return true;
+		else
+			goto invalid;
+	}
+
+	if (R(fabs)(d - 1) < PSC_EPS)
+		return true;
+
+invalid:
+	fprintf(stderr, "Invalid ppoint: nx:%lf ny:%lf r:%lf d:%lf e:%lf\n",
+			p.nx, p.ny, p.r, d, PSC_EPS);
+	return false;
 }
 
 ppoint_t
