@@ -7,7 +7,10 @@
 #include "color.h"
 
 #include <cairo.h>
+
+#ifdef HAVE_X11
 #include <cairo-xlib.h>
+#endif
 
 typedef struct {
 	cairo_t *_cr;
