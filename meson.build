@@ -57,7 +57,6 @@ endif
 
 test_flags = [
 	'-march=native',
-	'-mavx',
 	'-ffast-math'
 ]
 
