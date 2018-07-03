@@ -43,6 +43,12 @@ systemctl --user enable pscircle
 systemctl --user start pscircle
 ```
 
+## Archlinux
+
+A package is available on the aur as
+[pscircle-git](https://aur.archlinux.org/packages/pscircle-git/).
+
+
 ## Usage
 
 To view complete list of command line arguments run:
