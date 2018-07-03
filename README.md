@@ -1,9 +1,12 @@
 # pscircle 
+
 **pscircle** visualizes Linux processes in a form of radial tree.
 
 *by Ruslan Kuchumov, 2018*
 
 # Installation
+
+## Compiling from the source code
 
 Make sure you have [meson](http://mesonbuild.com/Getting-meson.html) and [ninja](https://ninja-build.org/) build systems installed.
 
@@ -24,6 +27,8 @@ pip3 install meson
 sudo apt-get install -y libpng-dev libcairo2-dev libx11-dev
 ```
 
+> In other distributions the process is similar, but the names of the packages may differ
+
 To compile and install *pscircle* call:
 
 ```bash
@@ -38,16 +43,18 @@ In case you want to compile without X11 support, call `meson configure -Denable-
 After installation and configuration you may want to create systemd service to regularly update desktop wallpaper:
 
 ```bash
+mkdir -p ~/.config/systemd/user/
 cp examples/pscircle.service ~/.config/systemd/user/
 systemctl --user enable pscircle
 systemctl --user start pscircle
 ```
 
-## Archlinux
+## Installing from repositories
 
-A package is available on the aur as
+### ArchLinux AUR
+
+A package is available on the AUR as
 [pscircle-git](https://aur.archlinux.org/packages/pscircle-git/).
-
 
 ## Usage
 
@@ -105,7 +112,11 @@ For more examples check [examples](examples/) directory.
 
 ## Using *pscircle* with desktop environments
 
-Some desktop environments (e.g. KDE or GNOME) do not display X11 root window as desktop wallpaper. You can still create image file (by using `--output=path.png`) and create a script that would set this image as wallpaper. If you succeed in this, you are welcome to create a contribution, or just send me these scripts directly.
+Some desktop environments (e.g. KDE or GNOME) do not display X11 root window as desktop wallpaper. You can still the image to the file (by using `--output=path.png`) and create a script that would set this image as wallpaper. 
+
+> Hint: you can place the image in `/tmp` directory which is often mapped to the main memory. It omits writing to the disk and improves performance.
+
+Also in GNOME, XFCE and, probably, some other DE wallpaper is updated automatically when the image is changed. So you can save the image to the file and set the path to this file in your system settings.
 
 ## Graph doesn't fit to my screen
 
@@ -148,6 +159,18 @@ Execution times of printing the image to PNG file:
 ```
 
 As you can see, drawing the tree to the file (on SSD disk) take almost 4 times longer that printing to X11 screen (0.11 vs 0.45 seconds of cputime). 
+
+## Multiple display environment
+
+As *pscircle* is not tested yet in multi-display environment to make it work correctly, I suggest trying the following options:
+
+* specify `--output-display=...` argument to print the image to the correct display, or
+* change `DISPLAY` environment variable before running the program, or
+* output image to the file using `--output=...` argument and then set it as the wallpaper using external command (e.g. `feh`).
+
+# Contributing
+
+You can suggest your desired features [here](https://gitlab.com/mildlyparallel/pscircle/issues/7) and vote for the features suggested by other users.
 
 # Asknowlegemnts
 
