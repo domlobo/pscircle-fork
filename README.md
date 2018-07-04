@@ -14,7 +14,7 @@ You will also need the following dependencies:
 
 *  libcairo
 *  libpng
-*  libx11 (optional; if disabled output to only PNG file will be supported)
+*  libx11 (optional; if disabled output only to PNG file will be supported)
 
 In Debian-based distributions you can install them from the repository:
 
@@ -56,6 +56,11 @@ systemctl --user start pscircle
 A package is available on the AUR as
 [pscircle-git](https://aur.archlinux.org/packages/pscircle-git/).
 
+### Gentoo ebuild
+
+Gentoo ebuild is available in [examples/pscircle-9999.ebuild](examples/pscircle-9999.ebuild) 
+(by [_ahrs](https://www.reddit.com/r/unixporn/comments/8v9r19/oc_ive_just_created_a_program_for_drawing_process/e1qmuie)).
+
 ## Usage
 
 To view complete list of command line arguments run:
@@ -73,6 +78,15 @@ Parameters related to visualization are described in the following diagram:
 By default image will be printed directly to X11 root window of the display specified in `--output-display=...`. But you can print image to PNG file by specifying `--output=pscircle.png` argument. (Check [#6 example](examples/06-output-to-image.sh))
 
 When you finish configuring command line arguments you can modify corresponding constants in [config.h.meson](config.h.meson) and recompile the application so that your configuration would be used by default.
+
+## Using *pscircle* with desktop environments
+
+GNOME, KDE, XFCE and, probably, some other DE do not display X11 root window as desktop wallpaper. But you can still save the image to the file (by using `--output=path.png`) and either:
+
+* Set the path to the image in wallpaper system config. DE is likely to update the wallpaper automatically, when the image has changed.
+* Create your own script for updating the wallpaper after *pscircle* is called. (I'd appreciate if you share it.)
+
+> Hint: you can place the image in `/tmp` directory which is often mapped to the main memory. It omits writing to the disk and improves performance.
 
 # Examples
 
@@ -109,14 +123,6 @@ For more examples check [examples](examples/) directory.
 [source](examples/04-bottom.sh) | [full size](docs/04-bottom.png)
 
 # Rationale 
-
-## Using *pscircle* with desktop environments
-
-Some desktop environments (e.g. KDE or GNOME) do not display X11 root window as desktop wallpaper. You can still the image to the file (by using `--output=path.png`) and create a script that would set this image as wallpaper. 
-
-> Hint: you can place the image in `/tmp` directory which is often mapped to the main memory. It omits writing to the disk and improves performance.
-
-Also in GNOME, XFCE and, probably, some other DE wallpaper is updated automatically when the image is changed. So you can save the image to the file and set the path to this file in your system settings.
 
 ## Graph doesn't fit to my screen
 
