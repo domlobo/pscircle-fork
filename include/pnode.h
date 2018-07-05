@@ -18,8 +18,6 @@ struct pnode_t {
 
 	real_t cputime;
 	
-	pnode_t *stub;
-	nnodes_t nstubs;
 	ppoint_t position;
 };
 

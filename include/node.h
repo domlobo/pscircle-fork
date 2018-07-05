@@ -5,6 +5,11 @@
 
 #include "types.h"
 
+#define FOR_CHILDREN(node) \
+	for (node_t *n = ((node_t *) node)->first; n != NULL; n = n->next)
+#define FOR_CHILDREN_REV(node) \
+	for (node_t *n = ((node_t *) node)->last; n != NULL; n = n->prev)
+
 typedef struct node_t node_t;
 
 struct node_t {
@@ -38,3 +43,6 @@ node_reorder_by_leaves(node_t *node);
 
 node_t *
 node_widest_child(node_t *node);
+
+void
+node_unlink(node_t *node);

@@ -8,11 +8,6 @@
 
 #include "node.h"
 
-#define FOR_CHILDREN(node) \
-	for (node_t *n = node->first; n != NULL; n = n->next)
-#define FOR_CHILDREN_REV(node) \
-	for (node_t *n = node->last; n != NULL; n = n->prev)
-
 node_t *
 right(node_t *node);
 
@@ -56,6 +51,10 @@ node_add(node_t *parent, node_t *child)
 	assert(child);
 
 	child->_parent = parent;
+	child->next = NULL;
+	child->prev = NULL;
+	child->first = NULL;
+	child->last = NULL;
 
 	if (parent->first == NULL) {
 		child->_id = 1;
@@ -396,3 +395,25 @@ node_widest_child(node_t *node)
 	return argmax;
 }
 
+void
+node_unlink(node_t *node)
+{
+	assert(node);
+
+	if (node->prev)
+		node->prev->next = node->next;
+
+	if (node->next)
+		node->next->prev = node->prev;
+
+	node_t *parent = node->_parent;
+	if (parent) {
+		if (parent->first == node)
+			parent->first = node->next;
+
+		if (parent->last == node)
+			parent->last = node->prev;
+
+		renumber(parent);
+	}
+}
