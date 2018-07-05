@@ -20,7 +20,7 @@ In Debian-based distributions you can install them from the repository:
 
 ```bash
 # Ninja and Meson build systems
-sudo apt-get install -y ninja-build python3-pip
+sudo apt-get install -y ninja-build python3-pip pkg-config
 pip3 install meson
 
 # Dependencies
