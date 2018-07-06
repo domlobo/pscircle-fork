@@ -81,6 +81,7 @@ typedef struct {
 	pid_t root_pid;
 	nnodes_t max_children;
 	memunit_t memory_unit;
+	bool collapse_threads;
 
 	size_t max_mem;
 	size_t min_mem;

@@ -429,3 +429,143 @@ TEST(node_widest_child, two_levels) {
 
 	EXPECT_EQ(node_widest_child(&p), &c2);
 }
+
+TEST(node_unlink, from_middle) {
+	node_t p = {};
+	node_t c1 = {};
+	node_t c2 = {};
+	node_t c3 = {};
+	node_t c4 = {};
+
+	node_add(&p, &c1);
+	node_add(&p, &c2);
+	node_add(&p, &c3);
+	node_add(&p, &c4);
+
+	node_unlink(&c2);
+
+	EXPECT_EQ(p.first, &c1);
+	EXPECT_EQ(p.last, &c4);
+	EXPECT_EQ(node_nchildren(&p), 3u);
+
+	EXPECT_EQ(c1.next, &c3);
+	EXPECT_EQ(c2.next, &c3);
+	EXPECT_EQ(c3.next, &c4);
+	EXPECT_EQ(c4.next, nullptr);
+
+	EXPECT_EQ(c1.prev, nullptr);
+	EXPECT_EQ(c2.prev, &c1);
+	EXPECT_EQ(c3.prev, &c1);
+	EXPECT_EQ(c4.prev, &c3);
+}
+
+TEST(node_unlink, from_frist) {
+	node_t p = {};
+	node_t c1 = {};
+	node_t c2 = {};
+	node_t c3 = {};
+	node_t c4 = {};
+
+	node_add(&p, &c1);
+	node_add(&p, &c2);
+	node_add(&p, &c3);
+	node_add(&p, &c4);
+
+	node_unlink(&c1);
+
+	EXPECT_EQ(p.first, &c2);
+	EXPECT_EQ(p.last, &c4);
+	EXPECT_EQ(node_nchildren(&p), 3u);
+
+	EXPECT_EQ(c1.next, &c2);
+	EXPECT_EQ(c2.next, &c3);
+	EXPECT_EQ(c3.next, &c4);
+	EXPECT_EQ(c4.next, nullptr);
+
+	EXPECT_EQ(c1.prev, nullptr);
+	EXPECT_EQ(c2.prev, nullptr);
+	EXPECT_EQ(c3.prev, &c2);
+	EXPECT_EQ(c4.prev, &c3);
+}
+
+TEST(node_unlink, from_last) {
+	node_t p = {};
+	node_t c1 = {};
+	node_t c2 = {};
+	node_t c3 = {};
+	node_t c4 = {};
+
+	node_add(&p, &c1);
+	node_add(&p, &c2);
+	node_add(&p, &c3);
+	node_add(&p, &c4);
+
+	node_unlink(&c4);
+
+	EXPECT_EQ(p.first, &c1);
+	EXPECT_EQ(p.last, &c3);
+	EXPECT_EQ(node_nchildren(&p), 3u);
+
+	EXPECT_EQ(c1.next, &c2);
+	EXPECT_EQ(c2.next, &c3);
+	EXPECT_EQ(c3.next, nullptr);
+	EXPECT_EQ(c4.next, nullptr);
+
+	EXPECT_EQ(c1.prev, nullptr);
+	EXPECT_EQ(c2.prev, &c1);
+	EXPECT_EQ(c3.prev, &c2);
+	EXPECT_EQ(c4.prev, &c3);
+}
+
+TEST(node_unlink, two_nodes) {
+	node_t p = {};
+	node_t c1 = {};
+	node_t c2 = {};
+
+	node_add(&p, &c1);
+	node_add(&p, &c2);
+
+	node_unlink(&c1);
+
+	EXPECT_EQ(p.first, &c2);
+	EXPECT_EQ(p.last, &c2);
+	EXPECT_EQ(node_nchildren(&p), 1u);
+
+	EXPECT_EQ(c1.next, &c2);
+	EXPECT_EQ(c1.prev, nullptr);
+
+	EXPECT_EQ(c2.next, nullptr);
+	EXPECT_EQ(c2.prev, nullptr);
+}
+
+TEST(node_unlink, single_node) {
+	node_t p = {};
+	node_t c1 = {};
+
+	node_add(&p, &c1);
+
+	node_unlink(&c1);
+
+	EXPECT_EQ(p.first, nullptr);
+	EXPECT_EQ(p.last, nullptr);
+	EXPECT_EQ(node_nchildren(&p), 0u);
+
+	EXPECT_EQ(c1.next, nullptr);
+	EXPECT_EQ(c1.prev, nullptr);
+}
+
+TEST(node_unlink, two_unlik_calls) {
+	node_t p = {};
+	node_t c1 = {};
+	node_t c2 = {};
+
+	node_add(&p, &c1);
+	node_add(&p, &c2);
+
+	node_unlink(&c1);
+	node_unlink(&c2);
+
+	EXPECT_EQ(p.first, nullptr);
+	EXPECT_EQ(p.last, nullptr);
+	EXPECT_EQ(node_nchildren(&p), 0u);
+}

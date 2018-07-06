@@ -4,6 +4,7 @@ set -e
 
 pscircle \
 	--root-pid=1 \
+	--collapse-threads=true \
 	--max-children=35 \
 	--tree-sector-angle=3.1415 \
 	--tree-rotate=true \

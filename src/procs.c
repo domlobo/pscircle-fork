@@ -26,6 +26,12 @@ read_procs_linux(procs_t *procs);
 void
 link_process(procs_t *procs);
 
+void
+create_stubs_rec(pnode_t *p);
+
+void
+collapse_threads_rec(pnode_t *p);
+
 pnode_t *
 get_new_process(procs_t *procs);
 
@@ -43,9 +49,6 @@ update_cpu_toplist(procs_t *procs, pnode_t *p);
 
 void
 sort_top_lists(procs_t *procs);
-
-void
-add_stubs(procs_t *procs);
 
 pnode_t *
 find_by_pid(procs_t *procs, pid_t pid);
@@ -72,6 +75,11 @@ procs_init(procs_t *procs, FILE *fp)
 		read_procs_linux(procs);
 
 	link_process(procs);
+
+	if (config.collapse_threads)
+		collapse_threads_rec(procs->root);
+
+	create_stubs_rec(procs->root);
 
 	sort_top_lists(procs);
 }
@@ -227,14 +235,101 @@ link_process(procs_t *procs)
 		if (!parent)
 			continue;
 
-		if (node_nchildren(&parent->node) < config.max_children) {
-			node_add((node_t *)parent, (node_t *)p);
-		} else {
-			count_as_stub(parent, p);
-		}
+		node_add((node_t *)parent, (node_t *)p);
+	}
+}
+
+void
+create_stubs_rec(pnode_t *p)
+{
+	assert(p);
+
+	FOR_CHILDREN(p)
+		create_stubs_rec((pnode_t *) n);
+
+	nnodes_t nchildren = node_nchildren((node_t *)p);
+
+	/* +1 as replacing a single node with <1 omitted> is pointless */
+	if (nchildren <= config.max_children + 1)
+		return;
+
+	pnode_t *stub = NULL;
+	nnodes_t left = nchildren - config.max_children;
+	bool firstpass = true;
+
+secondpass:
+	FOR_CHILDREN_REV(p) {
+		if (left == 0)
+			break;
+		if (firstpass && node_nchildren(n) > 0)
+			continue;
+		if (!firstpass && node_nchildren(n) == 0)
+			continue;
+
+		pnode_t *pn = (pnode_t *) n;
+
+		if (!stub)
+			stub = pn;
+
+		if (pn->mem > stub->mem)
+			stub->mem = pn->mem;
+		if (pn->cpu > stub->cpu)
+			stub->cpu = pn->cpu;
+
+		node_unlink(n);
+
+		left--;
 	}
 
-	add_stubs(procs);
+	if (firstpass) {
+		firstpass = false;
+		goto secondpass;
+	}
+
+	snprintf(stub->name, PSC_MAX_NAME_LENGHT, "<%zd omitted>",
+			nchildren - config.max_children);
+
+	node_add((node_t *)p, (node_t *)stub);
+}
+
+void
+collapse_threads_rec(pnode_t *p)
+{
+	assert(p);
+
+	FOR_CHILDREN(p)
+		collapse_threads_rec((pnode_t *) n);
+
+	char buf[PSC_MAX_NAME_LENGHT + 1] = {0};
+
+	FOR_CHILDREN(p) {
+		pnode_t *pn = (pnode_t *) n;
+		nnodes_t count = 1;
+
+		for (node_t *m = n->next; m != NULL; m = m->next) {
+			if (node_nchildren(m) != 0)
+				continue;
+
+			pnode_t *pm = (pnode_t *) m;
+
+			if (strcmp(pn->name, pm->name) != 0)
+				continue;
+
+			if (pm->mem > pn->mem)
+				pn->mem = pm->mem;
+			if (pm->cpu > pn->cpu)
+				pn->cpu = pm->cpu;
+
+			count++;
+			node_unlink(m);
+		}
+
+		if (count == 1)
+			continue;
+
+		snprintf(buf, PSC_MAX_NAME_LENGHT, "%zd * %s", count, pn->name);
+		strncpy(pn->name, buf, PSC_MAX_NAME_LENGHT);
+	}
 }
 
 void
@@ -243,29 +338,6 @@ reserve_root_memory(procs_t *procs)
 	pnode_t *r = get_new_process(procs);
 	assert(r);
 	r->pid = -1;
-}
-
-void
-count_as_stub(pnode_t *parent, pnode_t *p)
-{
-	assert(parent);
-	assert(p);
-
-	if (!parent->stub) {
-		assert(parent->nstubs == 0);
-		parent->stub = p;
-		parent->nstubs = 1;
-		return;
-	}
-
-	assert(parent->nstubs > 0);
-
-	if (p->mem > parent->stub->mem)
-		parent->stub->mem = p->mem;
-	if (p->cpu > parent->stub->cpu)
-		parent->stub->cpu = p->cpu;
-
-	parent->nstubs++;
 }
 
 void
@@ -358,22 +430,6 @@ sort_top_lists(procs_t *procs)
 
 	qsort(procs->mem_toplist, PSC_TOPLIST_MAX_ROWS,
 			sizeof(pnode_t *), mem_comp);
-}
-
-void
-add_stubs(procs_t *procs)
-{
-	for (size_t i = 0; i < procs->nprocesses; ++i) {
-		pnode_t *p = procs->processes + i;
-		if (!p->stub)
-			continue;
-		assert(p->nstubs > 0);
-
-		snprintf(p->stub->name, PSC_MAX_NAME_LENGHT,
-				"<%zd omitted>", p->nstubs);
-
-		node_add((node_t *)p, (node_t *)p->stub);
-	}
 }
 
 void
