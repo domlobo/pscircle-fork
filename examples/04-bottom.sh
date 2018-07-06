@@ -15,6 +15,7 @@ pscircle \
 	--toplists-bar-color=ddbf54 \
 	--max-children=35 \
 	--root-pid=1 \
+	--collapse-threads=true \
 	--tree-sector-angle=3.9269 \
 	--tree-center=0:350 \
 	--tree-rotate=true \
