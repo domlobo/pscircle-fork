@@ -61,7 +61,9 @@ cflags = [
 
 test_flags = [
 	'-march=native',
-	'-ffast-math'
+	'-ffast-math',
+	'-Wno-missing-field-initializers',
+	'-Wno-missing-braces'
 ]
 
 foreach flag : test_flags

@@ -78,7 +78,7 @@ typedef struct {
 	size_t output_width;
 	size_t output_height;
 
-	pid_t root_pid;
+	int root_pid;
 	nnodes_t max_children;
 	memunit_t memory_unit;
 	bool collapse_threads;

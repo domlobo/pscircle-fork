@@ -338,7 +338,7 @@ parser_memory(const char *value, void *output)
 	if (*e == '\0')
 		return true;
 
-	const static char units[] = {
+	static const char units[] = {
 		'B', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'
 	};
 
@@ -360,7 +360,7 @@ parser_memory_unit(const char *value, void *output)
 
 	memunit_t *out = (memunit_t *) output;
 
-	const static char units[] = {
+	static const char units[] = {
 		'B', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'
 	};
 
