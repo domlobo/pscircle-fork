@@ -25,6 +25,7 @@ cfg_t config = {
 	.memory_unit      = PSC_MEMORY_UNIT,
 	.root_pid         = PSC_ROOT_PID,
 	.max_children     = PSC_MAX_CHILDREN,
+	.collapse_threads = PSC_COLLAPSE_THREADS,
 	.background       = PSC_BACKGROUND_COLOR,
 	.background_image = PSC_BACKGROUND_IMAGE,
 
@@ -43,7 +44,7 @@ cfg_t config = {
 		.rotation   = PSC_TREE_ROTATION,
 		.center     = PSC_TREE_CENTER,
 		.anchor_proc_name  = PSC_ANCHOR_PROC_NAME,
-		.anchor_proc_angle = PSC_ANCHOR_PROC_ANGLE
+		.anchor_proc_angle = PSC_ANCHOR_PROC_ANGLE,
 	},
 
 	.dot = {
@@ -140,6 +141,9 @@ parse_cmdline(int argc, char const * argv[])
 		"PID of the root process");
 	ARGQ(&argp, "--max-children", config.max_children, parser_long, PSC_MAX_CHILDREN,
 		"Maximum number of child proceceses.");
+	ARGQ(&argp, "--collapse-threads", config.collapse_threads, parser_bool, PSC_COLLAPSE_THREADS,
+		"If set, processes children with the name and without their own children will be collpsed into "
+		"a single proccess");
 
 	ARGQ(&argp, "--memory-unit", config.memory_unit, parser_memory_unit, PSC_MEMORY_UNIT,
 		"Unit of memeory (B, K, M, G, T) used in RSS memory column");

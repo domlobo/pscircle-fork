@@ -29,6 +29,9 @@ link_process(procs_t *procs);
 void
 create_stubs_rec(pnode_t *p);
 
+void
+collapse_threads_rec(pnode_t *p);
+
 pnode_t *
 get_new_process(procs_t *procs);
 
@@ -72,6 +75,9 @@ procs_init(procs_t *procs, FILE *fp)
 		read_procs_linux(procs);
 
 	link_process(procs);
+
+	if (config.collapse_threads)
+		collapse_threads_rec(procs->root);
 
 	create_stubs_rec(procs->root);
 
@@ -284,6 +290,46 @@ secondpass:
 			nchildren - config.max_children);
 
 	node_add((node_t *)p, (node_t *)stub);
+}
+
+void
+collapse_threads_rec(pnode_t *p)
+{
+	assert(p);
+
+	FOR_CHILDREN(p)
+		collapse_threads_rec((pnode_t *) n);
+
+	char buf[PSC_MAX_NAME_LENGHT + 1] = {0};
+
+	FOR_CHILDREN(p) {
+		pnode_t *pn = (pnode_t *) n;
+		nnodes_t count = 1;
+
+		for (node_t *m = n->next; m != NULL; m = m->next) {
+			if (node_nchildren(m) != 0)
+				continue;
+
+			pnode_t *pm = (pnode_t *) m;
+
+			if (strcmp(pn->name, pm->name) != 0)
+				continue;
+
+			if (pm->mem > pn->mem)
+				pn->mem = pm->mem;
+			if (pm->cpu > pn->cpu)
+				pn->cpu = pm->cpu;
+
+			count++;
+			node_unlink(m);
+		}
+
+		if (count == 1)
+			continue;
+
+		snprintf(buf, PSC_MAX_NAME_LENGHT, "%zd * %s", count, pn->name);
+		strncpy(pn->name, buf, PSC_MAX_NAME_LENGHT);
+	}
 }
 
 void

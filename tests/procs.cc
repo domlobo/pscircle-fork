@@ -292,6 +292,68 @@ TEST_F(procs_test, cpu_toplist__toplist_smaller_than_max_rows) {
 	}
 }
 
+TEST_F(procs_test, collapse__same_proccesses) {
+	config.collapse_threads = true;
+
+	create(
+"1     0  1.0  1 p1\n"
+"2     1  4.0  4 p2\n"
+"3     1  3.0  3 p2\n"
+"4     1  5.0  9 p3\n"
+"5     1  8.0  3 p2\n"
+	);
+
+	ASSERT_NE(procs, nullptr);
+	auto r = procs->root;
+	ASSERT_NE(r, nullptr);
+	auto p1 = (pnode_t *)r->node.first;
+	ASSERT_NE(p1, nullptr);
+	auto p2 = (pnode_t *)p1->node.first;
+	ASSERT_NE(p2, nullptr);
+	auto p3 = (pnode_t *)p2->node.next;
+	ASSERT_NE(p3, nullptr);
+	auto p4 = (pnode_t *)p3->node.next;
+	EXPECT_EQ(p4, nullptr);
+
+	EXPECT_STREQ(p1->name, "p1");
+	EXPECT_STREQ(p2->name, "3 * p2");
+	EXPECT_STREQ(p3->name, "p3");
+	EXPECT_EQ(p2->mem, 4u*1024);
+	EXPECT_NEAR(p2->cpu, 8, EPS);
+}
+
+TEST_F(procs_test, collapse__process_with_child) {
+	config.collapse_threads = true;
+
+	create(
+"1     0  1.0  1 p1\n"
+"2     1  4.0  4 p2\n"
+"3     1  3.0  3 p2\n"
+"4     1  5.0  9 p3\n"
+"5     1  8.0  3 p2\n"
+"6     3  3.0  3 p6\n"
+	);
+
+	ASSERT_NE(procs, nullptr);
+	auto r = procs->root;
+	ASSERT_NE(r, nullptr);
+	auto p1 = (pnode_t *)r->node.first;
+	ASSERT_NE(p1, nullptr);
+	auto p2 = (pnode_t *)p1->node.first;
+	ASSERT_NE(p2, nullptr);
+	auto p3 = (pnode_t *)p2->node.next;
+	ASSERT_NE(p3, nullptr);
+	auto p31 = (pnode_t *)p3->node.first;
+	ASSERT_NE(p31, nullptr);
+	auto p4 = (pnode_t *)p3->node.next;
+	EXPECT_NE(p4, nullptr);
+
+	EXPECT_STREQ(p1->name, "p1");
+	EXPECT_STREQ(p2->name, "2 * p2");
+	EXPECT_STREQ(p3->name, "p2");
+	EXPECT_STREQ(p31->name, "p6");
+	EXPECT_STREQ(p4->name, "p3");
+}
 
 TEST_F(procs_test, stubs__cpu_and_mem_are_max) {
 	config.max_children = 2;

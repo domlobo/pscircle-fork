@@ -76,6 +76,10 @@ TEST(parse_cmdline, max_children) {
 	parse<nnodes_t>("--max-children=22", config.max_children, 22);
 }
 
+TEST(parse_cmdline, collapse_threads) {
+	parse<bool>("--collapse-threads=true", config.collapse_threads, true);
+}
+
 TEST(parse_cmdline, memory_unit) {
 	parse<memunit_t>("--memory-unit=M", config.memory_unit, 2);
 }
