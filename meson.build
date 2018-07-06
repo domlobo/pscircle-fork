@@ -7,7 +7,7 @@ project(
 )
 
 config = configuration_data()
-config.set('version', '1.0.3')
+config.set('version', '1.1.0')
 config.set('NDEBUG', not get_option('buildtype').startswith('debug'))
 
 psc_main = [
@@ -55,12 +55,14 @@ else
 	config.set('HAVE_X11', false)
 endif
 
+cflags = [
+	'-D_GNU_SOURCE=1'
+]
+
 test_flags = [
 	'-march=native',
 	'-ffast-math'
 ]
-
-cflags = []
 
 foreach flag : test_flags
 	if cc.has_argument(flag)

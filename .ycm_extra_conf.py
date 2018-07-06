@@ -10,6 +10,7 @@ flags = [
     '-I', 'include',
     '-I', 'build',
     '-I', '/usr/include/cairo',
+    '-D_GNU_SOURCE=1',
 ]
 
 SOURCE_EXTENSIONS = [ '.c', ]
