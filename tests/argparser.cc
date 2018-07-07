@@ -53,6 +53,14 @@ TEST_F(args_test, help_screen_short) {
 	EXPECT_EXIT(parse({"-h"}), ExitedWithCode(0), ".*");
 }
 
+TEST_F(args_test, version_long) {
+	EXPECT_EXIT(parse({"--version"}), ExitedWithCode(0), ".*");
+}
+
+TEST_F(args_test, version_short) {
+	EXPECT_EXIT(parse({"-V"}), ExitedWithCode(0), ".*");
+}
+
 TEST_F(args_test, a_few_args) {
 	long arg1;
 	point_t arg2;

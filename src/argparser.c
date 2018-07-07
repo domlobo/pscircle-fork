@@ -13,6 +13,9 @@ void
 print_help_and_exit(argparser_t *argparser);
 
 void
+print_version_and_exit();
+
+void
 print_unknown_and_exit(const char *arg);
 
 void
@@ -56,6 +59,9 @@ argparser_parse(argparser_t *argparser, int argc, char const * argv[])
 		const char *a = argv[i];
 		if (strcmp(a, "-h") == 0 || strcmp(a, "--help") == 0)
 			print_help_and_exit(argparser);
+
+		if (strcmp(a, "-V") == 0 || strcmp(a, "--version") == 0)
+			print_version_and_exit();
 
 		char *eq = strchr(a, '=');
 		if (!eq || eq == a)
@@ -158,6 +164,13 @@ print_help_and_exit(argparser_t *argparser)
 		"    <https://gitlab.com/mildlyparallel/pscircle>\n"
 	);
 
+	exit(EXIT_SUCCESS);
+}
+
+void
+print_version_and_exit()
+{
+	puts("pscircle version " VERSION_STR);
 	exit(EXIT_SUCCESS);
 }
 
