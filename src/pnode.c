@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <string.h>
 
 #include "pnode.h"
 #include "cfg.h"
@@ -32,3 +33,11 @@ pnode_cpu_percentage(pnode_t *pnode)
 	return (m - config.min_cpu) / (config.max_cpu - config.min_cpu);
 }
 
+bool
+pnode_is_null(pnode_t *pnode)
+{
+	assert(pnode);
+
+	static const uint8_t zeros[sizeof(pnode_t)] = {0};
+	return memcmp(zeros, pnode, sizeof(pnode_t)) == 0;
+}
