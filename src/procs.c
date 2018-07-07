@@ -42,10 +42,10 @@ void
 count_as_stub(pnode_t *parent, pnode_t *child);
 
 void
-update_mem_toplist(procs_t *procs, pnode_t *p);
+update_memlist(procs_t *procs, pnode_t *p);
 
 void
-update_cpu_toplist(procs_t *procs, pnode_t *p);
+update_cpulist(procs_t *procs, pnode_t *p);
 
 void
 sort_top_lists(procs_t *procs);
@@ -62,8 +62,7 @@ procs_init(procs_t *procs, FILE *fp)
 	assert(procs);
 
 #ifndef NDEBUG
-	uint8_t zeros[sizeof(procs_t)];
-	memset(zeros, 0, sizeof(zeros));
+	uint8_t zeros[sizeof(procs_t)] = {0};
 	assert(memcmp(zeros, procs, sizeof(procs_t)) == 0);
 #endif
 
@@ -224,9 +223,9 @@ link_process(procs_t *procs)
 	for (size_t i = 1; i < procs->nprocesses; ++i) {
 		pnode_t *p = procs->processes + i;
 
-		update_cpu_toplist(procs, p);
+		update_cpulist(procs, p);
 
-		update_mem_toplist(procs, p);
+		update_memlist(procs, p);
 
 		if (p == procs->root)
 			continue;
@@ -341,60 +340,63 @@ reserve_root_memory(procs_t *procs)
 }
 
 void
-update_cpu_toplist(procs_t *procs, pnode_t *p)
+update_cpulist(procs_t *procs, pnode_t *p)
 {
 	assert(procs);
 	assert(p);
 
-	pnode_t **found = NULL;
+	pnode_t *found = NULL;
 
 	for (size_t i = 0; i < PSC_TOPLIST_MAX_ROWS; ++i) {
-		pnode_t **pp = &(procs->cpu_toplist[i]);
-		if (*pp == NULL) {
+		pnode_t *pp = procs->cpulist + i;
+		if (pnode_is_null(pp)) {
 			found = pp;
 			break;
 		}
 
-		if ((*pp)->cpu < p->cpu)
+		if (pp->cpu < p->cpu)
 			found = pp;
 	}
 
 	if (found)
-		*found = p;
+		*found = *p;
 }
 
 void
-update_mem_toplist(procs_t *procs, pnode_t *p)
+update_memlist(procs_t *procs, pnode_t *p)
 {
 	assert(procs);
 	assert(p);
 
-	pnode_t **found = NULL;
+	pnode_t *found = NULL;
 
 	for (size_t i = 0; i < PSC_TOPLIST_MAX_ROWS; ++i) {
-		pnode_t **pp = &(procs->mem_toplist[i]);
-		if (*pp == NULL) {
+		pnode_t *pp = procs->memlist + i;
+		if (pnode_is_null(pp)) {
 			found = pp;
 			break;
 		}
 
-		if ((*pp)->mem < p->mem)
+		if (pp->mem < p->mem)
 			found = pp;
 	}
 
 	if (found)
-		*found = p;
+		*found = *p;
 }
 
 int cpu_comp(const void *a, const void *b) {
-	const pnode_t *pa = *(const pnode_t **) a;
-	const pnode_t *pb = *(const pnode_t **) b;
+	pnode_t *pa = (pnode_t *) a;
+	pnode_t *pb = (pnode_t *) b;
 
-	if (!pa && !pb)
+	bool na = pnode_is_null(pa);
+	bool nb = pnode_is_null(pb);
+
+	if (na && nb)
 		return 0;
-	if (!pa && pb)
+	if (na && !nb)
 		return 1;
-	if (pa && !pb)
+	if (!na && nb)
 		return -1;
 
 	if (pa->cpu < pb->cpu)
@@ -404,14 +406,17 @@ int cpu_comp(const void *a, const void *b) {
 }
 
 int mem_comp(const void *a, const void *b) {
-	const pnode_t *pa = *(const pnode_t **) a;
-	const pnode_t *pb = *(const pnode_t **) b;
+	pnode_t *pa = (pnode_t *) a;
+	pnode_t *pb = (pnode_t *) b;
 
-	if (!pa && !pb)
+	bool na = pnode_is_null(pa);
+	bool nb = pnode_is_null(pb);
+
+	if (na && nb)
 		return 0;
-	if (!pa && pb)
+	if (na && !nb)
 		return 1;
-	if (pa && !pb)
+	if (!na && nb)
 		return -1;
 
 	if (pa->mem < pb->mem)
@@ -425,11 +430,11 @@ sort_top_lists(procs_t *procs)
 {
 	assert(procs);
 
-	qsort(procs->cpu_toplist, PSC_TOPLIST_MAX_ROWS,
-			sizeof(pnode_t *), cpu_comp);
+	qsort(procs->cpulist, PSC_TOPLIST_MAX_ROWS,
+			sizeof(pnode_t), cpu_comp);
 
-	qsort(procs->mem_toplist, PSC_TOPLIST_MAX_ROWS,
-			sizeof(pnode_t *), mem_comp);
+	qsort(procs->memlist, PSC_TOPLIST_MAX_ROWS,
+			sizeof(pnode_t), mem_comp);
 }
 
 void

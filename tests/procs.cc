@@ -214,26 +214,26 @@ TEST_F(procs_test, links__too_much_processes__array_resized) {
 	EXPECT_STREQ(pl->name, last.c_str());
 }
 
-TEST_F(procs_test, mem_toplist__empty_rows) {
+TEST_F(procs_test, memlist__empty_rows) {
 	create(
 "1     0  1.0  1 p1\n"
 "2     1  4.0  4 p2\n"
 "3     1  3.0  3 p3\n"
 	);
 
-	auto l = procs->mem_toplist;
+	auto l = procs->memlist;
 	size_t i = 0;
 	for (auto &name : {"p2", "p3", "p1"}) {
-		ASSERT_NE(l[i],  nullptr);
-		EXPECT_STREQ(l[i]->name, name);
+		ASSERT_FALSE(pnode_is_null(l + i));
+		EXPECT_STREQ(l[i].name, name);
 		i++;
 	}
 
 	for (size_t i = 4; i < PSC_TOPLIST_MAX_ROWS; ++i)
-		ASSERT_EQ(l[i],  nullptr);
+		ASSERT_TRUE(pnode_is_null(l + i));
 }
 
-TEST_F(procs_test, mem_toplist__toplist_smaller_than_max_rows) {
+TEST_F(procs_test, memlist__toplist_smaller_than_max_rows) {
 	create(
 "1     0  1.0  10 p1\n"
 "2     1  4.0  40 p2\n"
@@ -244,11 +244,11 @@ TEST_F(procs_test, mem_toplist__toplist_smaller_than_max_rows) {
 "7     4  2.2  22 p7\n"
 	);
 
-	auto l = procs->mem_toplist;
+	auto l = procs->memlist;
 	size_t i = 0;
 	for (auto &name : {"p2", "p5"}) {
-		ASSERT_NE(l[i],  nullptr);
-		EXPECT_STREQ(l[i]->name, name);
+		ASSERT_FALSE(pnode_is_null(l + i));
+		EXPECT_STREQ(l[i].name, name);
 		i++;
 	}
 }
@@ -260,16 +260,16 @@ TEST_F(procs_test, cpu_toplist__empty_rows) {
 "3     1  3.0  3 p3\n"
 	);
 
-	auto l = procs->cpu_toplist;
+	auto l = procs->cpulist;
 	size_t i = 0;
 	for (auto &name : {"p2", "p3", "p1"}) {
-		ASSERT_NE(l[i],  nullptr);
-		EXPECT_STREQ(l[i]->name, name);
+		ASSERT_FALSE(pnode_is_null(l + i));
+		EXPECT_STREQ(l[i].name, name);
 		i++;
 	}
 
 	for (size_t i = 4; i < PSC_TOPLIST_MAX_ROWS; ++i)
-		ASSERT_EQ(l[i],  nullptr);
+		ASSERT_TRUE(pnode_is_null(l + i));
 }
 
 TEST_F(procs_test, cpu_toplist__toplist_smaller_than_max_rows) {
@@ -283,11 +283,11 @@ TEST_F(procs_test, cpu_toplist__toplist_smaller_than_max_rows) {
 "7     4  2.2  22 p7\n"
 	);
 
-	auto l = procs->cpu_toplist;
+	auto l = procs->cpulist;
 	size_t i = 0;
 	for (auto &name : {"p2", "p5"}) {
-		ASSERT_NE(l[i],  nullptr);
-		EXPECT_STREQ(l[i]->name, name);
+		ASSERT_FALSE(pnode_is_null(l + i));
+		EXPECT_STREQ(l[i].name, name);
 		i++;
 	}
 }
@@ -506,6 +506,34 @@ TEST_F(procs_test, stubs__single_proc_is_not_omited) {
 	EXPECT_STREQ(p2->name, "p2");
 	EXPECT_STREQ(p3->name, "p3");
 	EXPECT_STREQ(p4->name, "p4");
+}
+
+TEST_F(procs_test, collapse_stubs__lists_are_not_affected) {
+	config.max_children = 1;
+	config.collapse_threads = true;
+
+	create(
+"1     0  1.0  1 p1\n"
+"2     1  4.0  4 p2\n"
+"3     1  3.0  3 p3\n"
+"4     1  5.0  9 p4\n"
+"5     1  8.0  5 p4\n"
+	);
+
+	size_t i = 0;
+	for (auto &name : {"p4", "p4", "p2", "p3", "p1"}) {
+		ASSERT_FALSE(pnode_is_null(procs->cpulist + i));
+		EXPECT_STREQ(procs->cpulist[i].name, name);
+		i++;
+	}
+
+	i = 0;
+	for (auto &name : {"p4", "p4", "p2", "p3", "p1"}) {
+		ASSERT_FALSE(pnode_is_null(procs->memlist + i));
+		EXPECT_STREQ(procs->memlist[i].name, name);
+		i++;
+	}
+
 }
 
 TEST_F(procs_test, find_by_name__existing_processes) {

@@ -15,8 +15,8 @@ typedef struct {
 	size_t nprocesses;
 	pnode_t processes[PSC_MAX_PROCS_COUNT];
 
-	pnode_t *cpu_toplist[PSC_TOPLIST_MAX_ROWS];
-	pnode_t *mem_toplist[PSC_TOPLIST_MAX_ROWS];
+	pnode_t cpulist[PSC_TOPLIST_MAX_ROWS];
+	pnode_t memlist[PSC_TOPLIST_MAX_ROWS];
 } procs_t;
 
 void

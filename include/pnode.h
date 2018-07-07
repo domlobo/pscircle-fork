@@ -26,3 +26,6 @@ pnode_mem_percentage(pnode_t *pnode);
 
 real_t
 pnode_cpu_percentage(pnode_t *pnode);
+
+bool
+pnode_is_null(pnode_t *pnode);

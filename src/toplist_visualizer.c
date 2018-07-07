@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ppoint.h>
+#include <string.h>
 
 #include "cfg.h"
 #include "node.h"
@@ -16,10 +17,10 @@ typedef struct {
 } visualizer_t ;
 
 real_t
-calc_max_pid_width(painter_t *painter, pnode_t **list);
+calc_max_pid_width(painter_t *painter, pnode_t *list);
 
 void
-draw_toplist(visualizer_t *vis, toplist_t *cfg, pnode_t **list, point_t pos);
+draw_toplist(visualizer_t *vis, toplist_t *cfg, pnode_t *list, point_t pos);
 
 void
 draw_toplists_header(visualizer_t *vis, toplist_t *cfg, point_t pos);
@@ -65,19 +66,23 @@ draw_toplists(painter_t *painter, procs_t *procs)
 		.y = config.toplists.cpulist.center.y + rh/2 - h/2
 	};
 
-	draw_toplist(&vis, &config.toplists.cpulist, procs->cpu_toplist, pos_cpu);
+	draw_toplist(&vis, &config.toplists.cpulist, procs->cpulist, pos_cpu);
 
 	point_t pos_mem = {
 		.x = config.toplists.memlist.center.x,
 		.y = config.toplists.memlist.center.y + rh/2 - h/2,
 	};
 
-	draw_toplist(&vis, &config.toplists.memlist, procs->mem_toplist, pos_mem);
+	draw_toplist(&vis, &config.toplists.memlist, procs->memlist, pos_mem);
 }
 
 void
-draw_toplist(visualizer_t *vis, toplist_t *cfg, pnode_t **list, point_t pos)
+draw_toplist(visualizer_t *vis, toplist_t *cfg, pnode_t *list, point_t pos)
 {
+	assert(vis);
+	assert(cfg);
+	assert(list);
+
 	if (!cfg->show)
 		return;
 
@@ -90,10 +95,10 @@ draw_toplist(visualizer_t *vis, toplist_t *cfg, pnode_t **list, point_t pos)
 	real_t pid_width = calc_max_pid_width(vis->painter, list);
 
 	for (size_t i = 0; i < PSC_TOPLIST_MAX_ROWS; ++i) {
-		if (!list[i])
+		if (pnode_is_null(list + i))
 			break;
 
-		draw_toplists_row(vis, cfg, list[i], pos, pid_width);
+		draw_toplists_row(vis, cfg, list + i, pos, pid_width);
 
 		pos.y += config.toplists.row_height;
 	}
@@ -138,6 +143,11 @@ cpu_string(real_t n)
 void
 draw_toplists_row(visualizer_t *vis, toplist_t *cfg, pnode_t *node, point_t pos, real_t pid_width) 
 {
+	assert(vis);
+	assert(cfg);
+	assert(node);
+	assert(!pnode_is_null(node));
+
 	static char value[PSC_LABEL_BUFSIZE] = {0};
 	double m = node->mem;
 	const char *u;
@@ -170,6 +180,10 @@ draw_toplists_row(visualizer_t *vis, toplist_t *cfg, pnode_t *node, point_t pos,
 void
 draw_pdot(visualizer_t *vis, pnode_t *node, point_t pos)
 {
+	assert(vis);
+	assert(node);
+	assert(!pnode_is_null(node));
+
 	real_t mem = pnode_mem_percentage(node);
 	real_t cpu = pnode_cpu_percentage(node);
 
@@ -202,6 +216,8 @@ draw_pdot(visualizer_t *vis, pnode_t *node, point_t pos)
 void
 draw_pid(visualizer_t *vis, pid_t pid, point_t pos)
 {
+	assert(vis);
+
 	static char buf[PSC_LABEL_BUFSIZE] = {0};
 	snprintf(buf, PSC_LABEL_BUFSIZE, "%d", pid);
 
@@ -218,6 +234,9 @@ draw_pid(visualizer_t *vis, pid_t pid, point_t pos)
 void
 draw_text(visualizer_t *vis, const char *text, point_t pos)
 {
+	assert(vis);
+	assert(text);
+
 	text_t t = {
 		.refpoint = pos,
 		.angle    = 0,
@@ -264,16 +283,16 @@ draw_bar(visualizer_t *vis, real_t value, point_t pos)
 }
 
 real_t
-calc_max_pid_width(painter_t *painter, pnode_t **list)
+calc_max_pid_width(painter_t *painter, pnode_t *list)
 {
 	assert(painter);
 	assert(list);
 
 	real_t max_width = 0;
 	for (size_t i = 0; i < PSC_TOPLIST_MAX_ROWS; ++i) {
-		if (!list[i])
+		if (pnode_is_null(list + i))
 			break;
-		point_t dim = painter_text_int_size(painter, list[i]->pid);
+		point_t dim = painter_text_int_size(painter, list[i].pid);
 		if (dim.x > max_width)
 			max_width = dim.x;
 	}
