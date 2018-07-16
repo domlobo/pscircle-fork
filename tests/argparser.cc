@@ -326,3 +326,70 @@ TEST(parse_bool, valid_0) {
 	EXPECT_TRUE(parser_bool("0", &val));
 	EXPECT_FALSE(val);
 }
+
+TEST(parser_list_real, single_item) {
+	real_t items[5] = {0};
+
+	EXPECT_TRUE(parser_list_real("0.3", &items));
+	EXPECT_NEAR(items[0], 0.3, EPS);
+	EXPECT_EQ(items[1], 0);
+}
+
+TEST(parser_list_real, two_items) {
+	real_t items[PSC_ARGLIST_LENGHT] = {0};
+
+	EXPECT_TRUE(parser_list_real("0.3,0.4", &items));
+	EXPECT_NEAR(items[0], 0.3, EPS);
+	EXPECT_NEAR(items[1], 0.4, EPS);
+	EXPECT_EQ(items[2], 0);
+}
+
+TEST(parser_list_real, parse_error) {
+	real_t items[PSC_ARGLIST_LENGHT] = {0};
+
+	EXPECT_FALSE(parser_list_real("0.3,0a.4,0.6", &items));
+}
+
+TEST(parser_list_real, redundant_commas_at_start) {
+	real_t items[PSC_ARGLIST_LENGHT] = {0};
+
+	EXPECT_TRUE(parser_list_real(",,,0.3,0.4", &items));
+	EXPECT_NEAR(items[0], 0.3, EPS);
+	EXPECT_NEAR(items[1], 0.4, EPS);
+	EXPECT_EQ(items[2], 0);
+}
+
+TEST(parser_list_real, redundant_commas_in_middle) {
+	real_t items[PSC_ARGLIST_LENGHT] = {0};
+
+	EXPECT_TRUE(parser_list_real("0.3,,,,0.4", &items));
+	EXPECT_NEAR(items[0], 0.3, EPS);
+	EXPECT_NEAR(items[1], 0.4, EPS);
+	EXPECT_EQ(items[2], 0);
+}
+
+TEST(parser_list_real, redundant_commas_at_end) {
+	real_t items[PSC_ARGLIST_LENGHT] = {0};
+
+	EXPECT_TRUE(parser_list_real("0.3,0.4,,,", &items));
+	EXPECT_NEAR(items[0], 0.3, EPS);
+	EXPECT_NEAR(items[1], 0.4, EPS);
+	EXPECT_EQ(items[2], 0);
+}
+
+
+TEST(parser_list_real, too_much_values) {
+	real_t items[PSC_ARGLIST_LENGHT + 2] = {0};
+
+	std::string s;
+	for (size_t i = 0; i < PSC_ARGLIST_LENGHT + 10; ++i)
+		s += std::to_string(i) + ",";
+
+	EXPECT_TRUE(parser_list_real(s.c_str(), &items));
+
+	for (size_t i = 0; i < PSC_ARGLIST_LENGHT; ++i)
+		EXPECT_NEAR(items[i], i, EPS);
+
+	EXPECT_EQ(items[PSC_ARGLIST_LENGHT + 0], 0);
+	EXPECT_EQ(items[PSC_ARGLIST_LENGHT + 1], 0);
+}

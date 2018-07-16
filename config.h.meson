@@ -30,7 +30,7 @@
 #define PSC_LABEL_BUFSIZE 50
 #define PSC_COLOR_BUFSIZE 10
 #define PSC_POINT_BUFSIZE 20
-
+#define PSC_ARGLIST_LENGHT 20
 
 
 // Can be changed via command line arguments

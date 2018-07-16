@@ -399,3 +399,34 @@ find_by_key(argparser_t *argparser, const char *key)
 	return NULL;
 }
 
+bool
+parser_list_real(const char *value, void *output)
+{
+	assert(value);
+	assert(output);
+
+	real_t *out = (real_t *) output;
+
+	const char *s = value;
+
+	for (size_t i = 0; i < PSC_ARGLIST_LENGHT; ++i) {
+		while (*s == ',')
+			++s;
+
+		char *e = NULL;
+#ifdef PSC_USE_FLOAT
+		out[i] = strtof(s, &e);
+#else
+		out[i] = strtod(s, &e);
+#endif
+		if (*e != ',' && *e != '\0')
+			return false;
+
+		if (*e == '\0')
+			return true;
+
+		s = e;
+	}
+
+	return true;
+}
