@@ -8,6 +8,7 @@
 #include "types.h"
 #include "color.h"
 #include "point.h"
+#include "list.h"
 
 void
 print_help_and_exit(argparser_t *argparser);
@@ -405,7 +406,7 @@ parser_list_real(const char *value, void *output)
 	assert(value);
 	assert(output);
 
-	real_t *out = (real_t *) output;
+	list_t *out = (list_t *) output;
 
 	const char *s = value;
 
@@ -415,9 +416,9 @@ parser_list_real(const char *value, void *output)
 
 		char *e = NULL;
 #ifdef PSC_USE_FLOAT
-		out[i] = strtof(s, &e);
+		out->d[i] = strtof(s, &e);
 #else
-		out[i] = strtod(s, &e);
+		out->d[i] = strtod(s, &e);
 #endif
 		if (*e != ',' && *e != '\0')
 			return false;

@@ -1,6 +1,7 @@
 #include <assert.h>
 #include "argparser.h"
 
+#include <stdlib.h>
 #include <stdio.h>
 #include "cfg.h"
 
@@ -11,6 +12,8 @@
 #define rgb(r,g,b) {(real_t)(r)/255, (real_t)(g)/255, (real_t)(b)/255, 1}
 
 #define rgba(r,g,b,a) {(real_t)(r)/255, (real_t)(g)/255, (real_t)(b)/255, (real_t)(a)/255}
+
+#define list(...) { .d = { __VA_ARGS__ } }
 
 #include "config.h"
 
@@ -165,8 +168,11 @@ parse_cmdline(int argc, char const * argv[])
 
 	ARG(&argp, "--tree-center", config.tree.center, parser_point, point_to_str((point_t) PSC_TREE_CENTER),
 			"X:Y Position of a tree center from the center of image");
-	ARGQ(&argp, "--tree-radius-increment", config.tree.radius_inc, parser_real, PSC_TREE_RADIUS_INCREMENT,
-			"The diffrence between radii of concentric circiles of the tree");
+	ARG(&argp, "--tree-radius-increment", config.tree.radius_inc, parser_list_real, list_real_to_string((list_t) PSC_TREE_RADIUS_INCREMENT),
+			"The diffrence between radii of concentric circiles of the tree. Multiple values "
+			"seprated with comma can be specified, e.g --tree-radius-increment=30,40,50 "
+			"would mean that the first radius would be 30, the second 70, and the reset would "
+			"be incremented by 50 (120,170,220...)");
 	ARGQ(&argp, "--tree-sector-angle", config.tree.sector, parser_real, PSC_TREE_SECTOR,
 			"Tree vertices will be displayed inside the sector with specified angle");
 	ARGQ(&argp, "--tree-rotate", config.tree.rotate, parser_bool, PSC_TREE_ROTATE,
@@ -265,3 +271,4 @@ parse_cmdline(int argc, char const * argv[])
 
 	argparser_parse(&argp, argc, argv);
 }
+

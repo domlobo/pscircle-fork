@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <config.h>
 
+#include <types.h>
+
 #define QUOTE(name) #name
 
 #define ARGQ(argparser, name, output, parser, defaults, description) do { \

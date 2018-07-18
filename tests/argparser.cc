@@ -6,6 +6,7 @@ extern "C" {
 #include "types.h"
 #include "point.h"
 #include "color.h"
+#include "list.h"
 #include "argparser.h"
 }
 
@@ -336,50 +337,53 @@ TEST(parser_list_real, single_item) {
 }
 
 TEST(parser_list_real, two_items) {
-	real_t items[PSC_ARGLIST_LENGHT] = {0};
+	list_t items = {0};
 
 	EXPECT_TRUE(parser_list_real("0.3,0.4", &items));
-	EXPECT_NEAR(items[0], 0.3, EPS);
-	EXPECT_NEAR(items[1], 0.4, EPS);
-	EXPECT_EQ(items[2], 0);
+	EXPECT_NEAR(items.d[0], 0.3, EPS);
+	EXPECT_NEAR(items.d[1], 0.4, EPS);
+	EXPECT_EQ(items.d[2], 0);
 }
 
 TEST(parser_list_real, parse_error) {
-	real_t items[PSC_ARGLIST_LENGHT] = {0};
+	list_t items = {0};
 
 	EXPECT_FALSE(parser_list_real("0.3,0a.4,0.6", &items));
 }
 
 TEST(parser_list_real, redundant_commas_at_start) {
-	real_t items[PSC_ARGLIST_LENGHT] = {0};
+	list_t items = {0};
 
 	EXPECT_TRUE(parser_list_real(",,,0.3,0.4", &items));
-	EXPECT_NEAR(items[0], 0.3, EPS);
-	EXPECT_NEAR(items[1], 0.4, EPS);
-	EXPECT_EQ(items[2], 0);
+	EXPECT_NEAR(items.d[0], 0.3, EPS);
+	EXPECT_NEAR(items.d[1], 0.4, EPS);
+	EXPECT_EQ(items.d[2], 0);
 }
 
 TEST(parser_list_real, redundant_commas_in_middle) {
-	real_t items[PSC_ARGLIST_LENGHT] = {0};
+	list_t items = {0};
 
 	EXPECT_TRUE(parser_list_real("0.3,,,,0.4", &items));
-	EXPECT_NEAR(items[0], 0.3, EPS);
-	EXPECT_NEAR(items[1], 0.4, EPS);
-	EXPECT_EQ(items[2], 0);
+	EXPECT_NEAR(items.d[0], 0.3, EPS);
+	EXPECT_NEAR(items.d[1], 0.4, EPS);
+	EXPECT_EQ(items.d[2], 0);
 }
 
 TEST(parser_list_real, redundant_commas_at_end) {
-	real_t items[PSC_ARGLIST_LENGHT] = {0};
+	list_t items = {0};
 
 	EXPECT_TRUE(parser_list_real("0.3,0.4,,,", &items));
-	EXPECT_NEAR(items[0], 0.3, EPS);
-	EXPECT_NEAR(items[1], 0.4, EPS);
-	EXPECT_EQ(items[2], 0);
+	EXPECT_NEAR(items.d[0], 0.3, EPS);
+	EXPECT_NEAR(items.d[1], 0.4, EPS);
+	EXPECT_EQ(items.d[2], 0);
 }
 
+typedef struct {
+	real_t d[PSC_ARGLIST_LENGHT + 2];
+} list2_t;
 
 TEST(parser_list_real, too_much_values) {
-	real_t items[PSC_ARGLIST_LENGHT + 2] = {0};
+	list2_t items = {0};
 
 	std::string s;
 	for (size_t i = 0; i < PSC_ARGLIST_LENGHT + 10; ++i)
@@ -388,8 +392,8 @@ TEST(parser_list_real, too_much_values) {
 	EXPECT_TRUE(parser_list_real(s.c_str(), &items));
 
 	for (size_t i = 0; i < PSC_ARGLIST_LENGHT; ++i)
-		EXPECT_NEAR(items[i], i, EPS);
+		EXPECT_NEAR(items.d[i], i, EPS);
 
-	EXPECT_EQ(items[PSC_ARGLIST_LENGHT + 0], 0);
-	EXPECT_EQ(items[PSC_ARGLIST_LENGHT + 1], 0);
+	EXPECT_EQ(items.d[PSC_ARGLIST_LENGHT + 0], 0);
+	EXPECT_EQ(items.d[PSC_ARGLIST_LENGHT + 1], 0);
 }

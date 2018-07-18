@@ -30,8 +30,7 @@
 #define PSC_LABEL_BUFSIZE 50
 #define PSC_COLOR_BUFSIZE 10
 #define PSC_POINT_BUFSIZE 20
-#define PSC_ARGLIST_LENGHT 20
-
+#define PSC_ARGLIST_LENGHT 30
 
 // Can be changed via command line arguments
 
@@ -62,7 +61,7 @@
 #define PSC_TREE_FONT_SIZE 20
 #define PSC_TREE_FONT_COLOR rgba(238, 238, 238, 180)
 #define PSC_TREE_SECTOR 0
-#define PSC_TREE_RADIUS_INCREMENT 210
+#define PSC_TREE_RADIUS_INCREMENT list(210)
 #define PSC_TREE_SECTOR 0
 #define PSC_TREE_ROTATE false
 #define PSC_TREE_ROTATION 0
