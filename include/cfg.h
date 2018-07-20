@@ -14,6 +14,7 @@ typedef struct {
 	color_t font_color;
 
 	reals_t radius_inc;
+	size_t hide_levels;
 	real_t sector;
 	real_t rotation;
 	bool rotate;

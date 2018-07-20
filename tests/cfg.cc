@@ -132,6 +132,10 @@ TEST(parse_cmdline, tree_radius_increment_singel_value) {
 	EXPECT_NEAR(config.tree.radius_inc.data[2], 50, EPS);
 }
 
+TEST(parse_cmdline, hide_top_levels) {
+	parse<size_t>("--hide-top-levels=4", config.tree.hide_levels, 4);
+}
+
 TEST(parse_cmdline, tree_sector_angle) {
 	parse<real_t>("--tree-sector-angle=12", config.tree.sector, 12);
 }

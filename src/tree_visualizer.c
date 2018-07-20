@@ -163,9 +163,12 @@ draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, size
 
 		draw_tree_recurcive(vis, painter, child, depth + 1);
 
+		if (depth < config.tree.hide_levels)
+			continue;
+
 		draw_dot(painter, child);
 
-		if (depth > 0)
+		if (depth > 0 && depth > config.tree.hide_levels)
 			draw_link(vis, painter, parent, child, radius_inc);
 
 		draw_label(vis, painter, child, angle);

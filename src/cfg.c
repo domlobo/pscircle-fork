@@ -173,6 +173,8 @@ parse_cmdline(int argc, char const * argv[])
 			"seprated with comma can be specified, e.g --tree-radius-increment=30,40,50 "
 			"would mean that the first radius would be 30, the second 70, and the reset would "
 			"be incremented by 50 (120,170,220...)");
+	ARGQ(&argp, "--hide-top-levels", config.tree.hide_levels, parser_ulong, PSC_HIDE_TOP_LEVELS,
+			"Specified number of the tree levels from the top will not be displayed.");
 	ARGQ(&argp, "--tree-sector-angle", config.tree.sector, parser_real, PSC_TREE_SECTOR,
 			"Tree vertices will be displayed inside the sector with specified angle");
 	ARGQ(&argp, "--tree-rotate", config.tree.rotate, parser_bool, PSC_TREE_ROTATE,
