@@ -47,7 +47,7 @@ TEST(reals_add, above_max_cout) {
 	for (size_t i = 0; i < PSC_REALS_COUNT + 2; ++i)
 		reals_add(&items, i);
 
-	EXPECT_EQ(items.size, PSC_REALS_COUNT);
+	EXPECT_EQ(items.size, (size_t)PSC_REALS_COUNT);
 	for (size_t i = 0; i < PSC_REALS_COUNT; ++i)
 		EXPECT_NEAR(items.data[i], i, EPS);
 }

@@ -30,17 +30,20 @@ calc_offsets(visualizer_t *vis);
 void
 init_tree_painter(painter_t *painter);
 
+real_t
+radius_inc_at_depth(size_t depth);
+
 void
 dinit_tree_painter(painter_t *painter);
 
 void
-draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *procs, int depth);
+draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *procs, size_t depth);
 
 void
 draw_dot(painter_t *painter, pnode_t *pnode);
 
 void
-draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child);
+draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child, real_t lenght);
 
 void
 draw_label(visualizer_t *vis, painter_t *painter, pnode_t *child, real_t angle);
@@ -74,7 +77,7 @@ calc_sector(visualizer_t *vis, procs_t *procs)
 	}
 
 	real_t cat = config.dot.radius + config.dot.border;
-	real_t hyp = config.tree.radius_inc.data[0];
+	real_t hyp = radius_inc_at_depth(0) + radius_inc_at_depth(1);
 	vis->sector = R(2.) * M_PI - R(atan)(cat / hyp);
 }
 
@@ -127,30 +130,45 @@ dinit_tree_painter(painter_t *painter)
 	painter_restore(painter);
 }
 
+real_t
+radius_inc_at_depth(size_t depth)
+{
+	assert(config.tree.radius_inc.size > 0);
+	if (depth < config.tree.radius_inc.size)
+		return config.tree.radius_inc.data[depth];
+
+	return config.tree.radius_inc.data[config.tree.radius_inc.size - 1];
+}
+
 void
-draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, int depth)
+draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, size_t depth)
 {
 	assert(painter);
 	assert(parent);
+	assert(config.tree.radius_inc.size > 0);
 
-	real_t radius = config.tree.radius_inc.data[0];
+	real_t radius_inc = 0;
+	real_t radius = 0;
+
+	for (size_t d = 0; d <= depth; ++d) {
+		radius_inc = radius_inc_at_depth(d);
+		radius += radius_inc;
+	}
 
 	for (node_t *n = parent->node.first; n != NULL; n = n->next) {
 		pnode_t *child = (pnode_t *) n;
 
-		real_t cr = radius * (depth + 1);
-		real_t ca = vis->sector * n->x + vis->rotation;
-		ppoint_t c = ppoint_from_radial(ca, cr);
-		child->position = c;
+		real_t angle = vis->sector * n->x + vis->rotation;
+		child->position = ppoint_from_radial(angle, radius);
 
 		draw_tree_recurcive(vis, painter, child, depth + 1);
 
 		draw_dot(painter, child);
 
 		if (depth > 0)
-			draw_link(vis, painter, parent, child);
+			draw_link(vis, painter, parent, child, radius_inc);
 
-		draw_label(vis, painter, child, ca);
+		draw_label(vis, painter, child, angle);
 	}
 }
 
@@ -178,7 +196,7 @@ draw_dot(painter_t *painter, pnode_t *pnode)
 }
 
 void
-draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child)
+draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child, real_t lenght)
 {
 	ppoint_t a = parent->position;
 	a.r += vis->link_offset;
@@ -201,7 +219,7 @@ draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child
 		return;
 	}
 
-	real_t conv = config.link.convexity * config.tree.radius_inc.data[0];
+	real_t conv = config.link.convexity * lenght;
 	ppoint_t ac = parent->position;
 	ac.r += conv;
 	ppoint_t bc = child->position;

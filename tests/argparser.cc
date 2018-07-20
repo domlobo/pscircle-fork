@@ -387,7 +387,7 @@ TEST(parser_list_real, too_much_values) {
 
 	EXPECT_TRUE(parser_list_real(s.c_str(), &items));
 
-	EXPECT_EQ(items.size, PSC_REALS_COUNT);
+	EXPECT_EQ(items.size, (size_t)PSC_REALS_COUNT);
 	for (size_t i = 0; i < PSC_REALS_COUNT; ++i)
 		EXPECT_NEAR(items.data[i], i, EPS);
 }
