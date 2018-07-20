@@ -2,7 +2,8 @@
 
 ## Added
 
-* Multiple circles radii support 
+* Multiple circles radii support (e.g `--tree-radius-increment=30,40,50`)
+* Option for hiding tree levels (`--hide-top-levels=1`)
 * GNOME example
 
 # 1.1 - 2018.07.06
