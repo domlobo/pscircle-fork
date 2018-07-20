@@ -5,6 +5,7 @@ tests = [
 	['node', ['node.cc']],
 	['pnode', ['pnode.cc']],
 	['procs', ['procs.cc']],
+	['reals', ['reals.cc']],
 	['argparser', ['argparser.cc']],
 	['cfg', ['cfg.cc']],
 ]

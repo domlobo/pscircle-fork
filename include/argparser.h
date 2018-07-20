@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <config.h>
 
+#include <types.h>
+
 #define QUOTE(name) #name
 
 #define ARGQ(argparser, name, output, parser, defaults, description) do { \
@@ -64,3 +66,6 @@ parser_memory(const char *value, void *output);
 
 bool
 parser_memory_unit(const char *value, void *output);
+
+bool
+parser_list_real(const char *value, void *output);

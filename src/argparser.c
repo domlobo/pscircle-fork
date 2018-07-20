@@ -8,6 +8,7 @@
 #include "types.h"
 #include "color.h"
 #include "point.h"
+#include "reals.h"
 
 void
 print_help_and_exit(argparser_t *argparser);
@@ -399,3 +400,38 @@ find_by_key(argparser_t *argparser, const char *key)
 	return NULL;
 }
 
+bool
+parser_list_real(const char *value, void *output)
+{
+	assert(value);
+	assert(output);
+
+	reals_t *out = (reals_t *) output;
+	out->size = 0;
+
+	const char *s = value;
+
+	while (*s != '\0') {
+		while (*s == ',')
+			++s;
+
+		if (*s == '\0')
+			break;
+
+		char *e = NULL;
+#ifdef PSC_USE_FLOAT
+		real_t x = strtof(s, &e);
+#else
+		real_t x = strtod(s, &e);
+#endif
+
+		if (*e != ',' && *e != '\0')
+			return false;
+
+		reals_add(out, x);
+
+		s = e;
+	}
+
+	return true;
+}

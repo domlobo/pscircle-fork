@@ -112,8 +112,24 @@ TEST(parse_cmdline, tree_center) {
 	parse("--tree-center=1:4.3", config.tree.center, 1, 4.3);
 }
 
-TEST(parse_cmdline, tree_radius_increment) {
-	parse<real_t>("--tree-radius-increment=30", config.tree.radius_inc, 30);
+TEST(parse_cmdline, tree_radius_increment_single_val) {
+	int argc = 2;
+	const char *argv[] = {"argv_0", "--tree-radius-increment=30"};
+	parse_cmdline(argc, argv);
+
+	EXPECT_EQ(config.tree.radius_inc.size, 1u);
+	EXPECT_NEAR(config.tree.radius_inc.data[0], 30, EPS);
+}
+
+TEST(parse_cmdline, tree_radius_increment_singel_value) {
+	int argc = 2;
+	const char *argv[] = {"argv_0", "--tree-radius-increment=30,40,50"};
+	parse_cmdline(argc, argv);
+
+	EXPECT_EQ(config.tree.radius_inc.size, 3u);
+	EXPECT_NEAR(config.tree.radius_inc.data[0], 30, EPS);
+	EXPECT_NEAR(config.tree.radius_inc.data[1], 40, EPS);
+	EXPECT_NEAR(config.tree.radius_inc.data[2], 50, EPS);
 }
 
 TEST(parse_cmdline, tree_sector_angle) {
@@ -275,4 +291,3 @@ TEST(parse_cmdline, memlist_label) {
 TEST(parse_cmdline, memlist_bar_value) {
 	parse<real_t>("--memlist-bar-value=442.1", config.toplists.memlist.value, 442.1);
 }
-

@@ -6,6 +6,7 @@ extern "C" {
 #include "types.h"
 #include "point.h"
 #include "color.h"
+#include "reals.h"
 #include "argparser.h"
 }
 
@@ -325,4 +326,68 @@ TEST(parse_bool, valid_0) {
 	int val = 0;
 	EXPECT_TRUE(parser_bool("0", &val));
 	EXPECT_FALSE(val);
+}
+
+TEST(parser_list_real, single_item) {
+	reals_t items = REALS();
+
+	EXPECT_TRUE(parser_list_real("0.3", &items));
+	EXPECT_EQ(items.size, 1u);
+	EXPECT_NEAR(items.data[0], 0.3, EPS);
+}
+
+TEST(parser_list_real, two_items) {
+	reals_t items = REALS();
+
+	EXPECT_TRUE(parser_list_real("0.3,0.4", &items));
+	EXPECT_EQ(items.size, 2u);
+	EXPECT_NEAR(items.data[0], 0.3, EPS);
+	EXPECT_NEAR(items.data[1], 0.4, EPS);
+}
+
+TEST(parser_list_real, parse_error) {
+	reals_t items = REALS();
+
+	EXPECT_FALSE(parser_list_real("0.3,0a.4,0.6", &items));
+}
+
+TEST(parser_list_real, redundant_commas_at_start) {
+	reals_t items = REALS();
+
+	EXPECT_TRUE(parser_list_real(",,,0.3,0.4", &items));
+	EXPECT_EQ(items.size, 2u);
+	EXPECT_NEAR(items.data[0], 0.3, EPS);
+	EXPECT_NEAR(items.data[1], 0.4, EPS);
+}
+
+TEST(parser_list_real, redundant_commas_in_middle) {
+	reals_t items = REALS();
+
+	EXPECT_TRUE(parser_list_real("0.3,,,,0.4", &items));
+	EXPECT_EQ(items.size, 2u);
+	EXPECT_NEAR(items.data[0], 0.3, EPS);
+	EXPECT_NEAR(items.data[1], 0.4, EPS);
+}
+
+TEST(parser_list_real, redundant_commas_at_end) {
+	reals_t items = REALS();
+
+	EXPECT_TRUE(parser_list_real("0.3,0.4,,,", &items));
+	EXPECT_EQ(items.size, 2u);
+	EXPECT_NEAR(items.data[0], 0.3, EPS);
+	EXPECT_NEAR(items.data[1], 0.4, EPS);
+}
+
+TEST(parser_list_real, too_much_values) {
+	reals_t items = REALS();
+
+	std::string s;
+	for (size_t i = 0; i < PSC_REALS_COUNT + 10; ++i)
+		s += std::to_string(i) + ",";
+
+	EXPECT_TRUE(parser_list_real(s.c_str(), &items));
+
+	EXPECT_EQ(items.size, (size_t)PSC_REALS_COUNT);
+	for (size_t i = 0; i < PSC_REALS_COUNT; ++i)
+		EXPECT_NEAR(items.data[i], i, EPS);
 }
