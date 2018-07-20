@@ -40,15 +40,6 @@ sudo ninja install
 
 In case you want to compile without X11 support, call `meson configure -Denable-x11=false` before compiling.
 
-After installation and configuration you may want to create systemd service to regularly update desktop wallpaper:
-
-```bash
-mkdir -p ~/.config/systemd/user/
-cp examples/pscircle.service ~/.config/systemd/user/
-systemctl --user enable pscircle
-systemctl --user start pscircle
-```
-
 ## Installing from repositories
 
 ### ArchLinux AUR
@@ -62,6 +53,15 @@ Gentoo ebuild is available in [examples/pscircle-9999.ebuild](examples/pscircle-
 (by [_ahrs](https://www.reddit.com/r/unixporn/comments/8v9r19/oc_ive_just_created_a_program_for_drawing_process/e1qmuie)).
 
 ## Usage
+
+After installation and configuration you may want to create systemd service to regularly update desktop wallpaper:
+
+```bash
+mkdir -p ~/.config/systemd/user/
+cp examples/pscircle.service ~/.config/systemd/user/
+systemctl --user enable pscircle
+systemctl --user start pscircle
+```
 
 To view complete list of command line arguments run:
 

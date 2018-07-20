@@ -1,3 +1,10 @@
+# 1.2 - current
+
+## Added
+
+* Multiple circles radii support 
+* GNOME example
+
 # 1.1 - 2018.07.06
 
 ## Added
@@ -12,4 +19,4 @@
 
 ## Removed
 
-* `-mavx` option, 
+* `-mavx` compilation option,
