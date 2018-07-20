@@ -8,7 +8,7 @@
 #include "types.h"
 #include "color.h"
 #include "point.h"
-#include "list.h"
+#include "reals.h"
 
 void
 print_help_and_exit(argparser_t *argparser);
@@ -406,25 +406,29 @@ parser_list_real(const char *value, void *output)
 	assert(value);
 	assert(output);
 
-	list_t *out = (list_t *) output;
+	reals_t *out = (reals_t *) output;
+	out->size = 0;
 
 	const char *s = value;
 
-	for (size_t i = 0; i < PSC_ARGLIST_LENGHT; ++i) {
+	while (*s != '\0') {
 		while (*s == ',')
 			++s;
 
+		if (*s == '\0')
+			break;
+
 		char *e = NULL;
 #ifdef PSC_USE_FLOAT
-		out->d[i] = strtof(s, &e);
+		real_t x = strtof(s, &e);
 #else
-		out->d[i] = strtod(s, &e);
+		real_t x = strtod(s, &e);
 #endif
+
 		if (*e != ',' && *e != '\0')
 			return false;
 
-		if (*e == '\0')
-			return true;
+		reals_add(out, x);
 
 		s = e;
 	}

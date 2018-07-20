@@ -18,7 +18,7 @@ psc_sources = [
 	'src/color.c',
 	'src/point.c',
 	'src/ppoint.c',
-	'src/list.c',
+	'src/reals.c',
 	'src/node.c',
 	'src/pnode.c',
 	'src/timing.c',

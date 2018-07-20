@@ -6,7 +6,7 @@ extern "C" {
 #include "types.h"
 #include "point.h"
 #include "color.h"
-#include "list.h"
+#include "reals.h"
 #include "argparser.h"
 }
 
@@ -329,71 +329,65 @@ TEST(parse_bool, valid_0) {
 }
 
 TEST(parser_list_real, single_item) {
-	real_t items[5] = {0};
+	reals_t items = REALS();
 
 	EXPECT_TRUE(parser_list_real("0.3", &items));
-	EXPECT_NEAR(items[0], 0.3, EPS);
-	EXPECT_EQ(items[1], 0);
+	EXPECT_EQ(items.size, 1u);
+	EXPECT_NEAR(items.data[0], 0.3, EPS);
 }
 
 TEST(parser_list_real, two_items) {
-	list_t items = {0};
+	reals_t items = REALS();
 
 	EXPECT_TRUE(parser_list_real("0.3,0.4", &items));
-	EXPECT_NEAR(items.d[0], 0.3, EPS);
-	EXPECT_NEAR(items.d[1], 0.4, EPS);
-	EXPECT_EQ(items.d[2], 0);
+	EXPECT_EQ(items.size, 2u);
+	EXPECT_NEAR(items.data[0], 0.3, EPS);
+	EXPECT_NEAR(items.data[1], 0.4, EPS);
 }
 
 TEST(parser_list_real, parse_error) {
-	list_t items = {0};
+	reals_t items = REALS();
 
 	EXPECT_FALSE(parser_list_real("0.3,0a.4,0.6", &items));
 }
 
 TEST(parser_list_real, redundant_commas_at_start) {
-	list_t items = {0};
+	reals_t items = REALS();
 
 	EXPECT_TRUE(parser_list_real(",,,0.3,0.4", &items));
-	EXPECT_NEAR(items.d[0], 0.3, EPS);
-	EXPECT_NEAR(items.d[1], 0.4, EPS);
-	EXPECT_EQ(items.d[2], 0);
+	EXPECT_EQ(items.size, 2u);
+	EXPECT_NEAR(items.data[0], 0.3, EPS);
+	EXPECT_NEAR(items.data[1], 0.4, EPS);
 }
 
 TEST(parser_list_real, redundant_commas_in_middle) {
-	list_t items = {0};
+	reals_t items = REALS();
 
 	EXPECT_TRUE(parser_list_real("0.3,,,,0.4", &items));
-	EXPECT_NEAR(items.d[0], 0.3, EPS);
-	EXPECT_NEAR(items.d[1], 0.4, EPS);
-	EXPECT_EQ(items.d[2], 0);
+	EXPECT_EQ(items.size, 2u);
+	EXPECT_NEAR(items.data[0], 0.3, EPS);
+	EXPECT_NEAR(items.data[1], 0.4, EPS);
 }
 
 TEST(parser_list_real, redundant_commas_at_end) {
-	list_t items = {0};
+	reals_t items = REALS();
 
 	EXPECT_TRUE(parser_list_real("0.3,0.4,,,", &items));
-	EXPECT_NEAR(items.d[0], 0.3, EPS);
-	EXPECT_NEAR(items.d[1], 0.4, EPS);
-	EXPECT_EQ(items.d[2], 0);
+	EXPECT_EQ(items.size, 2u);
+	EXPECT_NEAR(items.data[0], 0.3, EPS);
+	EXPECT_NEAR(items.data[1], 0.4, EPS);
 }
 
-typedef struct {
-	real_t d[PSC_ARGLIST_LENGHT + 2];
-} list2_t;
-
 TEST(parser_list_real, too_much_values) {
-	list2_t items = {0};
+	reals_t items = REALS();
 
 	std::string s;
-	for (size_t i = 0; i < PSC_ARGLIST_LENGHT + 10; ++i)
+	for (size_t i = 0; i < PSC_REALS_COUNT + 10; ++i)
 		s += std::to_string(i) + ",";
 
 	EXPECT_TRUE(parser_list_real(s.c_str(), &items));
 
-	for (size_t i = 0; i < PSC_ARGLIST_LENGHT; ++i)
-		EXPECT_NEAR(items.d[i], i, EPS);
-
-	EXPECT_EQ(items.d[PSC_ARGLIST_LENGHT + 0], 0);
-	EXPECT_EQ(items.d[PSC_ARGLIST_LENGHT + 1], 0);
+	EXPECT_EQ(items.size, PSC_REALS_COUNT);
+	for (size_t i = 0; i < PSC_REALS_COUNT; ++i)
+		EXPECT_NEAR(items.data[i], i, EPS);
 }

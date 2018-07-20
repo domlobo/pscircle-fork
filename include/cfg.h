@@ -6,14 +6,14 @@
 #include "types.h"
 #include "color.h"
 #include "point.h"
-#include "list.h"
+#include "reals.h"
 
 typedef struct {
 	const char *font_face;
 	real_t font_size;
 	color_t font_color;
 
-	list_t radius_inc;
+	reals_t radius_inc;
 	real_t sector;
 	real_t rotation;
 	bool rotate;

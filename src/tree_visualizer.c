@@ -74,7 +74,7 @@ calc_sector(visualizer_t *vis, procs_t *procs)
 	}
 
 	real_t cat = config.dot.radius + config.dot.border;
-	real_t hyp = config.tree.radius_inc.d[0];
+	real_t hyp = config.tree.radius_inc.data[0];
 	vis->sector = R(2.) * M_PI - R(atan)(cat / hyp);
 }
 
@@ -133,10 +133,12 @@ draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, int 
 	assert(painter);
 	assert(parent);
 
+	real_t radius = config.tree.radius_inc.data[0];
+
 	for (node_t *n = parent->node.first; n != NULL; n = n->next) {
 		pnode_t *child = (pnode_t *) n;
 
-		real_t cr = config.tree.radius_inc.d[0] * (depth + 1);
+		real_t cr = radius * (depth + 1);
 		real_t ca = vis->sector * n->x + vis->rotation;
 		ppoint_t c = ppoint_from_radial(ca, cr);
 		child->position = c;
@@ -199,7 +201,7 @@ draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child
 		return;
 	}
 
-	real_t conv = config.link.convexity * config.tree.radius_inc.d[0];
+	real_t conv = config.link.convexity * config.tree.radius_inc.data[0];
 	ppoint_t ac = parent->position;
 	ac.r += conv;
 	ppoint_t bc = child->position;

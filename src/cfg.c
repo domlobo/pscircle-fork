@@ -168,7 +168,7 @@ parse_cmdline(int argc, char const * argv[])
 
 	ARG(&argp, "--tree-center", config.tree.center, parser_point, point_to_str((point_t) PSC_TREE_CENTER),
 			"X:Y Position of a tree center from the center of image");
-	ARG(&argp, "--tree-radius-increment", config.tree.radius_inc, parser_list_real, list_real_to_string((list_t) PSC_TREE_RADIUS_INCREMENT),
+	ARG(&argp, "--tree-radius-increment", config.tree.radius_inc, parser_list_real, reals_to_string(PSC_TREE_RADIUS_INCREMENT),
 			"The diffrence between radii of concentric circiles of the tree. Multiple values "
 			"seprated with comma can be specified, e.g --tree-radius-increment=30,40,50 "
 			"would mean that the first radius would be 30, the second 70, and the reset would "

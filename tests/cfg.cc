@@ -117,8 +117,8 @@ TEST(parse_cmdline, tree_radius_increment_single_val) {
 	const char *argv[] = {"argv_0", "--tree-radius-increment=30"};
 	parse_cmdline(argc, argv);
 
-	EXPECT_NEAR(config.tree.radius_inc.d[0], 30, EPS);
-	EXPECT_EQ(config.tree.radius_inc.d[1], 0);
+	EXPECT_EQ(config.tree.radius_inc.size, 1u);
+	EXPECT_NEAR(config.tree.radius_inc.data[0], 30, EPS);
 }
 
 TEST(parse_cmdline, tree_radius_increment_singel_value) {
@@ -126,10 +126,10 @@ TEST(parse_cmdline, tree_radius_increment_singel_value) {
 	const char *argv[] = {"argv_0", "--tree-radius-increment=30,40,50"};
 	parse_cmdline(argc, argv);
 
-	EXPECT_NEAR(config.tree.radius_inc.d[0], 30, EPS);
-	EXPECT_NEAR(config.tree.radius_inc.d[1], 40, EPS);
-	EXPECT_NEAR(config.tree.radius_inc.d[2], 50, EPS);
-	EXPECT_EQ(config.tree.radius_inc.d[3], 0);
+	EXPECT_EQ(config.tree.radius_inc.size, 3u);
+	EXPECT_NEAR(config.tree.radius_inc.data[0], 30, EPS);
+	EXPECT_NEAR(config.tree.radius_inc.data[1], 40, EPS);
+	EXPECT_NEAR(config.tree.radius_inc.data[2], 50, EPS);
 }
 
 TEST(parse_cmdline, tree_sector_angle) {
