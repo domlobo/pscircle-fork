@@ -76,9 +76,7 @@ calc_sector(visualizer_t *vis, procs_t *procs)
 		return;
 	}
 
-	real_t cat = config.dot.radius + config.dot.border;
-	real_t hyp = radius_inc_at_depth(0) + radius_inc_at_depth(1);
-	vis->sector = R(2.) * M_PI - R(atan)(cat / hyp);
+	vis->sector = R(2.) * M_PI;
 }
 
 void

@@ -265,7 +265,7 @@ normilize(node_t *node, real_t minx, real_t maxx)
 {
 	node->x -= minx;
 	if (minx != maxx)
-		node->x /= maxx - minx;
+		node->x /= maxx - minx + 1;
 
 	FOR_CHILDREN(node)
 		normilize(n, minx, maxx);
