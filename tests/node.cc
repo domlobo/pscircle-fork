@@ -93,7 +93,7 @@ TEST(arrange, one_level) {
 
 	node_arrange(&p);
 
-	double n = 1. / 3;
+	double n = 1. / 4;
 	EXPECT_NEAR(p.x,  n * 1.5, EPS);
 	EXPECT_NEAR(c1.x, n * 0., EPS);
 	EXPECT_NEAR(c2.x, n * 1., EPS);
@@ -120,7 +120,7 @@ TEST(arrange, two_levels_a) {
 
 	node_arrange(&p);
 
-	double n = 1. / 2;
+	double n = 1. / 3;
 	EXPECT_NEAR(p.x,  n * 1, EPS);
 	EXPECT_NEAR(c1.x, n * 0, EPS);
 	EXPECT_NEAR(c2.x, n * 1, EPS);
@@ -149,7 +149,7 @@ TEST(arrange, two_levels_b) {
 
 	node_arrange(&p);
 
-	double n = 1. / 2;
+	double n = 1. / 3;
 	EXPECT_NEAR(p.x,  n * 1, EPS);
 	EXPECT_NEAR(c1.x, n * 0, EPS);
 	EXPECT_NEAR(c2.x, n * 1, EPS);
@@ -183,7 +183,7 @@ TEST(arrange, two_levels_c) {
 
 	node_arrange(&p);
 
-	double n = 1. / 4;
+	double n = 1. / 5;
 	EXPECT_NEAR(p.x,  n * 1.75, EPS);
 	EXPECT_NEAR(c1.x, n * 0, EPS);
 	EXPECT_NEAR(c2.x, n * 1, EPS);
@@ -216,7 +216,7 @@ TEST(arrange, three_levels_a) {
 
 	node_arrange(&p);
 
-	double n = 1. / 13;
+	double n = 1. / 14;
 	EXPECT_NEAR(p.x,  n * 6.5, EPS);
 	EXPECT_NEAR(c[0].x, n * 3, EPS);
 	EXPECT_NEAR(c[1].x, n * 4.53333333333333333, EPS);
@@ -270,7 +270,7 @@ TEST(arrange, four_levels_a) {
 
 	node_arrange(&r);
 
-	double n = 1. / 17;
+	double n = 1. / 18;
 	EXPECT_NEAR(r.x,  n * 5, EPS);
 	EXPECT_NEAR(r1.x,  n * 0, EPS);
 	EXPECT_NEAR(r2.x,  n * 1, EPS);
