@@ -250,9 +250,14 @@ draw_label(visualizer_t *vis, painter_t *painter, pnode_t *child, real_t angle)
 		p.r += dim.x;
 	}
 
-	ppoint_t np = ppoint_normal(p, p.nx > 0);
-	np.r = dim.y / 2;
-
+	ppoint_t np;
+	if (dim.y < 0) {
+		np = ppoint_normal(p, p.nx < 0);
+		np.r = -dim.y / 2;
+	} else {
+		np = ppoint_normal(p, p.nx > 0);
+		np.r = dim.y / 2;
+	}
 
 	p = ppoint_add(p, np);
 

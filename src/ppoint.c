@@ -12,12 +12,8 @@ bool ppoint_is_valid(ppoint_t p)
 	if (p.r < -PSC_EPS)
 		goto invalid;
 
-	if (R(fabs)(p.r) < PSC_EPS) {
-		if (R(fabs)(p.nx) < PSC_EPS && R(fabs)(p.ny) < PSC_EPS)
-			return true;
-		else
-			goto invalid;
-	}
+	if (R(fabs)(p.r) < PSC_EPS && R(fabs)(p.nx) < PSC_EPS && R(fabs)(p.ny) < PSC_EPS)
+		return true;
 
 	if (R(fabs)(d - 1) < PSC_EPS)
 		return true;
