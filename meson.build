@@ -7,7 +7,7 @@ project(
 )
 
 config = configuration_data()
-config.set('version', '1.2.1')
+config.set('version', '1.2.2')
 config.set('NDEBUG', not get_option('buildtype').startswith('debug'))
 
 psc_main = [
