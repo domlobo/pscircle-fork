@@ -43,6 +43,12 @@ void
 draw_tree_root(visualizer_t *vis, painter_t *painter, pnode_t *procs);
 
 void
+draw_labels_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *procs, size_t depth);
+
+real_t
+set_root_angle(visualizer_t *vis, pnode_t *root);
+
+void
 draw_dot(painter_t *painter, pnode_t *pnode);
 
 void
@@ -68,6 +74,8 @@ draw_tree(painter_t *painter, procs_t *procs)
 		draw_tree_root(&vis, painter, procs->root);
 	else
 		draw_tree_recurcive(&vis, painter, procs->root, 0);
+
+	draw_labels_recurcive(&vis, painter, procs->root, 0);
 
 	dinit_tree_painter(painter);
 }
@@ -175,6 +183,28 @@ draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, size
 		if (depth > 0 && depth > config.tree.hide_levels)
 			draw_link(vis, painter, parent, child, radius_inc);
 
+		/* TODO: is config.tree.hide_levels working with --show_root? */
+	}
+}
+
+void
+draw_labels_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, size_t depth)
+{
+	assert(painter);
+	assert(parent);
+
+	if (config.tree.show_root && depth == 0) {
+		real_t angle = set_root_angle(vis, parent);
+		draw_label(vis, painter, parent, angle);
+	}
+
+	for (node_t *n = parent->node.first; n != NULL; n = n->next) {
+		pnode_t *child = (pnode_t *) n;
+
+		real_t angle = vis->sector * n->x + vis->rotation;
+
+		draw_labels_recurcive(vis, painter, child, depth + 1);
+
 		draw_label(vis, painter, child, angle);
 	}
 }
@@ -230,13 +260,8 @@ draw_tree_root(visualizer_t *vis, painter_t *painter, pnode_t *root)
 		draw_dot(painter, child);
 
 		draw_link(vis, painter, root, child, radius);
-
-		draw_label(vis, painter, child, angle);
 	}
 
-	real_t angle = set_root_angle(vis, root);
-
-	draw_label(vis, painter, root, angle);
 }
 
 void
