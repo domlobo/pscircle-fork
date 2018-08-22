@@ -215,6 +215,7 @@ link_process(procs_t *procs)
 	if (!found) {
 		procs->root = procs->processes;
 		procs->root->pid = config.root_pid;
+		snprintf(procs->root->name, PSC_MAX_NAME_LENGHT, "PID %d not found", config.root_pid);
 	} else {
 		procs->root = found;
 	}
@@ -338,6 +339,8 @@ reserve_root_memory(procs_t *procs)
 	pnode_t *r = get_new_process(procs);
 	assert(r);
 	r->pid = -1;
+	r->cpu = 0;
+	r->mem = 0;
 }
 
 void

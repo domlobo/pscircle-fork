@@ -17,6 +17,9 @@ typedef struct {
 	size_t hide_levels;
 	real_t sector;
 	real_t rotation;
+	bool show_root;
+	real_t root_link_sector;
+	real_t root_label_angle;
 	bool rotate;
 	const char *anchor_proc_name;
 	real_t anchor_proc_angle;

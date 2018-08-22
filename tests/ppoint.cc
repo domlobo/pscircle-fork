@@ -20,8 +20,8 @@ TEST(ppoint_from_radial, non_zero) {
 
 TEST(ppoint_from_radial, zero_width) {
 	ppoint_t p = ppoint_from_radial(M_PI / 6, 0.);
-	EXPECT_NEAR(p.nx, 0., EPS);
-	EXPECT_NEAR(p.ny, 0., EPS);
+	EXPECT_NEAR(p.nx, sqrt(3) / 2, EPS);
+	EXPECT_NEAR(p.ny, 0.5, EPS);
 	EXPECT_NEAR(p.r, 0, EPS);
 }
 
@@ -64,7 +64,7 @@ TEST(ppoint_codirectinal, two_zero_vector) {
 TEST(ppoint_normal, up_normal) {
 	ppoint_t p = {sqrt(3)/2, 0.5, 2.};
 	ppoint_t n = ppoint_normal(p, true);
-	EXPECT_NEAR(n.r, 1, EPS);
+	EXPECT_NEAR(n.r, 2, EPS);
 	EXPECT_NEAR(n.nx, -0.5, EPS);
 	EXPECT_NEAR(n.ny, sqrt(3) / 2, EPS);
 }
@@ -73,7 +73,7 @@ TEST(ppoint_normal, down_normal) {
 	ppoint_t p = {sqrt(3)/2, 0.5, 2};
 	ppoint_t n = ppoint_normal(p, false);
 
-	EXPECT_NEAR(n.r, 1, EPS);
+	EXPECT_NEAR(n.r, 2, EPS);
 	EXPECT_NEAR(n.nx, 0.5, EPS);
 	EXPECT_NEAR(n.ny, -sqrt(3) / 2, EPS);
 }
@@ -92,6 +92,24 @@ TEST(ppoint_normal, down_normal_of_zero_vector) {
 	EXPECT_NEAR(n.r, 0, EPS);
 	EXPECT_NEAR(n.nx, 0, EPS);
 	EXPECT_NEAR(n.ny, 0, EPS);
+}
+
+TEST(ppoint_normal, up_normal_of_zero_radius) {
+	ppoint_t p = {sqrt(3)/2, 0.5, 0.};
+	ppoint_t n = ppoint_normal(p, true);
+
+	EXPECT_NEAR(n.r, 0, EPS);
+	EXPECT_NEAR(n.nx, -0.5, EPS);
+	EXPECT_NEAR(n.ny, sqrt(3)/2, EPS);
+}
+
+TEST(ppoint_normal, down_normal_of_zero_radius) {
+	ppoint_t p = {sqrt(3)/2, 0.5, 0.};
+	ppoint_t n = ppoint_normal(p, false);
+
+	EXPECT_NEAR(n.r, 0, EPS);
+	EXPECT_NEAR(n.nx, 0.5, EPS);
+	EXPECT_NEAR(n.ny, -sqrt(3)/2, EPS);
 }
 
 TEST(ppoint_add, two_orthogonal) {

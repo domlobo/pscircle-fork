@@ -40,6 +40,9 @@ void
 draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *procs, size_t depth);
 
 void
+draw_tree_root(visualizer_t *vis, painter_t *painter, pnode_t *procs);
+
+void
 draw_dot(painter_t *painter, pnode_t *pnode);
 
 void
@@ -61,7 +64,10 @@ draw_tree(painter_t *painter, procs_t *procs)
 
 	init_tree_painter(painter);
 
-	draw_tree_recurcive(&vis, painter, procs->root, 0);
+	if (config.tree.show_root)
+		draw_tree_root(&vis, painter, procs->root);
+	else
+		draw_tree_recurcive(&vis, painter, procs->root, 0);
 
 	dinit_tree_painter(painter);
 }
@@ -173,6 +179,66 @@ draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, size
 	}
 }
 
+real_t
+set_root_angle(visualizer_t *vis, pnode_t *root)
+{
+	node_t *nroot  = (node_t *) root;
+
+	real_t angle = config.tree.root_label_angle;
+
+	if (fabs(angle - R(2.) * M_PI) < PSC_EPS) {
+		real_t x = (nroot->first->x + nroot->last->x) / 2;
+		angle = vis->sector * x + vis->rotation;
+	}
+
+	root->position = ppoint_from_radial(angle, 0);
+
+	return angle;
+}
+
+void
+draw_tree_root(visualizer_t *vis, painter_t *painter, pnode_t *root)
+{
+	assert(painter);
+	assert(root);
+
+	draw_dot(painter, root);
+
+	size_t sd = 0;
+	if (vis->sector < config.tree.root_link_sector) {
+		set_root_angle(vis, root);
+	} else {
+		sd = vis->sector / config.tree.root_link_sector;
+	}
+
+	real_t radius = radius_inc_at_depth(1);
+
+	for (node_t *n = root->node.first; n != NULL; n = n->next) {
+		pnode_t *child = (pnode_t *) n;
+
+		real_t angle = vis->sector * n->x + vis->rotation;
+		child->position = ppoint_from_radial(angle, radius);
+
+		if (sd > 0) {
+			real_t si = (int) (n->x * sd);
+			real_t ra = vis->sector * (si + 0.5) / sd + vis->rotation;
+			root->position = ppoint_from_radial(ra, 0);
+		}
+
+		draw_tree_recurcive(vis, painter, child, 1);
+
+		draw_dot(painter, child);
+
+		draw_link(vis, painter, root, child, radius);
+
+		draw_label(vis, painter, child, angle);
+	}
+
+	real_t angle = set_root_angle(vis, root);
+
+	draw_label(vis, painter, root, angle);
+}
+
 void
 draw_dot(painter_t *painter, pnode_t *pnode)
 {
@@ -259,9 +325,9 @@ draw_label(visualizer_t *vis, painter_t *painter, pnode_t *child, real_t angle)
 		np.r = dim.y / 2;
 	}
 
-	p = ppoint_add(p, np);
-
 	p.r += vis->lable_offset;
+
+	p = ppoint_add(p, np);
 
 	text_t text = {
 		.refpoint = ppoint_to_point(p),

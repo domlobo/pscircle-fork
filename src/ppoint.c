@@ -30,14 +30,12 @@ ppoint_from_radial(real_t phi, real_t rho)
 	ppoint_t p = {0};
 	p.r = rho;
 
-	if (rho != 0) {
 #ifdef HAVE_SINCOS
-		R(sincos)(phi, &p.ny, &p.nx);
+	R(sincos)(phi, &p.ny, &p.nx);
 #else
-		p.nx = R(cos)(phi);
-		p.ny = R(sin)(phi);
+	p.nx = R(cos)(phi);
+	p.ny = R(sin)(phi);
 #endif
-	}
 
 	assert(ppoint_is_valid(p));
 
@@ -62,10 +60,8 @@ ppoint_normal(ppoint_t a, bool up)
 	assert(ppoint_is_valid(a));
 
 	ppoint_t p = {0};
-	if (R(fabs)(a.r) < PSC_EPS)
-		return p;
 
-	p.r = 1;
+	p.r = a.r;
 
 	if (up) {
 		p.nx = -a.ny;

@@ -140,6 +140,18 @@ TEST(parse_cmdline, tree_sector_angle) {
 	parse<real_t>("--tree-sector-angle=12", config.tree.sector, 12);
 }
 
+TEST(parse_cmdline, show_root) {
+	parse<bool>("--show-root=true", config.tree.show_root, true);
+}
+
+TEST(parse_cmdline, root_link_sector) {
+	parse<real_t>("--root-link-sector=1.23", config.tree.root_link_sector, 1.23);
+}
+
+TEST(parse_cmdline, root_label_angle) {
+	parse<real_t>("--root-label-angle=1.93", config.tree.root_label_angle, 1.93);
+}
+
 TEST(parse_cmdline, tree_rotate) {
 	parse<bool>("--tree-rotate=true", config.tree.rotate, true);
 }

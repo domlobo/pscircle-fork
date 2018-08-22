@@ -38,14 +38,17 @@ cfg_t config = {
 	.min_cpu = PSC_CPU_MIN,
 
 	.tree = {
-		.font_face  = PSC_TREE_FONT_FACE,
-		.font_size  = PSC_TREE_FONT_SIZE,
-		.font_color = PSC_TREE_FONT_COLOR,
-		.radius_inc = PSC_TREE_RADIUS_INCREMENT,
-		.sector     = PSC_TREE_SECTOR,
-		.rotate     = PSC_TREE_ROTATE,
-		.rotation   = PSC_TREE_ROTATION,
-		.center     = PSC_TREE_CENTER,
+		.font_face         = PSC_TREE_FONT_FACE,
+		.font_size         = PSC_TREE_FONT_SIZE,
+		.font_color        = PSC_TREE_FONT_COLOR,
+		.radius_inc        = PSC_TREE_RADIUS_INCREMENT,
+		.sector            = PSC_TREE_SECTOR,
+		.rotate            = PSC_TREE_ROTATE,
+		.rotation          = PSC_TREE_ROTATION,
+		.show_root         = PSC_TREE_SHOW_ROOT,
+		.root_link_sector  = PSC_TREE_ROOT_LINK_SECTOR,
+		.root_label_angle  = PSC_TREE_ROOT_LABEL_ANGLE,
+		.center            = PSC_TREE_CENTER,
 		.anchor_proc_name  = PSC_ANCHOR_PROC_NAME,
 		.anchor_proc_angle = PSC_ANCHOR_PROC_ANGLE,
 	},
@@ -177,6 +180,14 @@ parse_cmdline(int argc, char const * argv[])
 			"Specified number of the tree levels from the top will not be displayed.");
 	ARGQ(&argp, "--tree-sector-angle", config.tree.sector, parser_real, PSC_TREE_SECTOR,
 			"Tree vertices will be displayed inside the sector with specified angle");
+	ARGQ(&argp, "--show-root", config.tree.show_root, parser_bool, PSC_TREE_SHOW_ROOT,
+			"Displays root process (as specified by --root-pid)");
+	ARGQ(&argp, "--root-link-sector", config.tree.root_link_sector, parser_real, PSC_TREE_ROOT_LINK_SECTOR,
+			"Links comming from root node would be devided into sectors of specified angle. "
+			"Links ends belonging to the same sector would be joined.");
+	ARGQ(&argp, "--root-label-angle", config.tree.root_label_angle, parser_real, PSC_TREE_ROOT_LABEL_ANGLE,
+			"Angle of the label of root process. If not set (equals to 2*M_PI) angle would be "
+			"calculated as middle agnle from children nodes.");
 	ARGQ(&argp, "--tree-rotate", config.tree.rotate, parser_bool, PSC_TREE_ROTATE,
 			"Tree will be rotated to the angle specified in --tree-rotation-angle"
 			"If this option and --tree-anchor-proc-name are not set, "
