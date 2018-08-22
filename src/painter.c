@@ -310,10 +310,19 @@ painter_fill_backgound_image(painter_t *painter, const char *imgpah)
 		exit(EXIT_FAILURE);
 	}
 
-	// XXX: Can not draw at 0:0 on Xlib surfaces for some reasons
-	cairo_set_source_surface(painter->_cr, img, 0.05, 0.05);
+	cairo_pattern_t *pattern = cairo_pattern_create_for_surface(img);
+	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
+
+	cairo_matrix_t matrix;
+
+	cairo_matrix_init_scale(&matrix, config.background_scale, config.background_scale);
+	cairo_pattern_set_matrix(pattern, &matrix);
+
+	cairo_set_source(painter->_cr, pattern);
+
 	cairo_paint(painter->_cr);
 
+	cairo_pattern_destroy(pattern);
 	cairo_surface_destroy(img);
 }
 

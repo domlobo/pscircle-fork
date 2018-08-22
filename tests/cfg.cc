@@ -108,6 +108,10 @@ TEST(parse_cmdline, background_image) {
 	parse("--background-image=file.png", config.background_image, "file.png");
 }
 
+TEST(parse_cmdline, background_image_scale) {
+	parse<real_t>("--background-image-scale=1.2", config.background_scale, 1.2);
+}
+
 TEST(parse_cmdline, tree_center) {
 	parse("--tree-center=1:4.3", config.tree.center, 1, 4.3);
 }

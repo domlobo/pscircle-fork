@@ -31,6 +31,7 @@ cfg_t config = {
 	.collapse_threads = PSC_COLLAPSE_THREADS,
 	.background       = PSC_BACKGROUND_COLOR,
 	.background_image = PSC_BACKGROUND_IMAGE,
+	.background_scale = PSC_BACKGROUND_IMAGE_SCALE,
 
 	.max_mem = PSC_MEM_MAX,
 	.min_mem = PSC_MEM_MIN,
@@ -168,6 +169,8 @@ parse_cmdline(int argc, char const * argv[])
 			"Image backgound color");
 	ARG(&argp, "--background-image", config.background_image, parser_string, PSC_BACKGROUND_IMAGE,
 			"Path to background image. Image will be drawn at the top left corner without scaling");
+	ARGQ(&argp, "--background-image-scale", config.background_scale, parser_real, PSC_BACKGROUND_IMAGE_SCALE,
+			"Scale factor of backgraound image");
 
 	ARG(&argp, "--tree-center", config.tree.center, parser_point, point_to_str((point_t) PSC_TREE_CENTER),
 			"X:Y Position of a tree center from the center of image");
