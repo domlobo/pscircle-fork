@@ -16,13 +16,14 @@ typedef struct {
 	real_t sector;
 	real_t lable_offset;
 	real_t link_offset;
+	painter_t *painter;
 } visualizer_t ;
 
 void
 calc_rotation(visualizer_t *vis, procs_t *procs);
 
 void
-calc_sector(visualizer_t *vis, procs_t *procs);
+calc_sector(visualizer_t *vis);
 
 void
 calc_offsets(visualizer_t *vis);
@@ -37,32 +38,34 @@ void
 dinit_tree_painter(painter_t *painter);
 
 void
-draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *procs, size_t depth);
+draw_tree_recurcive(visualizer_t *vis, pnode_t *procs, size_t depth);
 
 void
-draw_tree_root(visualizer_t *vis, painter_t *painter, pnode_t *procs);
+draw_tree_root(visualizer_t *vis, pnode_t *procs);
 
 void
-draw_labels_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *procs, size_t depth);
+draw_labels_recurcive(visualizer_t *vis, pnode_t *procs, size_t depth);
 
 real_t
 set_root_angle(visualizer_t *vis, pnode_t *root);
 
 void
-draw_dot(painter_t *painter, pnode_t *pnode);
+draw_dot(visualizer_t *vis, pnode_t *pnode);
 
 void
-draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child, real_t lenght);
+draw_link(visualizer_t *vis, pnode_t *parent, pnode_t *child, real_t lenght);
 
 void
-draw_label(visualizer_t *vis, painter_t *painter, pnode_t *child, real_t angle);
+draw_label(visualizer_t *vis, pnode_t *child, real_t angle);
 
 void
 draw_tree(painter_t *painter, procs_t *procs)
 {
 	visualizer_t vis = {0};
 
-	calc_sector(&vis, procs);
+	vis.painter = painter;
+
+	calc_sector(&vis);
 
 	calc_rotation(&vis, procs);
 
@@ -71,20 +74,18 @@ draw_tree(painter_t *painter, procs_t *procs)
 	init_tree_painter(painter);
 
 	if (config.tree.show_root)
-		draw_tree_root(&vis, painter, procs->root);
+		draw_tree_root(&vis, procs->root);
 	else
-		draw_tree_recurcive(&vis, painter, procs->root, 0);
+		draw_tree_recurcive(&vis, procs->root, 0);
 
-	draw_labels_recurcive(&vis, painter, procs->root, 0);
+	draw_labels_recurcive(&vis, procs->root, 0);
 
 	dinit_tree_painter(painter);
 }
 
 void
-calc_sector(visualizer_t *vis, procs_t *procs)
+calc_sector(visualizer_t *vis)
 {
-	assert(procs);
-
 	if (config.tree.sector) {
 		vis->sector = config.tree.sector;
 		return;
@@ -153,10 +154,9 @@ radius_inc_at_depth(size_t depth)
 }
 
 void
-draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, size_t depth)
+draw_tree_recurcive(visualizer_t *vis, pnode_t *parent, size_t depth)
 {
-	assert(painter);
-	assert(parent);
+	assert(vis);
 	assert(config.tree.radius_inc.size > 0);
 
 	real_t radius_inc = 0;
@@ -173,29 +173,29 @@ draw_tree_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, size
 		real_t angle = vis->sector * n->x + vis->rotation;
 		child->position = ppoint_from_radial(angle, radius);
 
-		draw_tree_recurcive(vis, painter, child, depth + 1);
+		draw_tree_recurcive(vis, child, depth + 1);
 
 		if (depth < config.tree.hide_levels)
 			continue;
 
-		draw_dot(painter, child);
+		draw_dot(vis, child);
 
 		if (depth > 0 && depth > config.tree.hide_levels)
-			draw_link(vis, painter, parent, child, radius_inc);
+			draw_link(vis, parent, child, radius_inc);
 
 		/* TODO: is config.tree.hide_levels working with --show_root? */
 	}
 }
 
 void
-draw_labels_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, size_t depth)
+draw_labels_recurcive(visualizer_t *vis, pnode_t *parent, size_t depth)
 {
-	assert(painter);
+	assert(vis);
 	assert(parent);
 
 	if (config.tree.show_root && depth == 0) {
 		real_t angle = set_root_angle(vis, parent);
-		draw_label(vis, painter, parent, angle);
+		draw_label(vis, parent, angle);
 	}
 
 	for (node_t *n = parent->node.first; n != NULL; n = n->next) {
@@ -203,9 +203,9 @@ draw_labels_recurcive(visualizer_t *vis, painter_t *painter, pnode_t *parent, si
 
 		real_t angle = vis->sector * n->x + vis->rotation;
 
-		draw_labels_recurcive(vis, painter, child, depth + 1);
+		draw_labels_recurcive(vis, child, depth + 1);
 
-		draw_label(vis, painter, child, angle);
+		draw_label(vis, child, angle);
 	}
 }
 
@@ -227,12 +227,12 @@ set_root_angle(visualizer_t *vis, pnode_t *root)
 }
 
 void
-draw_tree_root(visualizer_t *vis, painter_t *painter, pnode_t *root)
+draw_tree_root(visualizer_t *vis, pnode_t *root)
 {
-	assert(painter);
+	assert(vis);
 	assert(root);
 
-	draw_dot(painter, root);
+	draw_dot(vis, root);
 
 	size_t sd = 0;
 	if (vis->sector < config.tree.root_link_sector) {
@@ -255,17 +255,16 @@ draw_tree_root(visualizer_t *vis, painter_t *painter, pnode_t *root)
 			root->position = ppoint_from_radial(ra, 0);
 		}
 
-		draw_tree_recurcive(vis, painter, child, 1);
+		draw_tree_recurcive(vis, child, 1);
 
-		draw_dot(painter, child);
+		draw_dot(vis, child);
 
-		draw_link(vis, painter, root, child, radius);
+		draw_link(vis, root, child, radius);
 	}
-
 }
 
 void
-draw_dot(painter_t *painter, pnode_t *pnode)
+draw_dot(visualizer_t *vis, pnode_t *pnode)
 {
 	real_t mem = pnode_mem_percentage(pnode);
 	real_t cpu = pnode_cpu_percentage(pnode);
@@ -284,11 +283,11 @@ draw_dot(painter_t *painter, pnode_t *pnode)
 		.foreground = fg
 	};
 
-	painter_draw_circle(painter, c);
+	painter_draw_circle(vis->painter, c);
 }
 
 void
-draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child, real_t lenght)
+draw_link(visualizer_t *vis, pnode_t *parent, pnode_t *child, real_t lenght)
 {
 	ppoint_t a = parent->position;
 	a.r += vis->link_offset;
@@ -307,7 +306,7 @@ draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child
 			.color = col
 		};
 
-		painter_draw_line(painter, line);
+		painter_draw_line(vis->painter, line);
 		return;
 	}
 
@@ -326,13 +325,13 @@ draw_link(visualizer_t *vis, painter_t *painter, pnode_t *parent, pnode_t *child
 		.color = col
 	};
 
-	painter_draw_curve(painter, curve);
+	painter_draw_curve(vis->painter, curve);
 }
 
 void
-draw_label(visualizer_t *vis, painter_t *painter, pnode_t *child, real_t angle)
+draw_label(visualizer_t *vis, pnode_t *child, real_t angle)
 {
-	point_t dim = painter_text_size(painter, child->name);
+	point_t dim = painter_text_size(vis->painter, child->name);
 
 	ppoint_t p = child->position;
 
@@ -361,6 +360,6 @@ draw_label(visualizer_t *vis, painter_t *painter, pnode_t *child, real_t angle)
 		.str = child->name
 	};
 
-	painter_draw_text(painter, text);
+	painter_draw_text(vis->painter, text);
 }
 
