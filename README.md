@@ -90,6 +90,27 @@ GNOME, KDE, XFCE and, probably, some other DE do not display X11 root window as 
 
 For GNOME DE [this script](examples/gnome.sh) may help you.
 
+## Usage on OSX 
+
+Make sure you've disabled X11 support, by calling `meson configure -Denable-x11=false` before compiling *pscircle*.
+
+As OSX doesn't have linux-compatible procfs, you should supply processes data in our own way via stdin. Input data format should be similar to the output of `ps -e -o pid,ppid,pcpu,rss,comm --no-headers` linux command, e.g: 
+
+
+```
+    1     0  0.0     4 runit
+    2     0  0.0     0 kthreadd
+    3     2  0.0     0 rcu_gp
+```
+
+It can be achieved by calling:
+
+```
+ps -e -c -o pid=,ppid=,pcpu=,rss=,comm= | ./pscircle --stdin=true --memlist-show=false --cpulist-show=false
+```
+
+As a result `pscircle.png` image would be created. Then you should set it is as your wallpaper image. In case you create the script for that, I'll appreciate the contribution.
+
 # Examples
 
 For more examples check [examples](examples/) directory.
