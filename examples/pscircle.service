@@ -6,4 +6,4 @@ Environment=DISPLAY=:0
 ExecStart=/bin/bash -c "while true; do pscircle; sleep 30; done"
 
 [Install]
-WantedBy=graphical.target
+WantedBy=default.target
